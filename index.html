@@ -1,155 +1,227 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>SQL Admin Panel – FINAL</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <meta charset="UTF-8" />
+    <title>SQL | MASTER ADMIN CONTROL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <style>
+        :root {
+            --accent: #00ff88;
+            --gold: #ffd700;
+            --bg: #050505;
+            --card: #111111;
+            --red: #ff4444;
+        }
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBvObxADcAior6R_or9O6UmWsFT8do1GkI",
-      authDomain: "sqladmin-ff04d.firebaseapp.com",
-      projectId: "sqladmin-ff04d",
-      storageBucket: "sqladmin-ff04d.firebasestorage.app",
-      messagingSenderId: "539086978850",
-      appId: "1:539086978850:web:261e6a0cf3c9a2aa29ef7b"
-    };
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        
+        /* Auth Screen */
+        .auth-container { max-width: 350px; margin: 100px auto; padding: 30px; background: var(--card); border: 1px solid var(--gold); border-radius: 20px; text-align: center; }
+        .auth-container h2 { color: var(--gold); letter-spacing: 2px; }
+        
+        /* Header */
+        header { background: #000; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 100; }
+        header h2 { margin: 0; font-size: 1.2rem; color: var(--gold); }
+        .menu-btn { font-size: 1.5rem; cursor: pointer; color: var(--gold); }
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+        /* Dashboard */
+        .wrap { padding: 20px; max-width: 1000px; margin: 0 auto; }
+        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .card h3 { margin-top: 0; color: var(--accent); border-bottom: 1px solid #222; padding-bottom: 10px; font-size: 1rem; }
 
-    // -------- AUTH --------
-    window.loginAdmin = async () => {
-      try {
-        await signInWithEmailAndPassword(auth, email.value, pass.value);
-      } catch {
-        alert('Wrong email or password');
-      }
-    };
+        /* Forms */
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .field-group { display: flex; flex-direction: column; }
+        label { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 4px; font-weight: bold; }
+        input, select { background: #000; border: 1px solid #333; color: var(--accent); padding: 10px; border-radius: 8px; outline: none; font-size: 0.9rem; }
+        input:focus { border-color: var(--accent); }
 
-    window.logout = async () => {
-      await signOut(auth);
-    };
+        button { padding: 12px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        .btn-update { background: var(--accent); color: #000; width: 100%; }
+        .btn-approve { background: var(--accent); color: #000; flex: 1; }
+        .btn-reject { background: var(--red); color: #fff; flex: 1; }
+        .btn-logout { background: transparent; color: var(--red); border: 1px solid var(--red); padding: 5px 15px; font-size: 0.7rem; }
 
-    onAuthStateChanged(auth, u => {
-      login.style.display = u ? 'none' : 'block';
-      panel.style.display = u ? 'block' : 'none';
-      if (u) {
-        showMatches();
-        loadMatches();
-      }
-    });
+        /* Menu Overlay */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; }
+        .menu-box { position: absolute; right: 0; top: 0; width: 250px; height: 100%; background: #0d0d0d; padding: 40px 20px; border-left: 2px solid var(--gold); }
+        .menu-box button { width: 100%; margin-bottom: 15px; text-align: left; background: #1a1a1a; color: #fff; padding: 15px; }
+        .menu-box button i { margin-right: 10px; color: var(--gold); }
 
-    // -------- MENU --------
-    window.toggleMenu = () => menu.style.display = 'block';
-    window.closeMenu = () => menu.style.display = 'none';
+        /* Payment Row */
+        .pay-row { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px dashed #333; }
+        .utr-text { font-family: monospace; color: var(--gold); font-size: 1rem; }
 
-    window.showMatches = () => {
-      matchesPage.style.display = 'block';
-      paymentsPage.style.display = 'none';
-      closeMenu();
-    };
+        .status-badge { font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+        .pending { background: #ffa50033; color: orange; }
+        .approved { background: #00ff8833; color: var(--accent); }
+    </style>
+</head>
+<body>
 
-    window.showPayments = () => {
-      matchesPage.style.display = 'none';
-      paymentsPage.style.display = 'block';
-      loadPayments();
-      closeMenu();
-    };
-
-    // -------- MATCHES --------
-    async function loadMatches() {
-      matches.innerHTML = '';
-      const snap = await getDocs(collection(db, 'matches'));
-      snap.forEach(d => {
-        const m = d.data();
-        matches.innerHTML += `
-          <div class="card">
-            <h3>${m.type}</h3>
-            Entry <input id="e-${d.id}" value="${m.entry}" />
-            Win <input id="w-${d.id}" value="${m.win}" />
-            Status <input id="s-${d.id}" value="${m.status}" />
-            Room ID <input id="r-${d.id}" value="${m.roomId || ''}" />
-            Password <input id="p-${d.id}" value="${m.password || ''}" />
-            <button onclick="saveMatch('${d.id}')">Update Match</button>
-          </div>`;
-      });
-    }
-
-    window.saveMatch = async id => {
-      await updateDoc(doc(db, 'matches', id), {
-        entry: Number(document.getElementById('e-'+id).value),
-        win: Number(document.getElementById('w-'+id).value),
-        status: document.getElementById('s-'+id).value,
-        roomId: document.getElementById('r-'+id).value,
-        password: document.getElementById('p-'+id).value
-      });
-      alert('Match updated');
-    };
-
-    // -------- PAYMENTS --------
-    async function loadPayments() {
-      payments.innerHTML = '';
-      const snap = await getDocs(collection(db, 'payments'));
-      snap.forEach(d => {
-        const p = d.data();
-        payments.innerHTML += `
-          <div class="card">
-            <b>Match:</b> ${p.matchId || ''}<br>
-            <b>Amount:</b> ₹${p.amount}<br>
-            <b>UTR:</b> ${p.txid}<br>
-            <b>Status:</b> ${p.status}<br>
-            <button onclick="approve('${d.id}')">Approve</button>
-            <button class="danger" onclick="reject('${d.id}')">Reject</button>
-          </div>`;
-      });
-    }
-
-    window.approve = async id => {
-      await updateDoc(doc(db, 'payments', id), { status: 'approved' });
-      alert('Payment approved');
-      loadPayments();
-    };
-
-    window.reject = async id => {
-      await updateDoc(doc(db, 'payments', id), { status: 'rejected' });
-      alert('Payment rejected');
-      loadPayments();
-    };
-  </script>  <style>
-    body { background:#0b0b0b; color:#fff; font-family:Arial; margin:0 }
-    .top { display:flex; justify-content:space-between; padding:15px; background:#000 }
-    .menuBtn { cursor:pointer; font-size:22px }
-    .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6) }
-    .menuBox { position:absolute; right:0; top:0; background:#111; width:200px; height:100%; padding:20px }
-    .menuBox button { width:100%; margin-bottom:10px }
-    .wrap { padding:20px }
-    .card { background:#111; padding:15px; border-radius:12px; margin-bottom:15px }
-    input { width:100%; margin:5px 0; padding:8px; background:#000; color:#0f0; border:1px solid #333 }
-    button { padding:8px; background:#00ff88; border:none; font-weight:bold; border-radius:6px }
-    .danger { background:red; color:#fff }
-  </style></head>
-<body><div id="login" class="wrap">
-  <h2>Admin Login</h2>
-  <input id="email" placeholder="Email" />
-  <input id="pass" type="password" placeholder="Password" />
-  <button onclick="loginAdmin()">Login</button>
-</div><div id="panel" style="display:none">
-  <div class="top">
-    <h3>Admin Panel</h3>
-    <div class="menuBtn" onclick="toggleMenu()">☰</div>
-  </div>  <div id="menu" class="overlay" onclick="closeMenu()">
-    <div class="menuBox" onclick="event.stopPropagation()">
-      <button onclick="showMatches()">Matches</button>
-      <button onclick="showPayments()">Payments</button>
-      <button class="danger" onclick="logout()">Logout</button>
+    <div id="login-screen" class="auth-container">
+        <i class="fas fa-user-shield fa-3x" style="color: var(--gold); margin-bottom: 15px;"></i>
+        <h2>SQL ADMIN</h2>
+        <input id="email" type="email" placeholder="Admin Email" style="width: 100%; box-sizing: border-box; margin-bottom: 10px;" />
+        <input id="pass" type="password" placeholder="Password" style="width: 100%; box-sizing: border-box; margin-bottom: 20px;" />
+        <button onclick="loginAdmin()" class="btn-update">UNLOCK SYSTEM</button>
     </div>
-  </div>  <div id="matchesPage">
-    <div id="matches" class="wrap"></div>
-  </div>  <div id="paymentsPage" style="display:none">
-    <div id="payments" class="wrap"></div>
-  </div>
-</div></body>
-</html>
+
+    <div id="panel" style="display:none">
+        <header>
+            <h2><i class="fas fa-gauge-high"></i> CONTROL PANEL</h2>
+            <div class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+        </header>
+
+        <div id="menu" class="overlay" onclick="closeMenu()">
+            <div class="menu-box" onclick="event.stopPropagation()">
+                <h3 style="color:var(--gold)">MAIN MENU</h3>
+                <button onclick="showPage('matches')"><i class="fas fa-gamepad"></i> Manage Matches</button>
+                <button onclick="showPage('payments')"><i class="fas fa-receipt"></i> Verify Payments</button>
+                <hr style="border:0; border-top:1px solid #222; margin: 20px 0;">
+                <button class="btn-logout" onclick="logout()" style="width: 100%;"><i class="fas fa-sign-out-alt"></i> LOGOUT</button>
+            </div>
+        </div>
+
+        <div id="matchesPage" class="wrap">
+            <h2 style="color: var(--gold);"><i class="fas fa-trophy"></i> Active Tournaments</h2>
+            <div id="matches-container"></div>
+        </div>
+
+        <div id="paymentsPage" class="wrap" style="display:none">
+            <h2 style="color: var(--gold);"><i class="fas fa-shield-check"></i> Payment Requests</h2>
+            <div id="payments-container"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, updateDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvObxADcAior6R_or9O6UmWsFT8do1GkI",
+            authDomain: "sqladmin-ff04d.firebaseapp.com",
+            projectId: "sqladmin-ff04d",
+            storageBucket: "sqladmin-ff04d.firebasestorage.app",
+            messagingSenderId: "539086978850",
+            appId: "1:539086978850:web:261e6a0cf3c9a2aa29ef7b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- Auth Logic ---
+        window.loginAdmin = async () => {
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('pass').value;
+            try { await signInWithEmailAndPassword(auth, e, p); } 
+            catch { alert('Access Denied: Invalid Credentials'); }
+        };
+
+        window.logout = () => signOut(auth);
+
+        onAuthStateChanged(auth, user => {
+            document.getElementById('login-screen').style.display = user ? 'none' : 'block';
+            document.getElementById('panel').style.display = user ? 'block' : 'none';
+            if(user) { loadMatches(); loadPayments(); }
+        });
+
+        // --- Navigation ---
+        window.toggleMenu = () => document.getElementById('menu').style.display = 'block';
+        window.closeMenu = () => document.getElementById('menu').style.display = 'none';
+        
+        window.showPage = (page) => {
+            document.getElementById('matchesPage').style.display = page === 'matches' ? 'block' : 'none';
+            document.getElementById('paymentsPage').style.display = page === 'payments' ? 'block' : 'none';
+            closeMenu();
+        };
+
+        // --- Load Matches ---
+        function loadMatches() {
+            onSnapshot(collection(db, "matches"), snap => {
+                const container = document.getElementById('matches-container');
+                container.innerHTML = "";
+                snap.forEach(d => {
+                    const m = d.data();
+                    container.innerHTML += `
+                    <div class="card">
+                        <h3>Match ID: ${d.id.substring(0,8)}</h3>
+                        <div class="grid-form">
+                            <div class="field-group"><label>Map</label><input id="map-${d.id}" value="${m.map}"></div>
+                            <div class="field-group"><label>Type</label><input id="type-${d.id}" value="${m.type}"></div>
+                            <div class="field-group"><label>Entry (₹)</label><input type="number" id="entry-${d.id}" value="${m.entry}"></div>
+                            <div class="field-group"><label>Prize (₹)</label><input type="number" id="win-${d.id}" value="${m.win}"></div>
+                            <div class="field-group"><label>Joined</label><input type="number" id="joined-${d.id}" value="${m.joined}"></div>
+                            <div class="field-group"><label>Total Slots</label><input type="number" id="total-${d.id}" value="${m.total}"></div>
+                            <div class="field-group"><label>Status</label>
+                                <select id="status-${d.id}">
+                                    <option value="open" ${m.status=='open'?'selected':''}>Open</option>
+                                    <option value="full" ${m.status=='full'?'selected':''}>Full</option>
+                                    <option value="started" ${m.status=='started'?'selected':''}>Started</option>
+                                </select>
+                            </div>
+                            <div class="field-group"><label>Room ID</label><input id="rid-${d.id}" value="${m.roomId || ''}" placeholder="Wait..."></div>
+                        </div>
+                        <div class="field-group" style="margin-bottom:15px;"><label>Room Password</label><input id="pass-${d.id}" value="${m.password || ''}"></div>
+                        <button class="btn-update" onclick="updateMatch('${d.id}')">SAVE CHANGES</button>
+                    </div>`;
+                });
+            });
+        }
+
+        window.updateMatch = async (id) => {
+            await updateDoc(doc(db, "matches", id), {
+                map: document.getElementById(`map-${id}`).value,
+                type: document.getElementById(`type-${id}`).value,
+                entry: Number(document.getElementById(`entry-${id}`).value),
+                win: Number(document.getElementById(`win-${id}`).value),
+                joined: Number(document.getElementById(`joined-${id}`).value),
+                total: Number(document.getElementById(`total-${id}`).value),
+                status: document.getElementById(`status-${id}`).value,
+                roomId: document.getElementById(`rid-${id}`).value,
+                password: document.getElementById(`pass-${id}`).value
+            });
+            alert("Match Data Updated!");
+        };
+
+        // --- Load Payments ---
+        function loadPayments() {
+            onSnapshot(collection(db, "payments"), snap => {
+                const container = document.getElementById('payments-container');
+                container.innerHTML = "";
+                snap.forEach(d => {
+                    const p = d.data();
+                    container.innerHTML += `
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="font-size:0.8rem; color:#888;">${new Date(p.timestamp).toLocaleString()}</span>
+                            <span class="status-badge ${p.status}">${p.status.toUpperCase()}</span>
+                        </div>
+                        <div class="pay-row">
+                            <span style="font-size:0.7rem;">UTR NO:</span>
+                            <span class="utr-text">${p.utr}</span>
+                        </div>
+                        <p style="font-size:0.8rem; margin:10px 0;">Match Target ID: <b color="white">${p.matchId}</b></p>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn-approve" onclick="actionPay('${d.id}', 'approved')">APPROVE</button>
+                            <button class="btn-reject" onclick="actionPay('${d.id}', 'rejected')">REJECT</button>
+                        </div>
+                    </div>`;
+                });
+            });
+        }
+
+        window.actionPay = async (id, status) => {
+            if(confirm(`Are you sure you want to ${status} this payment?`)) {
+                await updateDoc(doc(db, "payments", id), { status: status });
+                alert(`Payment ${status.toUpperCase()} successfully.`);
+            }
+        };
+
+    </script>
+</body>
+  </html>
