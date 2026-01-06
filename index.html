@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>SQL Admin Panel (Fixed)</title>
+  <title>SQL Admin Panel – FINAL</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -20,8 +20,13 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // -------- AUTH --------
     window.loginAdmin = async () => {
-      await signInWithEmailAndPassword(auth, email.value, pass.value);
+      try {
+        await signInWithEmailAndPassword(auth, email.value, pass.value);
+      } catch {
+        alert('Wrong email or password');
+      }
     };
 
     window.logout = async () => {
@@ -31,12 +36,33 @@
     onAuthStateChanged(auth, u => {
       login.style.display = u ? 'none' : 'block';
       panel.style.display = u ? 'block' : 'none';
-      if (u) loadMatches();
+      if (u) {
+        showMatches();
+        loadMatches();
+      }
     });
 
+    // -------- MENU --------
+    window.toggleMenu = () => menu.style.display = 'block';
+    window.closeMenu = () => menu.style.display = 'none';
+
+    window.showMatches = () => {
+      matchesPage.style.display = 'block';
+      paymentsPage.style.display = 'none';
+      closeMenu();
+    };
+
+    window.showPayments = () => {
+      matchesPage.style.display = 'none';
+      paymentsPage.style.display = 'block';
+      loadPayments();
+      closeMenu();
+    };
+
+    // -------- MATCHES --------
     async function loadMatches() {
-      matches.innerHTML = "";
-      const snap = await getDocs(collection(db, "matches"));
+      matches.innerHTML = '';
+      const snap = await getDocs(collection(db, 'matches'));
       snap.forEach(d => {
         const m = d.data();
         matches.innerHTML += `
@@ -47,44 +73,64 @@
             Status <input id="s-${d.id}" value="${m.status}" />
             Room ID <input id="r-${d.id}" value="${m.roomId || ''}" />
             Password <input id="p-${d.id}" value="${m.password || ''}" />
-            <button onclick="save('${d.id}')">Update Match</button>
+            <button onclick="saveMatch('${d.id}')">Update Match</button>
           </div>`;
       });
     }
 
-    window.save = async id => {
-      await updateDoc(doc(db, "matches", id), {
+    window.saveMatch = async id => {
+      await updateDoc(doc(db, 'matches', id), {
         entry: Number(document.getElementById('e-'+id).value),
         win: Number(document.getElementById('w-'+id).value),
         status: document.getElementById('s-'+id).value,
         roomId: document.getElementById('r-'+id).value,
         password: document.getElementById('p-'+id).value
       });
-      alert('Updated');
+      alert('Match updated');
+    };
+
+    // -------- PAYMENTS --------
+    async function loadPayments() {
+      payments.innerHTML = '';
+      const snap = await getDocs(collection(db, 'payments'));
+      snap.forEach(d => {
+        const p = d.data();
+        payments.innerHTML += `
+          <div class="card">
+            <b>Match:</b> ${p.matchId || ''}<br>
+            <b>Amount:</b> ₹${p.amount}<br>
+            <b>UTR:</b> ${p.txid}<br>
+            <b>Status:</b> ${p.status}<br>
+            <button onclick="approve('${d.id}')">Approve</button>
+            <button class="danger" onclick="reject('${d.id}')">Reject</button>
+          </div>`;
+      });
+    }
+
+    window.approve = async id => {
+      await updateDoc(doc(db, 'payments', id), { status: 'approved' });
+      alert('Payment approved');
+      loadPayments();
+    };
+
+    window.reject = async id => {
+      await updateDoc(doc(db, 'payments', id), { status: 'rejected' });
+      alert('Payment rejected');
+      loadPayments();
     };
   </script>  <style>
     body { background:#0b0b0b; color:#fff; font-family:Arial; margin:0 }
     .top { display:flex; justify-content:space-between; padding:15px; background:#000 }
-    .menu { cursor:pointer }
-    .logout { display:none; position:absolute; right:10px; top:60px; background:#111; padding:10px }
-    .logout button { background:red; color:#fff }
+    .menuBtn { cursor:pointer; font-size:22px }
+    .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6) }
+    .menuBox { position:absolute; right:0; top:0; background:#111; width:200px; height:100%; padding:20px }
+    .menuBox button { width:100%; margin-bottom:10px }
     .wrap { padding:20px }
-    .card { background:#111; padding:15px; border-radius:10px; margin-bottom:15px }
+    .card { background:#111; padding:15px; border-radius:12px; margin-bottom:15px }
     input { width:100%; margin:5px 0; padding:8px; background:#000; color:#0f0; border:1px solid #333 }
-    button { padding:8px; background:#00ff88; border:none; font-weight:bold }
-  #topBar{display:flex;align-items:center;gap:10px;margin-bottom:15px}
-#menuBtn{background:#00ff88;color:#000;font-size:20px}
-#sideMenu{position:fixed;top:0;left:-220px;width:200px;height:100%;background:#111;padding:20px;transition:.3s;z-index:20}
-#sideMenu.open{left:0}
-#sideMenu button{width:100%;margin-bottom:10px}
-#menuOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:10}
-#topBar{display:flex;align-items:center;gap:10px;margin-bottom:15px}
-#menuBtn{background:#00ff88;color:#000;font-size:20px}
-#sideMenu{position:fixed;top:0;left:-220px;width:200px;height:100%;background:#111;padding:20px;transition:.3s;z-index:20}
-#sideMenu.open{left:0}
-#sideMenu button{width:100%;margin-bottom:10px}
-#menuOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:10}
-</style></head>
+    button { padding:8px; background:#00ff88; border:none; font-weight:bold; border-radius:6px }
+    .danger { background:red; color:#fff }
+  </style></head>
 <body><div id="login" class="wrap">
   <h2>Admin Login</h2>
   <input id="email" placeholder="Email" />
@@ -92,12 +138,18 @@
   <button onclick="loginAdmin()">Login</button>
 </div><div id="panel" style="display:none">
   <div class="top">
-    <h3>Matches</h3>
-    <div class="menu" onclick="document.getElementById('lg').style.display='block'">☰</div>
+    <h3>Admin Panel</h3>
+    <div class="menuBtn" onclick="toggleMenu()">☰</div>
+  </div>  <div id="menu" class="overlay" onclick="closeMenu()">
+    <div class="menuBox" onclick="event.stopPropagation()">
+      <button onclick="showMatches()">Matches</button>
+      <button onclick="showPayments()">Payments</button>
+      <button class="danger" onclick="logout()">Logout</button>
+    </div>
+  </div>  <div id="matchesPage">
+    <div id="matches" class="wrap"></div>
+  </div>  <div id="paymentsPage" style="display:none">
+    <div id="payments" class="wrap"></div>
   </div>
-  <div id="lg" class="logout">
-    <button onclick="logout()">Logout</button>
-  </div>
-  <div id="matches" class="wrap"></div>
 </div></body>
 </html>
