@@ -72,7 +72,19 @@
     .card { background:#111; padding:15px; border-radius:10px; margin-bottom:15px }
     input { width:100%; margin:5px 0; padding:8px; background:#000; color:#0f0; border:1px solid #333 }
     button { padding:8px; background:#00ff88; border:none; font-weight:bold }
-  </style></head>
+  #topBar{display:flex;align-items:center;gap:10px;margin-bottom:15px}
+#menuBtn{background:#00ff88;color:#000;font-size:20px}
+#sideMenu{position:fixed;top:0;left:-220px;width:200px;height:100%;background:#111;padding:20px;transition:.3s;z-index:20}
+#sideMenu.open{left:0}
+#sideMenu button{width:100%;margin-bottom:10px}
+#menuOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:10}
+#topBar{display:flex;align-items:center;gap:10px;margin-bottom:15px}
+#menuBtn{background:#00ff88;color:#000;font-size:20px}
+#sideMenu{position:fixed;top:0;left:-220px;width:200px;height:100%;background:#111;padding:20px;transition:.3s;z-index:20}
+#sideMenu.open{left:0}
+#sideMenu button{width:100%;margin-bottom:10px}
+#menuOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:10}
+</style></head>
 <body><div id="login" class="wrap">
   <h2>Admin Login</h2>
   <input id="email" placeholder="Email" />
