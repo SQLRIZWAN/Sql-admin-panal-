@@ -1,145 +1,128 @@
 <!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>SQL Admin Panel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  <!-- Firebase SDKs -->  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    // 🔐 Firebase Config (YOUR PROJECT)
-    const firebaseConfig = {
-      apiKey: "AIzaSyBvObxADcAior6R_or9O6UmWsFT8do1GkI",
-      authDomain: "sqladmin-ff04d.firebaseapp.com",
-      projectId: "sqladmin-ff04d",
-      storageBucket: "sqladmin-ff04d.firebasestorage.app",
-      messagingSenderId: "539086978850",
-      appId: "1:539086978850:web:261e6a0cf3c9a2aa29ef7b"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // ---------- AUTH ----------
-    window.loginAdmin = async () => {
-      try {
-        await signInWithEmailAndPassword(auth, email.value, password.value);
-      } catch {
-        alert("Wrong email or password");
-      }
-    };
-
-    window.logout = async () => signOut(auth);
-
-    onAuthStateChanged(auth, user => {
-      if (user) {
-        loginBox.style.display = 'none';
-        panel.style.display = 'block';
-        loadPayments();
-        loadMatches();
-      } else {
-        loginBox.style.display = 'block';
-        panel.style.display = 'none';
-      }
-    });
-
-    // ---------- PAYMENTS ----------
-    async function loadPayments() {
-      payments.innerHTML = "";
-      const snap = await getDocs(collection(db, "payments"));
-      snap.forEach(d => {
-        const p = d.data();
-        payments.innerHTML += `
-          <div class="card">
-            <b>₹${p.amount}</b> | ${p.matchId}<br>
-            TXID: ${p.txid}<br>
-            Status: ${p.status}<br>
-            <button onclick="approvePay('${d.id}')">Approve</button>
-            <button onclick="rejectPay('${d.id}')">Reject</button>
-          </div>`;
-      });
+  <title>Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body{
+      margin:0;font-family:Arial,Helvetica,sans-serif;
+      background:#0b0b0b;color:#eafff1;
     }
-
-    window.approvePay = async id => {
-      await updateDoc(doc(db, "payments", id), { status: "approved" });
-      loadPayments();
-    };
-
-    window.rejectPay = async id => {
-      await updateDoc(doc(db, "payments", id), { status: "rejected" });
-      loadPayments();
-    };
-
-    // ---------- MATCHES ----------
-    async function loadMatches() {
-      matches.innerHTML = "";
-      const snap = await getDocs(collection(db, "matches"));
-      snap.forEach(d => {
-        const m = d.data();
-        matches.innerHTML += `
-          <div class="card">
-            <h3>${m.type}</h3>
-            <small>Players: ${m.approvedPlayers || 0} / ${m.maxPlayers}</small><br><br>
-
-            Entry ₹<input id="e-${d.id}" value="${m.entry}" />
-            Win ₹<input id="w-${d.id}" value="${m.win}" />
-
-            Room ID<input id="r-${d.id}" value="${m.roomId || ''}" />
-            Password<input id="p-${d.id}" value="${m.password || ''}" />
-
-            Status
-            <select id="s-${d.id}">
-              <option ${m.status==='waiting'?'selected':''}>waiting</option>
-              <option ${m.status==='upcoming'?'selected':''}>upcoming</option>
-              <option ${m.status==='live'?'selected':''}>live</option>
-              <option ${m.status==='completed'?'selected':''}>completed</option>
-            </select>
-
-            Join Enabled
-            <select id="j-${d.id}">
-              <option value="true" ${m.joinEnabled?'selected':''}>ON</option>
-              <option value="false" ${!m.joinEnabled?'selected':''}>OFF</option>
-            </select>
-
-            <button onclick="saveMatch('${d.id}')">Save</button>
-          </div>`;
-      });
+    header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 16px;background:#000;border-bottom:1px solid #1f1f1f;
     }
+    .menu-btn{
+      font-size:26px;cursor:pointer;color:#00ff88;
+    }
+    .title{font-size:18px;font-weight:bold;color:#00ff88}/* Sidebar */
+.sidebar{
+  position:fixed;top:0;left:-260px;width:240px;height:100%;
+  background:#050505;border-right:1px solid #1f1f1f;
+  padding:20px;transition:.3s;z-index:1000;
+}
+.sidebar.active{left:0}
+.sidebar h3{color:#00ff88;margin-bottom:20px}
+.sidebar button{
+  width:100%;margin-bottom:12px;padding:12px;border:none;
+  background:#111;color:#eafff1;border-radius:10px;cursor:pointer;
+}
+.sidebar button:hover{background:#00ff88;color:#000}
 
-    window.saveMatch = async id => {
-      await updateDoc(doc(db, "matches", id), {
-        entry: Number(document.getElementById('e-'+id).value),
-        win: Number(document.getElementById('w-'+id).value),
-        roomId: document.getElementById('r-'+id).value,
-        password: document.getElementById('p-'+id).value,
-        status: document.getElementById('s-'+id).value,
-        joinEnabled: document.getElementById('j-'+id).value === 'true'
-      });
-      alert("Match updated");
-    };
+/* Overlay */
+.overlay{
+  display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.6);z-index:900;
+}
+.overlay.active{display:block}
 
-  </script>  <style>
-    body { margin:0; background:#0b0b0b; color:#fff; font-family:Arial }
-    input,select { width:100%; padding:8px; margin:6px 0; background:#000; color:#0f0; border:1px solid #333 }
-    button { padding:8px 12px; margin-top:8px; background:#00ff88; border:none; font-weight:bold; cursor:pointer }
-    .wrap { padding:20px }
-    .card { background:#111; padding:15px; margin:15px 0; border-radius:12px; border:1px solid #333 }
-    h2 { color:#00ff88 }
-    nav button { margin-right:10px }
-  </style></head>
-<body><div id="loginBox" class="wrap" style="margin-top:60px; text-align:center">
-  <h2>Admin Login</h2>
-  <input id="email" placeholder="Email" />
-  <input id="password" type="password" placeholder="Password" />
-  <button onclick="loginAdmin()">LOGIN</button>
-</div><div id="panel" class="wrap" style="display:none">
-  <nav>
-    <button onclick="loadPayments()">Payments</button>
-    <button onclick="loadMatches()">Matches</button>
-    <button onclick="logout()">Logout</button>
-  </nav>  <h2>Payments</h2>
-  <div id="payments"></div>  <h2>Matches</h2>
-  <div id="matches"></div>
-</div></body>
+/* Content */
+.content{padding:16px}
+.card{
+  background:#0f0f0f;border:1px solid #1f1f1f;
+  border-radius:16px;padding:16px;margin-bottom:16px;
+}
+.btn{
+  padding:10px 16px;border:none;border-radius:10px;cursor:pointer;
+  margin-right:8px;font-weight:bold;
+}
+.approve{background:#00ff88;color:#000}
+.reject{background:#ff4d4d;color:#fff}
+.status{margin-top:8px;font-size:14px}
+
+  </style>
+</head>
+<body><header>
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  <div class="title">Admin Panel</div>
+</header><div class="sidebar" id="sidebar">
+  <h3>Menu</h3>
+  <button onclick="showPayments()">Payments</button>
+  <button onclick="showMatches()">Matches</button>
+  <button onclick="logout()">Logout</button>
+</div>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div><div class="content" id="content"></div><script>
+function toggleMenu(){
+  sidebar.classList.toggle('active');
+  overlay.classList.toggle('active');
+}
+
+function logout(){
+  localStorage.removeItem('adminLogin');
+  location.reload();
+}
+
+/* ===== PAYMENTS ===== */
+function showPayments(){
+  toggleMenu();
+  const payments = JSON.parse(localStorage.getItem('payments')||'[]');
+  let html = '<h2>Payments</h2>';
+  payments.forEach((p,i)=>{
+    html += `
+      <div class="card">
+        <b>Match:</b> ${p.matchId}<br>
+        <b>Amount:</b> ₹${p.amount}<br>
+        <b>UTR:</b> ${p.utr}<br>
+        <b>Status:</b> ${p.status}
+        <div style="margin-top:10px">
+          <button class="btn approve" onclick="approve(${i})">Approve</button>
+          <button class="btn reject" onclick="reject(${i})">Reject</button>
+        </div>
+      </div>`;
+  });
+  content.innerHTML = html;
+}
+
+function approve(i){
+  const payments = JSON.parse(localStorage.getItem('payments'));
+  payments[i].status = 'approved';
+  localStorage.setItem('payments',JSON.stringify(payments));
+  showPayments();
+}
+
+function reject(i){
+  const payments = JSON.parse(localStorage.getItem('payments'));
+  payments[i].status = 'rejected';
+  localStorage.setItem('payments',JSON.stringify(payments));
+  showPayments();
+}
+
+/* ===== MATCHES ===== */
+function showMatches(){
+  toggleMenu();
+  const matches = JSON.parse(localStorage.getItem('matches')||'[]');
+  let html = '<h2>Matches</h2>';
+  matches.forEach(m=>{
+    html += `<div class="card">
+      <b>${m.id}</b><br>
+      Room ID: ${m.roomId||'-'}<br>
+      Password: ${m.roomPass||'-'}
+    </div>`;
+  });
+  content.innerHTML = html;
+}
+
+// default load
+showPayments();
+</script></body>
 </html>
