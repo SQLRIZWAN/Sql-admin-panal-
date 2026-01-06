@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>SQL | MASTER ADMIN CONTROL</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SQL MASTER ADMIN | STABLE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
     <style>
@@ -11,95 +11,99 @@
             --accent: #00ff88;
             --gold: #ffd700;
             --bg: #050505;
-            --card: #111111;
+            --card: #111;
             --red: #ff4444;
         }
 
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        /* Layout Fixes to prevent zoom and instability */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; touch-action: manipulation; }
         
-        /* Auth Screen */
-        .auth-container { max-width: 350px; margin: 100px auto; padding: 30px; background: var(--card); border: 1px solid var(--gold); border-radius: 20px; text-align: center; }
-        .auth-container h2 { color: var(--gold); letter-spacing: 2px; }
+        header { background: #000; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
+        header h2 { margin: 0; font-size: 1.1rem; color: var(--gold); letter-spacing: 1px; }
+
+        .wrap { padding: 15px; width: 100%; max-width: 600px; margin: 0 auto; }
         
-        /* Header */
-        header { background: #000; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 100; }
-        header h2 { margin: 0; font-size: 1.2rem; color: var(--gold); }
-        .menu-btn { font-size: 1.5rem; cursor: pointer; color: var(--gold); }
+        /* Dashboard Cards */
+        .card { background: var(--card); padding: 18px; border-radius: 15px; border: 1px solid #222; margin-bottom: 15px; }
+        .card h3 { margin: 0 0 15px 0; color: var(--accent); font-size: 0.9rem; display: flex; justify-content: space-between; }
 
-        /* Dashboard */
-        .wrap { padding: 20px; max-width: 1000px; margin: 0 auto; }
-        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .card h3 { margin-top: 0; color: var(--accent); border-bottom: 1px solid #222; padding-bottom: 10px; font-size: 1rem; }
-
-        /* Forms */
-        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .field-group { display: flex; flex-direction: column; }
-        label { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 4px; font-weight: bold; }
-        input, select { background: #000; border: 1px solid #333; color: var(--accent); padding: 10px; border-radius: 8px; outline: none; font-size: 0.9rem; }
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .field { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-size: 0.65rem; color: #888; text-transform: uppercase; margin-bottom: 4px; font-weight: bold; }
+        
+        input, select { background: #000; border: 1px solid #333; color: var(--accent); padding: 12px; border-radius: 8px; font-size: 0.9rem; outline: none; width: 100%; }
         input:focus { border-color: var(--accent); }
 
-        button { padding: 12px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        .btn-update { background: var(--accent); color: #000; width: 100%; }
+        /* Timer/Date Input Specific */
+        input[type="datetime-local"] { color-scheme: dark; font-family: sans-serif; }
+
+        button { padding: 14px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
+        .btn-save { background: var(--accent); color: #000; width: 100%; margin-top: 10px; }
+        
+        /* Payment Tabs UI */
+        .tab-container { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px; border-radius: 8px; font-size: 0.8rem; }
+        .tab-btn.active { background: var(--gold); color: #000; border-color: var(--gold); }
+
+        .pay-card { border-left: 4px solid var(--gold); }
+        .utr-box { background: #000; padding: 10px; border-radius: 5px; margin: 10px 0; border: 1px dashed #444; }
+        .utr-box span { color: var(--gold); font-family: monospace; font-size: 1.1rem; }
+
+        .action-btns { display: flex; gap: 10px; margin-top: 15px; }
         .btn-approve { background: var(--accent); color: #000; flex: 1; }
         .btn-reject { background: var(--red); color: #fff; flex: 1; }
-        .btn-logout { background: transparent; color: var(--red); border: 1px solid var(--red); padding: 5px 15px; font-size: 0.7rem; }
 
-        /* Menu Overlay */
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; }
-        .menu-box { position: absolute; right: 0; top: 0; width: 250px; height: 100%; background: #0d0d0d; padding: 40px 20px; border-left: 2px solid var(--gold); }
-        .menu-box button { width: 100%; margin-bottom: 15px; text-align: left; background: #1a1a1a; color: #fff; padding: 15px; }
-        .menu-box button i { margin-right: 10px; color: var(--gold); }
-
-        /* Payment Row */
-        .pay-row { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px dashed #333; }
-        .utr-text { font-family: monospace; color: var(--gold); font-size: 1rem; }
-
-        .status-badge { font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
-        .pending { background: #ffa50033; color: orange; }
-        .approved { background: #00ff8833; color: var(--accent); }
+        /* Navigation Menu */
+        #menu-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; }
+        .menu-content { position: absolute; right: 0; width: 260px; height: 100%; background: #0d0d0d; border-left: 2px solid var(--gold); padding: 50px 20px; }
+        .menu-item { display: block; width: 100%; padding: 15px; color: #fff; text-decoration: none; background: #1a1a1a; margin-bottom: 10px; border-radius: 8px; text-align: left; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen" class="auth-container">
-        <i class="fas fa-user-shield fa-3x" style="color: var(--gold); margin-bottom: 15px;"></i>
-        <h2>SQL ADMIN</h2>
-        <input id="email" type="email" placeholder="Admin Email" style="width: 100%; box-sizing: border-box; margin-bottom: 10px;" />
-        <input id="pass" type="password" placeholder="Password" style="width: 100%; box-sizing: border-box; margin-bottom: 20px;" />
-        <button onclick="loginAdmin()" class="btn-update">UNLOCK SYSTEM</button>
+    <header>
+        <h2><i class="fas fa-user-shield"></i> SQL CONTROL PANEL</h2>
+        <div onclick="openMenu()"><i class="fas fa-bars" style="color:var(--gold); font-size:1.4rem;"></i></div>
+    </header>
+
+    <div id="menu-overlay" onclick="closeMenu()">
+        <div class="menu-content" onclick="event.stopPropagation()">
+            <button class="menu-item" onclick="showSection('matches')"><i class="fas fa-gamepad"></i> Matches</button>
+            <button class="menu-item" onclick="showSection('payments')"><i class="fas fa-wallet"></i> Payments</button>
+            <button class="menu-item" onclick="logout()" style="background:var(--red); margin-top:50px;">Logout</button>
+        </div>
     </div>
 
-    <div id="panel" style="display:none">
-        <header>
-            <h2><i class="fas fa-gauge-high"></i> CONTROL PANEL</h2>
-            <div class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-        </header>
+    <div id="login-area" class="wrap" style="display:none; text-align:center; margin-top:100px;">
+        <div class="card">
+            <h3>ADMIN LOGIN</h3>
+            <input type="email" id="adm-email" placeholder="Email" style="margin-bottom:10px;">
+            <input type="password" id="adm-pass" placeholder="Password">
+            <button class="btn-save" onclick="login()">ENTER PANEL</button>
+        </div>
+    </div>
 
-        <div id="menu" class="overlay" onclick="closeMenu()">
-            <div class="menu-box" onclick="event.stopPropagation()">
-                <h3 style="color:var(--gold)">MAIN MENU</h3>
-                <button onclick="showPage('matches')"><i class="fas fa-gamepad"></i> Manage Matches</button>
-                <button onclick="showPage('payments')"><i class="fas fa-receipt"></i> Verify Payments</button>
-                <hr style="border:0; border-top:1px solid #222; margin: 20px 0;">
-                <button class="btn-logout" onclick="logout()" style="width: 100%;"><i class="fas fa-sign-out-alt"></i> LOGOUT</button>
-            </div>
+    <div id="matches-sec" class="wrap">
+        <h3 style="color:var(--gold);"><i class="fas fa-plus-circle"></i> MANAGE MATCHES</h3>
+        <div id="matches-list"></div>
+    </div>
+
+    <div id="payments-sec" class="wrap" style="display:none">
+        <h3 style="color:var(--gold);"><i class="fas fa-history"></i> VERIFY PAYMENTS</h3>
+        
+        <div class="tab-container">
+            <button id="tab-new" class="tab-btn active" onclick="switchPayTab('new')">NEW REQUESTS</button>
+            <button id="tab-history" class="tab-btn" onclick="switchPayTab('history')">HISTORY</button>
         </div>
 
-        <div id="matchesPage" class="wrap">
-            <h2 style="color: var(--gold);"><i class="fas fa-trophy"></i> Active Tournaments</h2>
-            <div id="matches-container"></div>
-        </div>
-
-        <div id="paymentsPage" class="wrap" style="display:none">
-            <h2 style="color: var(--gold);"><i class="fas fa-shield-check"></i> Payment Requests</h2>
-            <div id="payments-container"></div>
-        </div>
+        <div id="payments-list"></div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, updateDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBvObxADcAior6R_or9O6UmWsFT8do1GkI",
@@ -114,114 +118,160 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- Auth Logic ---
-        window.loginAdmin = async () => {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('pass').value;
-            try { await signInWithEmailAndPassword(auth, e, p); } 
-            catch { alert('Access Denied: Invalid Credentials'); }
+        let currentPayTab = 'new';
+
+        // --- AUTH ---
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                document.getElementById('login-area').style.display = 'none';
+                document.getElementById('matches-sec').style.display = 'block';
+                initData();
+            } else {
+                document.getElementById('login-area').style.display = 'block';
+                document.getElementById('matches-sec').style.display = 'none';
+                document.getElementById('payments-sec').style.display = 'none';
+            }
+        });
+
+        window.login = () => {
+            const e = document.getElementById('adm-email').value;
+            const p = document.getElementById('adm-pass').value;
+            signInWithEmailAndPassword(auth, e, p).catch(err => alert("Wrong Admin Details"));
         };
 
         window.logout = () => signOut(auth);
 
-        onAuthStateChanged(auth, user => {
-            document.getElementById('login-screen').style.display = user ? 'none' : 'block';
-            document.getElementById('panel').style.display = user ? 'block' : 'none';
-            if(user) { loadMatches(); loadPayments(); }
-        });
-
-        // --- Navigation ---
-        window.toggleMenu = () => document.getElementById('menu').style.display = 'block';
-        window.closeMenu = () => document.getElementById('menu').style.display = 'none';
-        
-        window.showPage = (page) => {
-            document.getElementById('matchesPage').style.display = page === 'matches' ? 'block' : 'none';
-            document.getElementById('paymentsPage').style.display = page === 'payments' ? 'block' : 'none';
-            closeMenu();
-        };
-
-        // --- Load Matches ---
-        function loadMatches() {
+        // --- MATCHES ---
+        function initData() {
+            // Load Matches
             onSnapshot(collection(db, "matches"), snap => {
-                const container = document.getElementById('matches-container');
-                container.innerHTML = "";
+                const list = document.getElementById('matches-list');
+                list.innerHTML = "";
                 snap.forEach(d => {
                     const m = d.data();
-                    container.innerHTML += `
+                    const id = d.id;
+                    // Format time for input
+                    let timeStr = "";
+                    if(m.startTime) {
+                        const date = new Date(m.startTime);
+                        timeStr = date.toISOString().slice(0, 16);
+                    }
+
+                    list.innerHTML += `
                     <div class="card">
-                        <h3>Match ID: ${d.id.substring(0,8)}</h3>
+                        <h3>ID: ${id.substring(0,8)} <span style="font-size:0.7rem; color:#555;">${m.status}</span></h3>
                         <div class="grid-form">
-                            <div class="field-group"><label>Map</label><input id="map-${d.id}" value="${m.map}"></div>
-                            <div class="field-group"><label>Type</label><input id="type-${d.id}" value="${m.type}"></div>
-                            <div class="field-group"><label>Entry (₹)</label><input type="number" id="entry-${d.id}" value="${m.entry}"></div>
-                            <div class="field-group"><label>Prize (₹)</label><input type="number" id="win-${d.id}" value="${m.win}"></div>
-                            <div class="field-group"><label>Joined</label><input type="number" id="joined-${d.id}" value="${m.joined}"></div>
-                            <div class="field-group"><label>Total Slots</label><input type="number" id="total-${d.id}" value="${m.total}"></div>
-                            <div class="field-group"><label>Status</label>
-                                <select id="status-${d.id}">
+                            <div class="field"><label>Map Name</label><input id="map-${id}" value="${m.map}"></div>
+                            <div class="field"><label>Type (Solo/Duo)</label><input id="type-${id}" value="${m.type}"></div>
+                            <div class="field"><label>Entry Fee</label><input type="number" id="fee-${id}" value="${m.entry}"></div>
+                            <div class="field"><label>Win Prize</label><input type="number" id="win-${id}" value="${m.win}"></div>
+                            <div class="field"><label>Joined</label><input type="number" id="joined-${id}" value="${m.joined}"></div>
+                            <div class="field"><label>Total Slots</label><input type="number" id="total-${id}" value="${m.total}"></div>
+                            <div class="field"><label>Status</label>
+                                <select id="status-${id}">
                                     <option value="open" ${m.status=='open'?'selected':''}>Open</option>
                                     <option value="full" ${m.status=='full'?'selected':''}>Full</option>
                                     <option value="started" ${m.status=='started'?'selected':''}>Started</option>
                                 </select>
                             </div>
-                            <div class="field-group"><label>Room ID</label><input id="rid-${d.id}" value="${m.roomId || ''}" placeholder="Wait..."></div>
+                            <div class="field"><label>Match Start Time</label>
+                                <input type="datetime-local" id="time-${id}" value="${timeStr}">
+                            </div>
                         </div>
-                        <div class="field-group" style="margin-bottom:15px;"><label>Room Password</label><input id="pass-${d.id}" value="${m.password || ''}"></div>
-                        <button class="btn-update" onclick="updateMatch('${d.id}')">SAVE CHANGES</button>
+                        <div class="field" style="margin-top:10px;"><label>Room ID</label><input id="rid-${id}" value="${m.roomId || ''}"></div>
+                        <div class="field"><label>Room Password</label><input id="rps-${id}" value="${m.password || ''}"></div>
+                        <button class="btn-save" onclick="updateMatch('${id}')">UPDATE MATCH DATA</button>
                     </div>`;
                 });
             });
+
+            // Load Payments
+            loadPayments();
         }
 
         window.updateMatch = async (id) => {
+            const timeVal = document.getElementById(`time-${id}`).value;
+            const startTimeStamp = timeVal ? new Date(timeVal).getTime() : 0;
+
             await updateDoc(doc(db, "matches", id), {
                 map: document.getElementById(`map-${id}`).value,
                 type: document.getElementById(`type-${id}`).value,
-                entry: Number(document.getElementById(`entry-${id}`).value),
+                entry: Number(document.getElementById(`fee-${id}`).value),
                 win: Number(document.getElementById(`win-${id}`).value),
                 joined: Number(document.getElementById(`joined-${id}`).value),
                 total: Number(document.getElementById(`total-${id}`).value),
                 status: document.getElementById(`status-${id}`).value,
                 roomId: document.getElementById(`rid-${id}`).value,
-                password: document.getElementById(`pass-${id}`).value
+                password: document.getElementById(`rps-${id}`).value,
+                startTime: startTimeStamp
             });
-            alert("Match Data Updated!");
+            alert("Match Updated Successfully!");
         };
 
-        // --- Load Payments ---
+        // --- PAYMENTS ---
         function loadPayments() {
             onSnapshot(collection(db, "payments"), snap => {
-                const container = document.getElementById('payments-container');
-                container.innerHTML = "";
+                const list = document.getElementById('payments-list');
+                list.innerHTML = "";
                 snap.forEach(d => {
                     const p = d.data();
-                    container.innerHTML += `
-                    <div class="card">
-                        <div style="display:flex; justify-content:space-between;">
-                            <span style="font-size:0.8rem; color:#888;">${new Date(p.timestamp).toLocaleString()}</span>
-                            <span class="status-badge ${p.status}">${p.status.toUpperCase()}</span>
+                    const id = d.id;
+
+                    // Filter Logic for New vs History
+                    if(currentPayTab === 'new' && p.status !== 'pending') return;
+                    if(currentPayTab === 'history' && p.status === 'pending') return;
+
+                    const statusColor = p.status === 'approved' ? 'var(--accent)' : (p.status === 'rejected' ? 'var(--red)' : 'var(--gold)');
+
+                    list.innerHTML += `
+                    <div class="card pay-card" style="border-left-color: ${statusColor}">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <label>Match Target</label>
+                                <div style="font-size:0.8rem; margin-bottom:5px;">${p.matchId}</div>
+                            </div>
+                            <span style="font-size:0.6rem; background:#222; padding:3px 8px; border-radius:4px; color:${statusColor}">
+                                ${p.status.toUpperCase()}
+                            </span>
                         </div>
-                        <div class="pay-row">
-                            <span style="font-size:0.7rem;">UTR NO:</span>
-                            <span class="utr-text">${p.utr}</span>
+                        <div class="utr-box">
+                            <label>UTR Number</label><br>
+                            <span>${p.utr}</span>
                         </div>
-                        <p style="font-size:0.8rem; margin:10px 0;">Match Target ID: <b color="white">${p.matchId}</b></p>
-                        <div style="display:flex; gap:10px;">
-                            <button class="btn-approve" onclick="actionPay('${d.id}', 'approved')">APPROVE</button>
-                            <button class="btn-reject" onclick="actionPay('${d.id}', 'rejected')">REJECT</button>
-                        </div>
+                        ${p.status === 'pending' ? `
+                            <div class="action-btns">
+                                <button class="btn-approve" onclick="handlePay('${id}', 'approved')">APPROVE</button>
+                                <button class="btn-reject" onclick="handlePay('${id}', 'rejected')">REJECT</button>
+                            </div>
+                        ` : `<div style="font-size:0.7rem; color:#555; text-align:right;">Processed on: ${new Date(p.timestamp).toLocaleString()}</div>`}
                     </div>`;
                 });
             });
         }
 
-        window.actionPay = async (id, status) => {
-            if(confirm(`Are you sure you want to ${status} this payment?`)) {
-                await updateDoc(doc(db, "payments", id), { status: status });
-                alert(`Payment ${status.toUpperCase()} successfully.`);
-            }
+        window.handlePay = async (id, stat) => {
+            await updateDoc(doc(db, "payments", id), { 
+                status: stat,
+                processedAt: Date.now()
+            });
+        };
+
+        window.switchPayTab = (tab) => {
+            currentPayTab = tab;
+            document.getElementById('tab-new').classList.toggle('active', tab === 'new');
+            document.getElementById('tab-history').classList.toggle('active', tab === 'history');
+            loadPayments();
+        };
+
+        // --- UI HELPERS ---
+        window.openMenu = () => document.getElementById('menu-overlay').style.display = 'block';
+        window.closeMenu = () => document.getElementById('menu-overlay').style.display = 'none';
+        window.showSection = (sec) => {
+            document.getElementById('matches-sec').style.display = sec === 'matches' ? 'block' : 'none';
+            document.getElementById('payments-sec').style.display = sec === 'payments' ? 'block' : 'none';
+            closeMenu();
         };
 
     </script>
 </body>
-  </html>
+</html>
