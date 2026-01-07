@@ -5,73 +5,85 @@
     <title>SQL MASTER | ALL-IN-ONE ADMIN</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    
     <style>
-        :root { --accent: #00ff88; --gold: #ffd700; --bg: #050505; --card: #111; --red: #ff4444; }
+        :root { --accent: #00ff88; --gold: #ffd700; --bg: #050505; --card: #111; --red: #ff4444; --muted:#999; --border:#222; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
-        
         header { background: #000; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
         header h2 { margin: 0; font-size: 1.1rem; color: var(--gold); letter-spacing: 1px; }
-
-        .wrap { padding: 15px; width: 100%; max-width: 600px; margin: 0 auto; }
-        .card { background: var(--card); padding: 18px; border-radius: 15px; border: 1px solid #222; margin-bottom: 15px; }
-        
-        /* Form Styling */
+        .wrap { padding: 15px; width: 100%; max-width: 860px; margin: 0 auto 80px auto; }
+        .card { background: var(--card); padding: 16px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 14px; }
         .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .field { display: flex; flex-direction: column; margin-bottom: 10px; }
-        label { font-size: 0.65rem; color: #888; text-transform: uppercase; margin-bottom: 4px; font-weight: bold; }
-        input, select { background: #000; border: 1px solid #333; color: var(--accent); padding: 12px; border-radius: 8px; font-size: 0.9rem; outline: none; width: 100%; }
-        
-        button { padding: 14px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
-        .btn-create { background: var(--gold); color: #000; width: 100%; margin-top: 10px; }
-        .btn-save { background: var(--accent); color: #000; width: 100%; margin-top: 10px; }
-
-        /* Navigation Tab */
-        .nav-tabs { display: flex; background: #000; padding: 5px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #222; }
-        .nav-btn { flex: 1; background: transparent; color: #666; padding: 10px; border-radius: 8px; border: none; font-size: 0.75rem; font-weight: bold; cursor: pointer; }
-        .nav-btn.active { background: #1a1a1a; color: var(--gold); }
-
-        /* Payment Tab Styling */
-        .tab-sub { display: flex; gap: 10px; margin-bottom: 15px; }
-        .sub-btn { flex: 1; padding: 8px; font-size: 0.7rem; border-radius: 5px; background: #111; color: #fff; border: 1px solid #333; }
-        .sub-btn.active { border-color: var(--gold); color: var(--gold); }
+        .field { display:flex; flex-direction:column; margin-bottom:8px; }
+        label { font-size: 0.65rem; color:var(--muted); text-transform:uppercase; margin-bottom:6px; font-weight:700; }
+        input, select, textarea { background:#000; border:1px solid #222; color:var(--accent); padding:10px; border-radius:8px; font-size:0.95rem; outline:none; width:100%; }
+        textarea { min-height:100px; resize:vertical; color:#fff; }
+        button { padding:12px 14px; border:none; border-radius:10px; font-weight:800; cursor:pointer; transition:0.18s; font-size:0.9rem; }
+        .btn-create { background:var(--gold); color:#000; width:100%; }
+        .btn-save { background:var(--accent); color:#000; width:100%; }
+        .nav-tabs { display:flex; gap:8px; margin-bottom:12px; }
+        .nav-btn { flex:1; background:#0b0b0b; border:1px solid #232323; color:var(--muted); padding:10px; border-radius:8px; cursor:pointer; font-weight:800; }
+        .nav-btn.active { background: #111; color:var(--gold); border-color:var(--gold); box-shadow:0 6px 18px rgba(0,0,0,0.6); }
+        .tab-sub { display:flex; gap:8px; margin-bottom:12px; }
+        .sub-btn { flex:1; padding:8px; background:#111; color:#fff; border-radius:8px; border:1px solid #222; cursor:pointer; font-weight:700; }
+        .sub-btn.active { border-color:var(--gold); color:var(--gold); }
+        .pay-card { display:flex; gap:12px; align-items:flex-start; }
+        .pay-thumb { width:86px; height:86px; object-fit:cover; border-radius:8px; border:1px solid #222; background:#000; }
+        .pay-body { flex:1; }
+        .pay-meta { color:var(--muted); font-size:0.85rem; margin-bottom:6px; }
+        .pay-actions { display:flex; gap:8px; margin-top:8px; }
+        .small { padding:8px 10px; border-radius:8px; font-weight:800; cursor:pointer; }
+        .danger { background:var(--red); color:#fff; border:none; }
+        .ok { background:var(--accent); color:#000; border:none; }
+        .muted { color:var(--muted); font-size:0.9rem; }
+        .img-preview { width:100%; max-width:240px; border-radius:8px; border:1px solid #222; margin-top:8px; }
+        .flex-row { display:flex; gap:8px; align-items:center; }
+        .full-width { width:100%; }
+        .note { font-size:0.85rem; color:var(--muted); margin-top:6px; }
+        @media (max-width:720px){ .grid-form{grid-template-columns:1fr;} .wrap{padding:12px;} .pay-card{flex-direction:column; align-items:flex-start;} .pay-thumb{width:100%;height:auto} }
     </style>
 </head>
 <body>
-
     <header>
         <h2><i class="fas fa-crown"></i> SQL ADMIN PANEL</h2>
-        <button id="logout-btn" style="background:none; color:var(--red); font-size:0.8rem; border:1px solid var(--red); padding:4px 10px;">LOGOUT</button>
+        <div style="display:flex; gap:8px; align-items:center;">
+            <button id="btn-results-upload" class="nav-btn" style="max-width:160px;" onclick="showTab('results')"><i class="fas fa-upload"></i> Upload Result</button>
+            <button id="logout-btn" style="background:none; color:var(--red); font-size:0.85rem; border:1px solid var(--red); padding:6px 10px; border-radius:8px;">LOGOUT</button>
+        </div>
     </header>
 
     <div class="wrap">
         <div class="nav-tabs">
             <button class="nav-btn active" id="btn-add" onclick="showTab('add')">ADD MATCH</button>
-            <button class="nav-btn" id="btn-manage" onclick="showTab('manage')">MANAGE</button>
+            <button class="nav-btn" id="btn-manage" onclick="showTab('manage')">MANAGE MATCHES</button>
             <button class="nav-btn" id="btn-pay" onclick="showTab('pay')">PAYMENTS</button>
+            <button class="nav-btn" id="btn-results" onclick="showTab('results_list')">RESULTS</button>
         </div>
 
+        <!-- ADD MATCH -->
         <div id="sec-add" class="tab-content">
             <div class="card">
-                <h3 style="color:var(--gold); margin-top:0;">CREATE NEW TOURNAMENT</h3>
+                <h3 style="color:var(--gold); margin:0 0 8px 0;">CREATE NEW TOURNAMENT</h3>
                 <div class="grid-form">
                     <div class="field"><label>Map</label><input id="new-map" placeholder="e.g. Bermuda"></div>
                     <div class="field"><label>Type</label><input id="new-type" placeholder="e.g. Solo"></div>
-                    <div class="field"><label>Entry Fee</label><input type="number" id="new-fee" value="10"></div>
-                    <div class="field"><label>Win Prize</label><input type="number" id="new-win" value="18"></div>
+                    <div class="field"><label>Entry Fee (₹)</label><input type="number" id="new-fee" value="10"></div>
+                    <div class="field"><label>Win Prize (₹)</label><input type="number" id="new-win" value="18"></div>
                     <div class="field"><label>Total Slots</label><input type="number" id="new-slots" value="48"></div>
                     <div class="field"><label>Joined Players</label><input type="number" id="new-joined" value="0"></div>
                 </div>
                 <div class="field"><label>Start Time</label><input type="datetime-local" id="new-time"></div>
+                <div class="field"><label>Details</label><textarea id="new-details" placeholder="Match notes, retirement message, special instructions..."></textarea></div>
                 <button class="btn-create" onclick="createNewMatch()"><i class="fas fa-rocket"></i> LAUNCH MATCH</button>
             </div>
         </div>
 
+        <!-- MANAGE -->
         <div id="sec-manage" class="tab-content" style="display:none">
             <div id="manage-list"></div>
         </div>
 
+        <!-- PAYMENTS -->
         <div id="sec-pay" class="tab-content" style="display:none">
             <div class="tab-sub">
                 <button class="sub-btn active" id="sub-new" onclick="filterPay('pending')">NEW</button>
@@ -79,13 +91,41 @@
             </div>
             <div id="pay-list"></div>
         </div>
+
+        <!-- RESULTS UPLOAD -->
+        <div id="sec-results" class="tab-content" style="display:none">
+            <div class="card">
+                <h3 style="color:var(--gold); margin:0 0 10px 0;">UPLOAD MATCH RESULT</h3>
+                <div class="grid-form">
+                    <div class="field"><label>Match ID (optional)</label><input id="res-matchid" placeholder="Paste match id if applicable"></div>
+                    <div class="field"><label>Winner Name</label><input id="res-winner" placeholder="Winner name"></div>
+                    <div class="field"><label>Winner UID</label><input id="res-uid" placeholder="Gaming UID"></div>
+                    <div class="field"><label>Runner/Other (optional)</label><input id="res-other" placeholder="Other players"></div>
+                </div>
+                <div class="field"><label>Message</label><textarea id="res-msg" placeholder="Short message to show with result"></textarea></div>
+                <div class="field"><label>Attach Image / SS</label><input type="file" id="res-ss" accept="image/*"></div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-save" onclick="uploadResult()">UPLOAD RESULT</button>
+                    <button class="btn-create" onclick="showTab('results_list')">VIEW RESULTS</button>
+                </div>
+                <div class="note">Uploaded results are trimmed to latest 100 automatically.</div>
+            </div>
+        </div>
+
+        <!-- RESULTS LIST -->
+        <div id="sec-results_list" class="tab-content" style="display:none">
+            <div id="results-list"></div>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import {
+            getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, deleteDoc,
+            query, orderBy, limit, getDocs, getDoc, arrayUnion, increment, serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // Firebase config (same as website)
         const firebaseConfig = {
             apiKey: "AIzaSyBvObxADcAior6R_or9O6UmWsFT8do1GkI",
             authDomain: "sqladmin-ff04d.firebaseapp.com",
@@ -96,143 +136,403 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- Logout Fix ---
-        document.getElementById('logout-btn').onclick = () => {
-            signOut(auth).then(() => {
-                alert("Logged out!");
-                location.reload();
-            });
-        };
+        // Cloudinary helper (unsigned preset you provided)
+        async function uploadToCloudinary(file){
+            if(!file) return "";
+            const fd = new FormData();
+            fd.append("file", file);
+            fd.append("upload_preset", "sql_admin");
+            fd.append("folder", "sql_free");
+            try{
+                const res = await fetch("https://api.cloudinary.com/v1_1/debp1kjtm/image/upload", { method: "POST", body: fd });
+                const json = await res.json();
+                return json.secure_url || "";
+            } catch(e){
+                console.error("cloud upload failed", e);
+                return "";
+            }
+        }
 
-        // Tab Switcher Logic
+        // UI helpers
         window.showTab = (tab) => {
             document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('sec-' + tab).style.display = 'block';
-            document.getElementById('btn-' + tab).classList.add('active');
+            const btn = document.getElementById('btn-' + tab);
+            if(btn) btn.classList.add('active');
+            // sync results button
+            document.getElementById('btn-results-upload').classList.toggle('active', tab === 'results');
+            // render needed sections
+            if(tab === 'manage') renderMatchesManage();
+            if(tab === 'pay') renderPayments(currentPayFilter);
+            if(tab === 'results_list') renderResultsList();
         };
 
-        // 1. ADD NEW MATCH
+        document.getElementById('logout-btn').onclick = () => { alert('Logout clicked (implement your admin auth).'); location.reload(); };
+
+        // ADD new match
         window.createNewMatch = async () => {
-            const timeVal = document.getElementById('new-time').value;
             const data = {
                 map: document.getElementById('new-map').value || 'Bermuda',
                 type: document.getElementById('new-type').value || 'Solo',
-                entry: Number(document.getElementById('new-fee').value),
-                win: Number(document.getElementById('new-win').value),
-                total: Number(document.getElementById('new-slots').value),
-                joined: Number(document.getElementById('new-joined').value),
+                entry: Number(document.getElementById('new-fee').value || 0),
+                win: Number(document.getElementById('new-win').value || 0),
+                total: Number(document.getElementById('new-slots').value || 0),
+                joined: Number(document.getElementById('new-joined').value || 0),
                 status: 'open',
-                startTime: timeVal ? new Date(timeVal).getTime() : Date.now(),
+                startTime: (document.getElementById('new-time').value) ? new Date(document.getElementById('new-time').value).getTime() : Date.now(),
                 roomId: '',
-                password: ''
+                password: '',
+                details: (document.getElementById('new-details').value || ''),
+                mapLower: (document.getElementById('new-map').value || 'Bermuda').toLowerCase()
             };
-            
             try {
                 await addDoc(collection(db, "matches"), data);
-                alert("Match Created Successfully!");
-                showTab('manage');
-                // Clear fields
+                alert("Match created.");
+                // clear some fields
                 document.getElementById('new-map').value = '';
-            } catch(e) { alert("Error: " + e.message); }
+                document.getElementById('new-type').value = '';
+                document.getElementById('new-time').value = '';
+                document.getElementById('new-details').value = '';
+                // show manage
+                showTab('manage');
+            } catch(e){ console.error(e); alert("Error creating match: " + e.message); }
         };
 
-        // 2. MANAGE MATCHES (REALTIME)
-        onSnapshot(collection(db, "matches"), snap => {
+        // MANAGE: realtime list
+        async function renderMatchesManage(){
             const list = document.getElementById('manage-list');
-            list.innerHTML = "";
-            snap.forEach(d => {
-                const m = d.data();
-                const id = d.id;
-                const timeStr = m.startTime ? new Date(m.startTime).toISOString().slice(0, 16) : "";
-
-                list.innerHTML += `
-                <div class="card">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <span style="font-size:0.7rem; color:var(--gold)">ID: ${id.substring(0,8)}</span>
-                        <button onclick="deleteMatch('${id}')" style="background:none; color:var(--red); padding:0; font-size:0.7rem;">DELETE</button>
-                    </div>
-                    <div class="grid-form">
-                        <div class="field"><label>Map</label><input id="m-${id}" value="${m.map}"></div>
-                        <div class="field"><label>Type</label><input id="t-${id}" value="${m.type}"></div>
-                        <div class="field"><label>Joined</label><input type="number" id="j-${id}" value="${m.joined}"></div>
-                        <div class="field"><label>Total Slots</label><input type="number" id="totl-${id}" value="${m.total}"></div>
-                        <div class="field"><label>Status</label>
-                            <select id="s-${id}">
-                                <option value="open" ${m.status=='open'?'selected':''}>Open</option>
-                                <option value="full" ${m.status=='full'?'selected':''}>Full</option>
-                                <option value="started" ${m.status=='started'?'selected':''}>Started</option>
-                            </select>
+            list.innerHTML = '';
+            onSnapshot(collection(db, "matches"), snap => {
+                list.innerHTML = '';
+                snap.forEach(d => {
+                    const m = d.data();
+                    const id = d.id;
+                    const timeVal = m.startTime ? new Date(Number(m.startTime)).toISOString().slice(0,16) : '';
+                    const details = m.details || '';
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                            <span style="font-size:0.85rem;color:var(--gold);">ID: ${id}</span>
+                            <div style="display:flex;gap:8px;">
+                                <button class="small ok" onclick="copyId('${id}')">COPY ID</button>
+                                <button class="small danger" onclick="deleteMatch('${id}')">DELETE</button>
+                            </div>
                         </div>
-                        <div class="field"><label>Time</label><input type="datetime-local" id="time-${id}" value="${timeStr}"></div>
-                    </div>
-                    <div class="grid-form">
-                        <div class="field"><label>Room ID</label><input id="rid-${id}" value="${m.roomId}"></div>
-                        <div class="field"><label>Room Pass</label><input id="rps-${id}" value="${m.password}"></div>
-                    </div>
-                    <button class="btn-save" onclick="updateMatch('${id}')">SAVE UPDATES</button>
-                </div>`;
-            });
-        });
+                        <div class="grid-form">
+                            <div class="field"><label>Map</label><input id="m-${id}" value="${escapeHtml(m.map||'')}"></div>
+                            <div class="field"><label>Type</label><input id="t-${id}" value="${escapeHtml(m.type||'')}"></div>
+                            <div class="field"><label>Joined</label><input type="number" id="j-${id}" value="${m.joined||0}"></div>
+                            <div class="field"><label>Total Slots</label><input type="number" id="totl-${id}" value="${m.total||0}"></div>
+                            <div class="field"><label>Status</label>
+                                <select id="s-${id}">
+                                    <option value="open" ${m.status==='open'?'selected':''}>Open</option>
+                                    <option value="full" ${m.status==='full'?'selected':''}>Full</option>
+                                    <option value="started" ${m.status==='started'?'selected':''}>Started</option>
+                                </select>
+                            </div>
+                            <div class="field"><label>Time</label><input type="datetime-local" id="time-${id}" value="${timeVal}"></div>
+                        </div>
+                        <div class="grid-form" style="margin-top:8px;">
+                            <div class="field"><label>Room ID</label><input id="rid-${id}" value="${escapeHtml(m.roomId||'')}"></div>
+                            <div class="field"><label>Room Pass</label><input id="rps-${id}" value="${escapeHtml(m.password||'')}"></div>
+                        </div>
+                        <div class="field"><label>Details</label><textarea id="d-${id}" placeholder="Retirement / notes">${escapeHtml(details)}</textarea></div>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-save" onclick="updateMatch('${id}')">SAVE UPDATES</button>
+                            <button class="btn-create" onclick="openMatchPreview('${id}')">PREVIEW</button>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+            }, err => console.error('matches snapshot error', err));
+        }
+
+        window.openMatchPreview = async (id) => {
+            const mSnap = await getDoc(docRef('matches', id));
+            if(!mSnap.exists()) return alert("Match not found.");
+            const m = mSnap.data();
+            alert(`Preview for ${id}:\nMap: ${m.map}\nType: ${m.type}\nStart: ${m.startTime ? new Date(Number(m.startTime)).toLocaleString() : '—'}\nDetails: ${m.details||'—'}`);
+        };
+
+        // helper for doc refs
+        function docRef(col, id){ return doc(db, col, id); }
 
         window.updateMatch = async (id) => {
-            const timeVal = document.getElementById(`time-${id}`).value;
-            await updateDoc(doc(db, "matches", id), {
-                map: document.getElementById(`m-${id}`).value,
-                type: document.getElementById(`t-${id}`).value,
-                joined: Number(document.getElementById(`j-${id}`).value),
-                total: Number(document.getElementById(`totl-${id}`).value),
-                status: document.getElementById(`s-${id}`).value,
-                startTime: timeVal ? new Date(timeVal).getTime() : 0,
-                roomId: document.getElementById(`rid-${id}`).value,
-                password: document.getElementById(`rps-${id}`).value
-            });
-            alert("Updated!");
+            try{
+                const timeVal = document.getElementById(`time-${id}`).value;
+                await updateDoc(doc(db, "matches", id), {
+                    map: document.getElementById(`m-${id}`).value,
+                    type: document.getElementById(`t-${id}`).value,
+                    joined: Number(document.getElementById(`j-${id}`).value || 0),
+                    total: Number(document.getElementById(`totl-${id}`).value || 0),
+                    status: document.getElementById(`s-${id}`).value,
+                    startTime: timeVal ? new Date(timeVal).getTime() : Date.now(),
+                    roomId: document.getElementById(`rid-${id}`).value,
+                    password: document.getElementById(`rps-${id}`).value,
+                    details: document.getElementById(`d-${id}`).value || ''
+                });
+                alert("Match updated.");
+            }catch(e){ console.error(e); alert("Update error: " + e.message); }
         };
 
         window.deleteMatch = async (id) => {
-            if(confirm("DANGEROUS: Match delete kar rahe ho?")) {
-                await deleteDoc(doc(db, "matches", id));
-            }
+            if(!confirm("DANGEROUS: Delete match? This will remove it permanently.")) return;
+            try{ await deleteDoc(doc(db, "matches", id)); alert("Deleted."); }catch(e){ console.error(e); alert("Delete failed."); }
         };
 
-        // 3. PAYMENTS LOGIC
+        // copy id helper
+        function copyId(id){
+            navigator.clipboard?.writeText(id).then(()=> alert("Copied ID to clipboard."));
+        }
+
+        // PAYMENTS: list & actions
+        let currentPayFilter = 'pending';
         window.filterPay = (f) => {
+            currentPayFilter = f;
             document.getElementById('sub-new').classList.toggle('active', f === 'pending');
             document.getElementById('sub-history').classList.toggle('active', f === 'history');
             renderPayments(f);
         };
 
-        function renderPayments(filter = 'pending') {
+        function renderPayments(filter = 'pending'){
+            const list = document.getElementById('pay-list');
+            list.innerHTML = '';
             onSnapshot(collection(db, "payments"), snap => {
-                const list = document.getElementById('pay-list');
-                list.innerHTML = "";
+                list.innerHTML = '';
                 snap.forEach(d => {
                     const p = d.data();
+                    p._id = d.id;
                     if(filter === 'pending' && p.status !== 'pending') return;
                     if(filter === 'history' && p.status === 'pending') return;
 
-                    list.innerHTML += `
-                    <div class="card" style="border-left: 3px solid ${p.status=='approved'?'var(--accent)':'var(--gold)'}">
-                        <div style="font-size:0.7rem; color:#888;">UTR: <b style="color:var(--gold); font-size:0.9rem;">${p.utr}</b></div>
-                        <div style="font-size:0.6rem; margin-top:5px;">MATCH: ${p.matchId}</div>
-                        ${p.status === 'pending' ? `
-                            <div style="display:flex; gap:10px; margin-top:10px;">
-                                <button onclick="actPay('${d.id}','approved')" style="flex:1; background:var(--accent); color:000; padding:8px; border-radius:5px; font-weight:bold;">APPROVE</button>
-                                <button onclick="actPay('${d.id}','rejected')" style="flex:1; background:var(--red); color:#fff; padding:8px; border-radius:5px; font-weight:bold;">REJECT</button>
+                    // build card
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.style.borderLeft = `4px solid ${p.status === 'approved' ? 'var(--accent)' : (p.status === 'rejected' ? 'var(--red)' : 'var(--gold)')}`;
+                    const payerName = p.payer?.name || '—';
+                    const payerPhone = p.payer?.phone || '—';
+                    const payerGaming = p.payer?.gamingid || p.payer?.gamingId || '—';
+                    const payerDp = p.payer?.dpUrl || '';
+                    const ss = p.ss || '';
+
+                    card.innerHTML = `
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <div style="font-size:0.9rem;"><b>UTR:</b> <span style="color:var(--gold)">${p.utr}</span></div>
+                            <div class="muted">${new Date(p.timestamp || Date.now()).toLocaleString()}</div>
+                        </div>
+                        <div style="display:flex;gap:12px;margin-top:10px;" class="pay-card">
+                            <img src="${payerDp||'https://img.icons8.com/ios-filled/100/user.png'}" class="pay-thumb" alt="dp">
+                            <div class="pay-body">
+                                <div class="pay-meta"><b>${payerName}</b> • ${payerPhone} • UID: ${payerGaming}</div>
+                                <div class="muted">Match: ${p.matchId} • Status: <b style="color:${p.status==='approved'?'var(--accent)':p.status==='rejected'?'var(--red)': 'var(--gold)'}">${p.status.toUpperCase()}</b></div>
+                                ${ss ? `<img src="${ss}" class="img-preview" alt="ss">` : '<div class="muted" style="margin-top:8px;">No screenshot attached</div>'}
+                                <div class="pay-actions">
+                                    ${p.status === 'pending' ? `
+                                        <button class="small ok" onclick="actPay('${p._id}','approved')">APPROVE</button>
+                                        <button class="small danger" onclick="actPay('${p._id}','rejected')">REJECT</button>
+                                    ` : `<button class="small" onclick="viewPaymentDetail('${p._id}')">VIEW</button>`}
+                                    <button class="small" onclick="openUserProfile('${payerPhone}')">USER</button>
+                                    <button class="small" onclick="deletePaymentSafe('${p._id}')">DEL</button>
+                                </div>
                             </div>
-                        ` : `<div style="text-align:right; font-size:0.6rem; color:#555;">Status: ${p.status.toUpperCase()}</div>`}
-                    </div>`;
+                        </div>
+                    `;
+                    list.appendChild(card);
                 });
-            });
+            }, err => console.error('payments snapshot err', err));
         }
         renderPayments('pending');
 
-        window.actPay = async (id, s) => { await updateDoc(doc(db, "payments", id), { status: s }); };
+        // view payment detail
+        window.viewPaymentDetail = async (id) => {
+            try{
+                const pSnap = await getDoc(doc(db,"payments", id));
+                if(!pSnap.exists()) return alert("Not found");
+                const p = pSnap.data();
+                alert(`UTR: ${p.utr}\nMatch: ${p.matchId}\nStatus: ${p.status}\nName: ${p.payer?.name || '—'}\nPhone: ${p.payer?.phone || '—'}\nGaming ID: ${p.payer?.gamingid || '—'}\nDate: ${new Date(p.timestamp||Date.now()).toLocaleString()}`);
+            }catch(e){ console.error(e); alert("Error"); }
+        };
 
+        // open user profile quick view (reads users collection if exists)
+        window.openUserProfile = async (phone) => {
+            if(!phone) return alert("No phone");
+            try{
+                const uSnap = await getDoc(doc(db,"users", phone));
+                if(uSnap.exists()){
+                    const u = uSnap.data();
+                    alert(`User: ${u.name}\nPhone: ${u.phone}\nEmail: ${u.email || '—'}\nGaming ID: ${u.gamingId || '—'}\nCreated: ${u.createdAt ? new Date(u.createdAt).toLocaleString() : '—'}`);
+                } else {
+                    alert("User not found in users collection. Phone: " + phone);
+                }
+            }catch(e){ console.error(e); alert("Error reading user."); }
+        };
+
+        // delete payment (careful)
+        window.deletePaymentSafe = async (id) => {
+            if(!confirm("Delete payment record?")) return;
+            try{ await deleteDoc(doc(db,"payments", id)); alert("Deleted."); }catch(e){ console.error(e); alert("Delete failed."); }
+        };
+
+        // Approve/Reject payment and update match join & approvedUtrs
+        window.actPay = async (paymentId, status) => {
+            try{
+                const pRef = doc(db,"payments", paymentId);
+                const pSnap = await getDoc(pRef);
+                if(!pSnap.exists()) return alert("Payment not found.");
+                const p = pSnap.data();
+
+                // Only proceed if status change
+                if(p.status === status) return alert("Already " + status);
+
+                // If approving, increment match joined and add utr to approvedUtrs (prevent double)
+                if(status === 'approved'){
+                    // update payment status first
+                    await updateDoc(pRef, { status: 'approved', adminActionAt: Date.now() });
+
+                    // update match: add approved utr and increment joined
+                    const matchRef = doc(db,"matches", p.matchId);
+                    try{
+                        await updateDoc(matchRef, {
+                            approvedUtrs: arrayUnion(p.utr),
+                            joined: increment(1)
+                        });
+                    }catch(e){
+                        console.warn("match update warn", e);
+                        // fallback: read and set joined
+                        try{
+                            const mSnap = await getDoc(matchRef);
+                            if(mSnap.exists()){
+                                const m = mSnap.data();
+                                await updateDoc(matchRef, { joined: (Number(m.joined||0) + 1) });
+                            }
+                        }catch(_){}
+                    }
+                    alert("Payment approved and match updated.");
+                } else {
+                    // reject
+                    await updateDoc(pRef, { status: 'rejected', adminActionAt: Date.now() });
+                    alert("Payment marked rejected.");
+                }
+                // after changing, payments list realtime will move it to history automatically
+            } catch(e){ console.error(e); alert("Action failed: " + e.message); }
+        };
+
+        // RESULTS: upload (admin)
+        window.uploadResult = async () => {
+            const matchId = document.getElementById('res-matchid').value.trim();
+            const winner = document.getElementById('res-winner').value.trim();
+            const uid = document.getElementById('res-uid').value.trim();
+            const other = document.getElementById('res-other').value.trim();
+            const msg = document.getElementById('res-msg').value.trim();
+            const ssFile = document.getElementById('res-ss').files[0];
+
+            if(!winner && !matchId) return alert("Enter at least a winner name or match id.");
+            const imgUrl = ssFile ? await uploadToCloudinary(ssFile) : "";
+
+            const payload = {
+                title: matchId ? `Match ${matchId} - Result` : `Result - ${winner}`,
+                matchId: matchId || null,
+                winner,
+                uid,
+                other,
+                body: msg,
+                image: imgUrl,
+                timestamp: Date.now()
+            };
+
+            try{
+                await addDoc(collection(db,"results"), payload);
+                await trimResultsTo100();
+                alert("Result uploaded.");
+                // clear form
+                document.getElementById('res-matchid').value = '';
+                document.getElementById('res-winner').value = '';
+                document.getElementById('res-uid').value = '';
+                document.getElementById('res-other').value = '';
+                document.getElementById('res-msg').value = '';
+                document.getElementById('res-ss').value = '';
+                showTab('results_list');
+            }catch(e){ console.error(e); alert("Upload failed: " + e.message); }
+        };
+
+        // Trim results collection to latest 100 by timestamp
+        async function trimResultsTo100(){
+            try{
+                const q = query(collection(db,"results"), orderBy("timestamp", "asc"));
+                const snap = await getDocs(q);
+                if(snap.size <= 100) return;
+                const toDelete = snap.size - 100;
+                let i = 0;
+                for(const d of snap.docs){
+                    if(i >= toDelete) break;
+                    try{ await deleteDoc(doc(db,"results", d.id)); }catch(e){ console.warn("delete result fail", e); }
+                    i++;
+                }
+            }catch(e){ console.warn('trim results err', e); }
+        }
+
+        // Results list render
+        async function renderResultsList(){
+            const list = document.getElementById('results-list');
+            list.innerHTML = '';
+            try{
+                const q = query(collection(db,"results"), orderBy("timestamp","desc"), limit(100));
+                const snap = await getDocs(q);
+                if(snap.empty){ list.innerHTML = '<div class="card"><div class="muted">No results yet.</div></div>'; return; }
+                snap.forEach(d => {
+                    const r = d.data();
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <div><b>${r.title || 'Result'}</b><div class="muted">${r.matchId ? 'Match: ' + r.matchId : ''}</div></div>
+                            <div class="muted">${new Date(r.timestamp || Date.now()).toLocaleString()}</div>
+                        </div>
+                        ${r.image ? `<img src="${r.image}" style="width:100%;max-height:280px;object-fit:cover;border-radius:8px;margin-top:8px;">` : ''}
+                        <div class="muted" style="margin-top:8px;">${r.body || ''}</div>
+                        <div style="display:flex;gap:8px;margin-top:10px;">
+                            <button class="small ok" onclick="editResult('${d.id}')">EDIT</button>
+                            <button class="small danger" onclick="deleteResult('${d.id}')">DELETE</button>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+            }catch(e){ console.error(e); list.innerHTML = '<div class="card">Error loading results.</div>'; }
+        }
+
+        window.editResult = async (id) => {
+            const rSnap = await getDoc(doc(db,"results", id));
+            if(!rSnap.exists()) return alert("Result not found.");
+            const r = rSnap.data();
+            const newTitle = prompt("Edit title", r.title || '');
+            if(newTitle === null) return;
+            const newBody = prompt("Edit message", r.body || '');
+            try{ await updateDoc(doc(db,"results", id), { title: newTitle, body: newBody }); alert("Updated."); renderResultsList(); }catch(e){ console.error(e); alert("Update failed."); }
+        };
+
+        window.deleteResult = async (id) => {
+            if(!confirm("Delete result?")) return;
+            try{ await deleteDoc(doc(db,"results", id)); alert("Deleted."); renderResultsList(); }catch(e){ console.error(e); alert("Delete failed."); }
+        };
+
+        // Utility: escape for inputs to avoid breaking HTML
+        function escapeHtml(str){
+            return (str||'').toString().replaceAll('"','&quot;').replaceAll("'", "’").replaceAll("\n","\\n");
+        }
+
+        // small initializations
+        showTab('add');
+
+        // allow switching to manage/pay by buttons on top nav
+        window.renderMatchesManage = renderMatchesManage;
+        window.renderPayments = renderPayments;
+        window.renderResultsList = renderResultsList;
+
+        // Auto-update: when payment is approved/rejected, it will move in UI (real-time snapshot)
     </script>
 </body>
-</html>
+    </html>
