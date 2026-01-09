@@ -37,8 +37,8 @@
         .nav-btn.active { background: #111; color:var(--gold); border-color:var(--gold); box-shadow:0 6px 18px rgba(0,0,0,0.6); }
         
         /* Sub Tabs */
-        .tab-sub { display:flex; gap:8px; margin-bottom:12px; }
-        .sub-btn { flex:1; padding:8px; background:#111; color:#fff; border-radius:8px; border:1px solid #222; cursor:pointer; font-weight:700; }
+        .tab-sub { display:flex; gap:8px; margin-bottom:12px; overflow-x:auto; }
+        .sub-btn { flex:1; padding:8px; background:#111; color:#fff; border-radius:8px; border:1px solid #222; cursor:pointer; font-weight:700; white-space:nowrap; }
         .sub-btn.active { border-color:var(--gold); color:var(--gold); }
 
         /* Payment Card */
@@ -54,15 +54,15 @@
         .user-info { flex:1; }
         .user-balance { color:var(--accent); font-weight:bold; font-size:0.9rem; }
 
-        /* User Edit Modal - CHANGED CSS HERE FOR SPACING */
+        /* User Edit Modal */
         .modal { 
             position:fixed; top:0; left:0; width:100%; height:100%; 
             background:rgba(0,0,0,0.9); z-index:5000; 
             display:none; 
-            align-items:flex-start; /* Changed from center to flex-start */
+            align-items:flex-start;
             justify-content:center; 
             padding:15px; 
-            padding-top: 60px; /* Added extra space at top */
+            padding-top: 60px;
             overflow-y:auto; 
         }
         .modal-box { background:#111; border:1px solid var(--gold); width:100%; max-width:600px; border-radius:15px; padding:20px; box-shadow:0 0 30px rgba(255,215,0,0.2); margin-bottom: 50px; }
@@ -72,8 +72,6 @@
 
         .muted { color:var(--muted); font-size:0.9rem; }
         .note { font-size:0.85rem; color:var(--muted); margin-top:6px; }
-
-        /* Delete Button Absolute Position Style */
         .abs-del { position:absolute; top:10px; right:10px; padding:6px 10px; font-size:0.75rem; border-radius:6px; z-index:10; }
 
         @media (max-width:720px){ .grid-form{grid-template-columns:1fr;} .wrap{padding:12px;} .pay-card{flex-direction:column; align-items:flex-start;} }
@@ -92,7 +90,7 @@
             <button class="nav-btn active" id="btn-add" onclick="showTab('add')">ADD MATCH</button>
             <button class="nav-btn" id="btn-manage" onclick="showTab('manage')">MANAGE</button>
             <button class="nav-btn" id="btn-pay" onclick="showTab('pay')">PAYMENTS</button>
-            <button class="nav-btn" id="btn-users" onclick="showTab('users')">ALL USERS</button>
+            <button class="nav-btn" id="btn-users" onclick="showTab('users')">USERS (<span id="total-users-nav">0</span>)</button>
             <button class="nav-btn" id="btn-results" onclick="showTab('results_list')">RESULTS</button>
         </div>
 
@@ -108,7 +106,7 @@
                     <div class="field"><label>Joined (Fake/Real)</label><input type="number" id="new-joined" value="0"></div>
                 </div>
                 <div class="field"><label>Start Time</label><input type="datetime-local" id="new-time"></div>
-                <div class="field"><label>Details</label><textarea id="new-details" placeholder="Match notes, retirement message, special instructions..."></textarea></div>
+                <div class="field"><label>Details</label><textarea id="new-details" placeholder="Match notes..."></textarea></div>
                 <button class="btn-create" onclick="createNewMatch()"><i class="fas fa-rocket"></i> LAUNCH MATCH</button>
             </div>
         </div>
@@ -119,7 +117,9 @@
 
         <div id="sec-pay" class="tab-content" style="display:none">
             <div class="tab-sub">
-                <button class="sub-btn active" id="sub-new" onclick="filterPay('pending')">NEW PENDING</button>
+                <button class="sub-btn active" id="sub-pending" onclick="filterPay('pending')">MATCH JOIN</button>
+                <button class="sub-btn" id="sub-addfund" onclick="filterPay('add_fund')">ADD FUND REQ</button>
+                <button class="sub-btn" id="sub-withdraw" onclick="filterPay('withdrawal')">WITHDRAW REQ</button>
                 <button class="sub-btn" id="sub-history" onclick="filterPay('history')">HISTORY</button>
             </div>
             <div id="pay-list"></div>
@@ -130,6 +130,7 @@
                 <div class="field">
                     <input id="user-search" placeholder="Search user by Phone Number..." oninput="renderUsers(this.value)">
                 </div>
+                <div style="font-size:0.8rem; color:var(--gold); margin-top:5px;">Total Users Registered: <span id="total-users-count">0</span></div>
             </div>
             <div id="users-list"></div>
         </div>
@@ -161,37 +162,25 @@
                 <h3 style="margin:0; color:var(--gold);">EDIT USER PROFILE</h3>
                 <button onclick="closeUserModal()" style="background:none; color:var(--red); font-size:1.5rem;">&times;</button>
             </div>
-            
             <input type="hidden" id="edit-user-id">
-
             <div style="display:flex; gap:15px; align-items:center; margin-bottom:15px;">
-                <img id="edit-dp" src="" onclick="window.open(this.src, '_blank')" style="width:70px; height:70px; border-radius:50%; border:2px solid var(--accent); object-fit:cover; cursor:pointer;" title="Click to View Full Photo">
-                <div style="flex:1;">
-                    <div class="field"><label>Full Name</label><input id="edit-name"></div>
-                </div>
+                <img id="edit-dp" src="" onclick="window.open(this.src, '_blank')" style="width:70px; height:70px; border-radius:50%; border:2px solid var(--accent); object-fit:cover; cursor:pointer;">
+                <div style="flex:1;"><div class="field"><label>Full Name</label><input id="edit-name"></div></div>
             </div>
-
             <div class="grid-form">
                 <div class="field"><label>Phone (Read Only)</label><input id="edit-phone" readonly style="color:#777;"></div>
                 <div class="field"><label>Gaming Name</label><input id="edit-gname"></div>
                 <div class="field"><label>Gaming UID</label><input id="edit-guid"></div>
                 <div class="field"><label>Email</label><input id="edit-email"></div>
             </div>
-
             <hr style="border:0; border-top:1px solid #222; margin:15px 0;">
-
             <h4 style="color:var(--accent); margin:0 0 10px 0;">WALLET & STATS</h4>
             <div class="grid-form" style="background:#001a0d; padding:10px; border-radius:10px; border:1px solid #004d26;">
-                <div class="field">
-                    <label style="color:var(--accent);">AVAILABLE BALANCE (₹)</label>
-                    <input type="number" id="edit-balance" style="font-size:1.2rem; font-weight:bold; color:var(--accent);">
-                </div>
+                <div class="field"><label style="color:var(--accent);">AVAILABLE BALANCE (₹)</label><input type="number" id="edit-balance" style="font-size:1.2rem; font-weight:bold; color:var(--accent);"></div>
                 <div class="field"><label>Total Profit (₹)</label><input type="number" id="edit-profit"></div>
                 <div class="field"><label>Total Loss (₹)</label><input type="number" id="edit-loss"></div>
             </div>
-
             <hr style="border:0; border-top:1px solid #222; margin:15px 0;">
-
             <h4 style="color:var(--gold); margin:0 0 10px 0;">PAYMENT INFO (For Sending Prize)</h4>
             <div class="field"><label>User UPI ID</label><input id="edit-upi" readonly></div>
             <div class="qr-display">
@@ -199,7 +188,6 @@
                 <img id="edit-qr" src="" class="qr-img" alt="No QR Uploaded">
                 <div id="no-qr-msg" style="display:none; color:var(--muted); font-size:0.8rem;">User has not uploaded QR yet.</div>
             </div>
-
             <div style="display:flex; gap:10px; margin-top:20px;">
                 <button class="btn-save" onclick="saveUserChanges()">SAVE CHANGES</button>
                 <button class="danger" onclick="closeUserModal()" style="padding:12px; border-radius:10px;">CANCEL</button>
@@ -226,7 +214,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- UI NAVIGATION ---
+        // --- NAVIGATION ---
         window.showTab = (tab) => {
             document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -239,7 +227,7 @@
             if(tab === 'results_list') renderResultsList();
         };
 
-        // --- 1. MATCH MANAGEMENT ---
+        // --- MATCHES ---
         window.createNewMatch = async () => {
             const data = {
                 map: document.getElementById('new-map').value || 'Bermuda',
@@ -267,7 +255,6 @@
                     const m = d.data();
                     const id = d.id;
                     const timeStr = m.startTime ? new Date(m.startTime).toISOString().slice(0,16) : '';
-                    
                     list.innerHTML += `
                     <div class="card">
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
@@ -306,76 +293,59 @@
             await updateDoc(doc(db,"matches",id), data);
             alert("Match Updated!");
         };
-        
         window.deleteDocMatch = async (id) => { if(confirm("Delete Match?")) await deleteDoc(doc(db,"matches",id)); }
 
-        // --- 2. USERS (NEW & ADVANCED) ---
+        // --- USERS (WITH COUNT) ---
         window.renderUsers = async (searchVal) => {
             const list = document.getElementById('users-list');
             list.innerHTML = 'Loading Users...';
-            
-            // Note: Firebase filtering is limited client-side for "contains", so we fetch and filter
-            const q = query(collection(db, "users"), limit(100)); 
+            const q = query(collection(db, "users"), limit(500)); 
             const snap = await getDocs(q);
             
+            // Update counts
+            document.getElementById('total-users-nav').innerText = snap.size;
+            document.getElementById('total-users-count').innerText = snap.size;
+
             list.innerHTML = '';
             let count = 0;
-            
             snap.forEach(d => {
                 const u = d.data();
-                const uid = d.id; // Phone is ID
-                
-                // Search Filter
+                const uid = d.id; 
                 if(searchVal && !uid.includes(searchVal) && !u.name.toLowerCase().includes(searchVal.toLowerCase())) return;
-
                 list.innerHTML += `
                 <div class="card user-card">
                     <img src="${u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png'}" class="user-dp">
                     <div class="user-info">
                         <div style="font-weight:bold;">${u.name || 'No Name'}</div>
-                        <div style="font-size:0.8rem; color:#888;">${u.phone} • UID: ${u.gamingName || '--'}</div>
+                        <div style="font-size:0.8rem; color:#888;">${u.phone} • UID: ${u.gamingId || '--'}</div>
                         <div class="user-balance">Bal: ₹${u.balance || 0}</div>
                     </div>
-                    <button class="small ok" onclick="openUserModal('${uid}')">EDIT / VIEW</button>
+                    <button class="small ok" onclick="openUserModal('${uid}')">EDIT</button>
                 </div>`;
                 count++;
             });
-            if(count === 0) list.innerHTML = '<div class="card muted">No users found.</div>';
         };
 
-        // OPEN EDIT MODAL
         window.openUserModal = async (phoneId) => {
             document.getElementById('user-modal').style.display = 'flex';
             const snap = await getDoc(doc(db, "users", phoneId));
-            if(!snap.exists()) return alert("User not found");
-            
+            if(!snap.exists()) return;
             const u = snap.data();
             document.getElementById('edit-user-id').value = phoneId;
             document.getElementById('edit-dp').src = u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png';
             document.getElementById('edit-name').value = u.name || '';
             document.getElementById('edit-phone').value = u.phone || '';
             document.getElementById('edit-gname').value = u.gamingName || '';
-            document.getElementById('edit-guid').value = u.gamingId || ''; // Assuming gamingId field holds UID
+            document.getElementById('edit-guid').value = u.gamingId || '';
             document.getElementById('edit-email').value = u.email || '';
-            
-            // Financials
             document.getElementById('edit-balance').value = u.balance || 0;
             document.getElementById('edit-profit').value = u.totalProfit || 0;
             document.getElementById('edit-loss').value = u.totalLoss || 0;
-
-            // Payment Info (Read Only/Edit)
             document.getElementById('edit-upi').value = u.upiId || 'Not Set';
             const qrImg = document.getElementById('edit-qr');
             const noQr = document.getElementById('no-qr-msg');
-            
-            if(u.qrUrl){
-                qrImg.src = u.qrUrl;
-                qrImg.style.display = 'block';
-                noQr.style.display = 'none';
-            } else {
-                qrImg.style.display = 'none';
-                noQr.style.display = 'block';
-            }
+            if(u.qrUrl){ qrImg.src = u.qrUrl; qrImg.style.display = 'block'; noQr.style.display = 'none'; } 
+            else { qrImg.style.display = 'none'; noQr.style.display = 'block'; }
         };
 
         window.saveUserChanges = async () => {
@@ -389,79 +359,83 @@
                 totalProfit: Number(document.getElementById('edit-profit').value),
                 totalLoss: Number(document.getElementById('edit-loss').value)
             };
-            
-            try {
-                await updateDoc(doc(db, "users", id), data);
-                alert("User Profile & Balance Updated Successfully!");
-                window.closeUserModal();
-                renderUsers(''); // Refresh list
-            } catch(e) {
-                alert("Error updating user: " + e.message);
-            }
+            await updateDoc(doc(db, "users", id), data);
+            alert("Updated!");
+            closeUserModal();
+            renderUsers('');
         };
-
         window.closeUserModal = () => document.getElementById('user-modal').style.display = 'none';
 
-        // --- 3. PAYMENTS ---
-        let payFilter = 'pending';
-        window.filterPay = (f) => { payFilter = f; renderPayments(f); };
+        // --- PAYMENTS (WITH WITHDRAW/ADD FUND LOGIC) ---
+        window.filterPay = (f) => { renderPayments(f); };
 
         window.renderPayments = (filter) => {
-            document.getElementById('sub-new').classList.toggle('active', filter==='pending');
-            document.getElementById('sub-history').classList.toggle('active', filter==='history');
-            
+            document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+            const btnMap = { 'pending':'sub-pending', 'add_fund':'sub-addfund', 'withdrawal':'sub-withdraw', 'history':'sub-history' };
+            if(btnMap[filter]) document.getElementById(btnMap[filter]).classList.add('active');
+
             const list = document.getElementById('pay-list');
             list.innerHTML = 'Loading...';
             
-            // In real app, you might use query(where("status","==",filter)) but snapshot is easier for small scale
             onSnapshot(collection(db,"payments"), s => {
                 list.innerHTML = '';
                 s.forEach(d => {
                     const p = d.data();
-                    if(filter === 'pending' && p.status !== 'pending') return;
+                    
+                    // Filter Logic
+                    if(filter === 'pending' && (p.status !== 'pending' || p.type === 'add_fund' || p.type === 'withdrawal')) return;
+                    if(filter === 'add_fund' && (p.type !== 'add_fund' || p.status !== 'pending')) return;
+                    if(filter === 'withdrawal' && (p.type !== 'withdrawal' || p.status !== 'pending')) return;
                     if(filter === 'history' && p.status === 'pending') return;
 
                     list.innerHTML += `
                     <div class="card pay-card">
                         <button class="danger abs-del" onclick="deleteDoc(doc(db,'payments','${d.id}'))"><i class="fas fa-trash"></i></button>
-
-                        <img src="${p.ss}" class="pay-thumb" onclick="window.open('${p.ss}')">
+                        ${p.ss ? `<img src="${p.ss}" class="pay-thumb" onclick="window.open('${p.ss}')">` : `<div class="pay-thumb" style="display:flex;align-items:center;justify-content:center;">NO SS</div>`}
                         <div class="pay-body">
                             <div class="pay-meta">
+                                <b style="color:var(--gold)">${(p.type||'MATCH JOIN').toUpperCase()}</b><br>
                                 <b>${p.userName}</b> (${p.userId})<br>
-                                UTR: <b style="color:#fff">${p.utr}</b> • Match: ${p.matchId}
+                                ${p.amount ? `Amount: <b style="color:var(--accent)">₹${p.amount}</b><br>` : ''}
+                                ${p.utr ? `UTR: <b style="color:#fff">${p.utr}</b>` : ''} 
+                                ${p.matchId ? `Match: ${p.matchId}` : ''}
                             </div>
                             <div class="pay-actions">
                                 ${p.status === 'pending' ? `
-                                    <button class="small ok" onclick="verifyPay('${d.id}','${p.matchId}','approved','${p.utr}')">APPROVE</button>
-                                    <button class="small danger" onclick="verifyPay('${d.id}','${p.matchId}','rejected','${p.utr}')">REJECT</button>
+                                    <button class="small ok" onclick="approveRequest('${d.id}','${p.userId}','${p.amount||0}','${p.type||'match'}','${p.matchId||''}','${p.utr||''}')">APPROVE</button>
+                                    <button class="small danger" onclick="verifyPay('${d.id}','${p.matchId}','rejected','')">REJECT</button>
                                 ` : `<span class="small" style="background:#222; color:#fff;">${p.status.toUpperCase()}</span>`}
                                 <button class="small" onclick="openUserModal('${p.userId}')">USER INFO</button>
                             </div>
                         </div>
                     </div>`;
                 });
-                if(list.innerHTML === '') list.innerHTML = '<div class="card muted">No payments found.</div>';
+                if(list.innerHTML === '') list.innerHTML = '<div class="card muted">No requests here.</div>';
             });
         };
 
-        window.verifyPay = async (pid, mid, status, utr) => {
-            if(!confirm(`Mark this payment as ${status}?`)) return;
-            
-            // Update Payment
-            await updateDoc(doc(db,"payments", pid), { status: status });
-            
-            // If Approved, Update Match Joined + Approved List
-            if(status === 'approved'){
-                await updateDoc(doc(db,"matches", mid), {
-                    joined: increment(1),
-                    approvedUtrs: arrayUnion(utr)
-                });
-            }
+        window.approveRequest = async (pid, uid, amt, type, mid, utr) => {
+            if(!confirm("Approve this request?")) return;
+            try {
+                if(type === 'add_fund') {
+                    await updateDoc(doc(db, "users", uid), { balance: increment(Number(amt)) });
+                } else if (type === 'match' || !type) {
+                    if(mid) {
+                        await updateDoc(doc(db, "matches", mid), { joined: increment(1), approvedUtrs: arrayUnion(utr) });
+                    }
+                }
+                // Withdrawal case: Balance is usually deducted during request, so only status change is needed.
+                await updateDoc(doc(db, "payments", pid), { status: 'approved' });
+                alert("Approved!");
+            } catch(e) { alert(e.message); }
         };
 
-        // --- 4. RESULTS ---
-        // Cloudinary Upload
+        window.verifyPay = async (pid, mid, status) => {
+            if(!confirm(`Mark as ${status}?`)) return;
+            await updateDoc(doc(db,"payments", pid), { status: status });
+        };
+
+        // --- RESULTS ---
         async function uploadToCloudinary(file){
             const fd = new FormData(); fd.append("file", file); fd.append("upload_preset", "sql_admin");
             const res = await fetch("https://api.cloudinary.com/v1_1/debp1kjtm/image/upload", {method:"POST", body:fd});
@@ -471,7 +445,6 @@
         window.uploadResult = async () => {
             const f = document.getElementById('res-ss').files[0];
             const img = f ? await uploadToCloudinary(f) : '';
-            
             const data = {
                 title: "Match Result",
                 matchId: document.getElementById('res-matchid').value,
@@ -479,9 +452,7 @@
                 winnerUid: document.getElementById('res-uid').value,
                 runnerName: document.getElementById('res-other').value,
                 message: document.getElementById('res-msg').value,
-                image: img,
-                timestamp: Date.now(),
-                likes: 0
+                image: img, timestamp: Date.now(), likes: 0
             };
             await addDoc(collection(db,"results"), data);
             alert("Result Published!");
@@ -490,31 +461,21 @@
 
         window.renderResultsList = async () => {
             const list = document.getElementById('results-list');
-            list.innerHTML = 'Loading...';
-            const q = query(collection(db,"results"), orderBy("timestamp","desc"), limit(50));
+            const q = query(collection(db,"results"), orderBy("timestamp","desc"), limit(20));
             const snap = await getDocs(q);
             list.innerHTML = '';
             snap.forEach(d => {
                 const r = d.data();
-                list.innerHTML += `
-                <div class="card">
-                    <div style="display:flex; justify-content:space-between;">
-                        <b>${r.winnerName || 'Result'}</b>
-                        <button class="small danger" onclick="deleteDoc(doc(db,'results','${d.id}'))"><i class="fas fa-trash"></i> DEL</button>
-                    </div>
-                    <div class="muted">${new Date(r.timestamp).toLocaleDateString()}</div>
-                </div>`;
+                list.innerHTML += `<div class="card"><div style="display:flex; justify-content:space-between;"><b>${r.winnerName}</b><button class="small danger" onclick="deleteDoc(doc(db,'results','${d.id}'));renderResultsList();">DEL</button></div></div>`;
             });
         };
 
-        // Expose to window
+        // Init
         window.deleteDoc = deleteDoc;
         window.doc = doc;
         window.db = db;
-
-        // Init
         showTab('add');
-
+        renderUsers(''); // To get the initial count
     </script>
 </body>
-                                                             </html>
+                </html>
