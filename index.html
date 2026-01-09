@@ -91,7 +91,7 @@
             <button class="nav-btn" id="btn-manage" onclick="showTab('manage')">MANAGE</button>
             <button class="nav-btn" id="btn-pay" onclick="showTab('pay')">PAYMENTS</button>
             <button class="nav-btn" id="btn-users" onclick="showTab('users')">USERS (<span id="total-users-nav">0</span>)</button>
-            <button class="nav-btn" id="btn-results" onclick="showTab('results_list')">RESULTS</button>
+            <button class="nav-btn" id="btn-results_list" onclick="showTab('results_list')">RESULTS</button>
         </div>
 
         <div id="sec-add" class="tab-content">
@@ -138,20 +138,24 @@
         <div id="sec-results_list" class="tab-content" style="display:none">
             <div class="card">
                 <h3 style="color:var(--gold);">UPLOAD MATCH RESULT</h3>
-                <button class="btn-save" onclick="document.getElementById('sec-results-upload').style.display='block'; this.style.display='none'">+ NEW UPLOAD</button>
+                <button class="btn-save" id="btn-show-upload" onclick="document.getElementById('sec-results-upload').style.display='block'; this.style.display='none'">+ NEW UPLOAD</button>
                 
                 <div id="sec-results-upload" style="display:none; margin-top:15px; border-top:1px solid #333; padding-top:15px;">
                     <div class="grid-form">
                         <div class="field"><label>Match ID</label><input id="res-matchid" placeholder="Optional"></div>
                         <div class="field"><label>Winner Name</label><input id="res-winner"></div>
-                        <div class="field"><label>Winner UID</label><input id="res-uid"></div>
+                        <div class="field"><label>Winner Phone/UID</label><input id="res-uid" placeholder="User Phone Number"></div>
                         <div class="field"><label>Runner Up</label><input id="res-other"></div>
                     </div>
                     <div class="field"><label>Message</label><textarea id="res-msg"></textarea></div>
                     <div class="field"><label>Result Image</label><input type="file" id="res-ss" accept="image/*"></div>
-                    <button class="btn-create" onclick="uploadResult()">PUBLISH RESULT</button>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-create" onclick="uploadResult()">PUBLISH RESULT</button>
+                        <button class="danger" style="width:40%" onclick="document.getElementById('sec-results-upload').style.display='none'; document.getElementById('btn-show-upload').style.display='block'">CANCEL</button>
+                    </div>
                 </div>
             </div>
+            <h4 style="color:var(--gold); margin-left:5px;">PUBLISHED RESULTS</h4>
             <div id="results-list"></div>
         </div>
     </div>
@@ -295,19 +299,17 @@
         };
         window.deleteDocMatch = async (id) => { if(confirm("Delete Match?")) await deleteDoc(doc(db,"matches",id)); }
 
-        // --- USERS (WITH COUNT) ---
+        // --- USERS ---
         window.renderUsers = async (searchVal) => {
             const list = document.getElementById('users-list');
             list.innerHTML = 'Loading Users...';
             const q = query(collection(db, "users"), limit(500)); 
             const snap = await getDocs(q);
             
-            // Update counts
             document.getElementById('total-users-nav').innerText = snap.size;
             document.getElementById('total-users-count').innerText = snap.size;
 
             list.innerHTML = '';
-            let count = 0;
             snap.forEach(d => {
                 const u = d.data();
                 const uid = d.id; 
@@ -322,7 +324,6 @@
                     </div>
                     <button class="small ok" onclick="openUserModal('${uid}')">EDIT</button>
                 </div>`;
-                count++;
             });
         };
 
@@ -366,7 +367,7 @@
         };
         window.closeUserModal = () => document.getElementById('user-modal').style.display = 'none';
 
-        // --- PAYMENTS (WITH WITHDRAW/ADD FUND LOGIC) ---
+        // --- PAYMENTS (FIXED LOGIC) ---
         window.filterPay = (f) => { renderPayments(f); };
 
         window.renderPayments = (filter) => {
@@ -382,8 +383,8 @@
                 s.forEach(d => {
                     const p = d.data();
                     
-                    // Filter Logic
-                    if(filter === 'pending' && (p.status !== 'pending' || p.type === 'add_fund' || p.type === 'withdrawal')) return;
+                    // Corrected Filter Logic
+                    if(filter === 'pending' && (p.status !== 'pending' || (p.type && p.type !== 'match'))) return;
                     if(filter === 'add_fund' && (p.type !== 'add_fund' || p.status !== 'pending')) return;
                     if(filter === 'withdrawal' && (p.type !== 'withdrawal' || p.status !== 'pending')) return;
                     if(filter === 'history' && p.status === 'pending') return;
@@ -424,7 +425,6 @@
                         await updateDoc(doc(db, "matches", mid), { joined: increment(1), approvedUtrs: arrayUnion(utr) });
                     }
                 }
-                // Withdrawal case: Balance is usually deducted during request, so only status change is needed.
                 await updateDoc(doc(db, "payments", pid), { status: 'approved' });
                 alert("Approved!");
             } catch(e) { alert(e.message); }
@@ -444,29 +444,48 @@
 
         window.uploadResult = async () => {
             const f = document.getElementById('res-ss').files[0];
-            const img = f ? await uploadToCloudinary(f) : '';
-            const data = {
-                title: "Match Result",
-                matchId: document.getElementById('res-matchid').value,
-                winnerName: document.getElementById('res-winner').value,
-                winnerUid: document.getElementById('res-uid').value,
-                runnerName: document.getElementById('res-other').value,
-                message: document.getElementById('res-msg').value,
-                image: img, timestamp: Date.now(), likes: 0
-            };
-            await addDoc(collection(db,"results"), data);
-            alert("Result Published!");
-            renderResultsList();
+            if(!f) { alert("Please select an image"); return; }
+            
+            try {
+                const img = await uploadToCloudinary(f);
+                const data = {
+                    title: "Match Result",
+                    matchId: document.getElementById('res-matchid').value,
+                    winnerName: document.getElementById('res-winner').value,
+                    winnerUid: document.getElementById('res-uid').value, // This is Phone/UID
+                    runnerName: document.getElementById('res-other').value,
+                    message: document.getElementById('res-msg').value,
+                    image: img, 
+                    timestamp: Date.now(), 
+                    likes: 0
+                };
+                await addDoc(collection(db,"results"), data);
+                alert("Result Published!");
+                document.getElementById('sec-results-upload').style.display='none';
+                document.getElementById('btn-show-upload').style.display='block';
+                renderResultsList();
+            } catch(e) { alert("Upload Failed: " + e.message); }
         };
 
         window.renderResultsList = async () => {
             const list = document.getElementById('results-list');
-            const q = query(collection(db,"results"), orderBy("timestamp","desc"), limit(20));
-            const snap = await getDocs(q);
-            list.innerHTML = '';
-            snap.forEach(d => {
-                const r = d.data();
-                list.innerHTML += `<div class="card"><div style="display:flex; justify-content:space-between;"><b>${r.winnerName}</b><button class="small danger" onclick="deleteDoc(doc(db,'results','${d.id}'));renderResultsList();">DEL</button></div></div>`;
+            list.innerHTML = 'Loading results...';
+            // Added real-time listener for results history
+            onSnapshot(query(collection(db,"results"), orderBy("timestamp","desc"), limit(20)), snap => {
+                list.innerHTML = '';
+                snap.forEach(d => {
+                    const r = d.data();
+                    list.innerHTML += `
+                    <div class="card" style="display:flex; gap:10px; align-items:center;">
+                        <img src="${r.image}" style="width:60px; height:60px; object-fit:cover; border-radius:5px;">
+                        <div style="flex:1;">
+                            <div style="color:var(--gold); font-weight:bold;">Winner: ${r.winnerName}</div>
+                            <div style="font-size:0.75rem; color:#888;">ID: ${r.winnerUid} | Match: ${r.matchId || 'N/A'}</div>
+                        </div>
+                        <button class="small danger" onclick="deleteDoc(doc(db,'results','${d.id}'))">DEL</button>
+                    </div>`;
+                });
+                if(list.innerHTML === '') list.innerHTML = '<div class="card muted">No results history.</div>';
             });
         };
 
@@ -475,7 +494,7 @@
         window.doc = doc;
         window.db = db;
         showTab('add');
-        renderUsers(''); // To get the initial count
+        renderUsers('');
     </script>
 </body>
-                </html>
+</html>
