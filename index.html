@@ -50,12 +50,8 @@
         .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:5000; display:none; align-items:flex-start; justify-content:center; padding:15px; padding-top: 60px; overflow-y:auto; }
         .modal-box { background:#111; border:1px solid var(--gold); width:100%; max-width:600px; border-radius:15px; padding:20px; box-shadow:0 0 30px rgba(255,215,0,0.2); margin-bottom: 50px; }
         .modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:10px; }
-        .qr-display { text-align:center; margin:10px 0; background:#000; padding:10px; border-radius:10px; border:1px dashed var(--muted); }
-        .qr-img { max-width:150px; border-radius:8px; }
 
-        .muted { color:var(--muted); font-size:0.9rem; }
         .abs-del { position:absolute; top:10px; right:10px; padding:6px 10px; font-size:0.75rem; border-radius:6px; z-index:10; }
-
         @media (max-width:720px){ .grid-form{grid-template-columns:1fr;} .wrap{padding:12px;} .pay-card{flex-direction:column; align-items:flex-start;} }
     </style>
 </head>
@@ -63,7 +59,7 @@
     <header>
         <h2><i class="fas fa-user-shield"></i> SQL ADMIN</h2>
         <div style="display:flex; gap:8px; align-items:center;">
-            <button id="logout-btn" style="background:none; color:var(--red); font-size:0.85rem; border:1px solid var(--red); padding:6px 10px; border-radius:8px;">LOGOUT</button>
+            <button onclick="location.reload()" style="background:none; color:var(--gold); border:1px solid var(--gold); padding:6px 10px; border-radius:8px;">REFRESH</button>
         </div>
     </header>
 
@@ -148,7 +144,7 @@
         <div class="modal-box">
             <div class="modal-head">
                 <h3 style="margin:0; color:var(--gold);">EDIT USER PROFILE</h3>
-                <button onclick="closeUserModal()" style="background:none; color:var(--red); font-size:1.5rem;">&times;</button>
+                <button onclick="closeUserModal()" style="background:none; color:var(--red); font-size:1.5rem; border:none;">&times;</button>
             </div>
             <input type="hidden" id="edit-user-id">
             <div style="display:flex; gap:15px; align-items:center; margin-bottom:15px;">
@@ -168,7 +164,6 @@
                 <div class="field"><label>Total Profit (₹)</label><input type="number" id="edit-profit"></div>
                 <div class="field"><label>Total Loss (₹)</label><input type="number" id="edit-loss"></div>
             </div>
-            <hr style="border:0; border-top:1px solid #222; margin:15px 0;">
             <div style="display:flex; gap:10px; margin-top:20px;">
                 <button class="btn-save" onclick="saveUserChanges()">SAVE CHANGES</button>
                 <button class="danger" onclick="closeUserModal()" style="padding:12px; border-radius:10px;">CANCEL</button>
@@ -194,6 +189,11 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
+        // --- GLOBAL VARIABLES FOR BUTTONS ---
+        window.db = db;
+        window.doc = doc;
+        window.deleteDoc = deleteDoc;
 
         // --- NAVIGATION ---
         window.showTab = (tab) => {
@@ -240,7 +240,7 @@
                     <div class="card">
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                             <span style="color:var(--gold)">ID: ${id}</span>
-                            <button class="small danger" onclick="deleteDocMatch('${id}')"><i class="fas fa-trash"></i> DELETE</button>
+                            <button class="small danger" onclick="deleteDocMatch('${id}')">DELETE</button>
                         </div>
                         <div class="grid-form">
                             <div class="field"><label>Status</label>
@@ -254,7 +254,7 @@
                             <div class="field"><label>Room ID</label><input id="rid-${id}" value="${m.roomId||''}"></div>
                             <div class="field"><label>Password</label><input id="pass-${id}" value="${m.password||''}"></div>
                             <div class="field"><label>Map</label><input id="map-${id}" value="${m.map}"></div>
-                            <div class="field"><label>Start Time</label><input type="datetime-local" id="time-${id}" value="${timeStr}"></div>
+                            <div class="field"><label>Time</label><input type="datetime-local" id="time-${id}" value="${timeStr}"></div>
                         </div>
                         <button class="btn-save" style="margin-top:10px;" onclick="updateMatch('${id}')">SAVE UPDATES</button>
                     </div>`;
@@ -276,74 +276,11 @@
         };
         window.deleteDocMatch = async (id) => { if(confirm("Delete Match?")) await deleteDoc(doc(db,"matches",id)); }
 
-        // --- USERS ---
-        window.renderUsers = async (searchVal) => {
-            const list = document.getElementById('users-list');
-            list.innerHTML = 'Loading Users...';
-            const q = query(collection(db, "users"), limit(500)); 
-            const snap = await getDocs(q);
-            
-            document.getElementById('total-users-nav').innerText = snap.size;
-            document.getElementById('total-users-count').innerText = snap.size;
-
-            list.innerHTML = '';
-            snap.forEach(d => {
-                const u = d.data();
-                const uid = d.id; 
-                if(searchVal && !uid.includes(searchVal) && !u.name.toLowerCase().includes(searchVal.toLowerCase())) return;
-                list.innerHTML += `
-                <div class="card user-card">
-                    <img src="${u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png'}" class="user-dp">
-                    <div class="user-info">
-                        <div style="font-weight:bold;">${u.name || 'No Name'}</div>
-                        <div style="font-size:0.8rem; color:#888;">${u.phone} • UID: ${u.gamingId || '--'}</div>
-                        <div class="user-balance">Bal: ₹${u.balance || 0}</div>
-                    </div>
-                    <button class="small ok" onclick="openUserModal('${uid}')">EDIT</button>
-                </div>`;
-            });
-        };
-
-        window.openUserModal = async (phoneId) => {
-            document.getElementById('user-modal').style.display = 'flex';
-            const snap = await getDoc(doc(db, "users", phoneId));
-            if(!snap.exists()) return;
-            const u = snap.data();
-            document.getElementById('edit-user-id').value = phoneId;
-            document.getElementById('edit-dp').src = u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png';
-            document.getElementById('edit-name').value = u.name || '';
-            document.getElementById('edit-phone').value = u.phone || '';
-            document.getElementById('edit-gname').value = u.gamingName || '';
-            document.getElementById('edit-guid').value = u.gamingId || '';
-            document.getElementById('edit-email').value = u.email || '';
-            document.getElementById('edit-balance').value = u.balance || 0;
-            document.getElementById('edit-profit').value = u.totalProfit || 0;
-            document.getElementById('edit-loss').value = u.totalLoss || 0;
-        };
-
-        window.saveUserChanges = async () => {
-            const id = document.getElementById('edit-user-id').value;
-            const data = {
-                name: document.getElementById('edit-name').value,
-                gamingName: document.getElementById('edit-gname').value,
-                gamingId: document.getElementById('edit-guid').value,
-                email: document.getElementById('edit-email').value,
-                balance: Number(document.getElementById('edit-balance').value),
-                totalProfit: Number(document.getElementById('edit-profit').value),
-                totalLoss: Number(document.getElementById('edit-loss').value)
-            };
-            await updateDoc(doc(db, "users", id), data);
-            alert("Updated!");
-            closeUserModal();
-            renderUsers('');
-        };
-        window.closeUserModal = () => document.getElementById('user-modal').style.display = 'none';
-
-        // --- PAYMENTS ---
-        window.filterPay = (f) => { renderPayments(f); };
+        // --- PAYMENTS (FIXED LOGIC) ---
+        window.filterPay = (f) => renderPayments(f);
         window.renderPayments = (filter) => {
             document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
-            const btnMap = { 'pending':'sub-pending', 'add_fund':'sub-addfund', 'withdrawal':'sub-withdraw', 'history':'sub-history' };
+            const btnMap = { 'pending':'sub-pending', 'add_fund':'sub-addfund', 'withdrawal':'sub-withdrawal', 'history':'sub-history' };
             if(btnMap[filter]) document.getElementById(btnMap[filter]).classList.add('active');
 
             const list = document.getElementById('pay-list');
@@ -353,56 +290,116 @@
                 list.innerHTML = '';
                 s.forEach(d => {
                     const p = d.data();
-                    if(filter === 'pending' && (p.status !== 'pending' || (p.type && p.type !== 'match'))) return;
-                    if(filter === 'add_fund' && (p.type !== 'add_fund' || p.status !== 'pending')) return;
-                    if(filter === 'withdrawal' && (p.type !== 'withdrawal' || p.status !== 'pending')) return;
-                    if(filter === 'history' && p.status === 'pending') return;
+                    const pid = d.id;
+                    let show = false;
+                    
+                    if(filter === 'pending' && p.status === 'pending' && (!p.type || p.type === 'match')) show = true;
+                    if(filter === 'add_fund' && p.status === 'pending' && p.type === 'add_fund') show = true;
+                    if(filter === 'withdrawal' && p.status === 'pending' && p.type === 'withdrawal') show = true;
+                    if(filter === 'history' && p.status !== 'pending') show = true;
+
+                    if(!show) return;
 
                     list.innerHTML += `
                     <div class="card pay-card">
-                        <button class="danger abs-del" onclick="deleteDoc(doc(db,'payments','${d.id}'))"><i class="fas fa-trash"></i></button>
-                        ${p.ss ? `<img src="${p.ss}" class="pay-thumb" onclick="window.open('${p.ss}')">` : `<div class="pay-thumb" style="display:flex;align-items:center;justify-content:center;">NO SS</div>`}
+                        <button class="danger abs-del" onclick="deleteDocById('payments','${pid}')">DEL</button>
+                        <img src="${p.ss || ''}" class="pay-thumb" onclick="window.open('${p.ss}')" onerror="this.src='https://placehold.co/80?text=NO+SS'">
                         <div class="pay-body">
                             <div class="pay-meta">
-                                <b style="color:var(--gold)">${(p.type||'MATCH JOIN').toUpperCase()}</b><br>
-                                <b>${p.userName}</b> (${p.userId})<br>
-                                ${p.amount ? `Amount: <b style="color:var(--accent)">₹${p.amount}</b><br>` : ''}
-                                ${p.utr ? `UTR: <b style="color:#fff">${p.utr}</b>` : ''} 
-                                ${p.matchId ? `Match: ${p.matchId}` : ''}
+                                <b style="color:var(--gold)">${(p.type||'match').toUpperCase()}</b> | ${p.status}<br>
+                                <b>User:</b> ${p.userName} (${p.userId})<br>
+                                <b>Amount:</b> ₹${p.amount||0} | <b>UTR:</b> ${p.utr||'N/A'}
+                                ${p.matchId ? `<br><b>Match ID:</b> ${p.matchId}` : ''}
                             </div>
                             <div class="pay-actions">
                                 ${p.status === 'pending' ? `
-                                    <button class="small ok" onclick="approveRequest('${d.id}','${p.userId}','${p.amount||0}','${p.type||'match'}','${p.matchId||''}','${p.utr||''}')">APPROVE</button>
-                                    <button class="small danger" onclick="verifyPay('${d.id}','${p.matchId}','rejected','')">REJECT</button>
-                                ` : `<span class="small" style="background:#222; color:#fff;">${p.status.toUpperCase()}</span>`}
+                                    <button class="small ok" onclick="approveRequest('${pid}','${p.userId}','${p.amount||0}','${p.type||'match'}','${p.matchId||''}','${p.utr||''}')">APPROVE</button>
+                                    <button class="small danger" onclick="rejectRequest('${pid}')">REJECT</button>
+                                ` : `<span style="font-size:0.7rem; color:var(--muted)">COMPLETED</span>`}
                                 <button class="small" onclick="openUserModal('${p.userId}')">USER INFO</button>
                             </div>
                         </div>
                     </div>`;
                 });
-                if(list.innerHTML === '') list.innerHTML = '<div class="card muted">No requests here.</div>';
             });
         };
 
         window.approveRequest = async (pid, uid, amt, type, mid, utr) => {
-            if(!confirm("Approve this request?")) return;
+            if(!confirm("Approve this payment/join?")) return;
             try {
                 if(type === 'add_fund') {
                     await updateDoc(doc(db, "users", uid), { balance: increment(Number(amt)) });
                 } else if (type === 'match' || !type) {
-                    if(mid) { await updateDoc(doc(db, "matches", mid), { joined: increment(1), approvedUtrs: arrayUnion(utr) }); }
+                    if(mid) await updateDoc(doc(db,"matches",mid), { joined: increment(1), approvedUtrs: arrayUnion(utr) });
                 }
                 await updateDoc(doc(db, "payments", pid), { status: 'approved' });
-                alert("Approved!");
+                alert("Approved Successfully!");
             } catch(e) { alert(e.message); }
         };
 
-        window.verifyPay = async (pid, mid, status) => {
-            if(!confirm(`Mark as ${status}?`)) return;
-            await updateDoc(doc(db,"payments", pid), { status: status });
+        window.rejectRequest = async (pid) => {
+            if(confirm("Reject this request?")) await updateDoc(doc(db, "payments", pid), { status: 'rejected' });
         };
 
-        // --- RESULTS (UPDATED WITH AUTO-CREDIT & SEPARATE PHONE/UID) ---
+        window.deleteDocById = async (col, id) => { if(confirm("Delete permanently?")) await deleteDoc(doc(db, col, id)); };
+
+        // --- USERS ---
+        window.renderUsers = async (searchVal) => {
+            const list = document.getElementById('users-list');
+            const snap = await getDocs(collection(db, "users"));
+            document.getElementById('total-users-nav').innerText = snap.size;
+            document.getElementById('total-users-count').innerText = snap.size;
+            list.innerHTML = '';
+            snap.forEach(d => {
+                const u = d.data();
+                if(searchVal && !d.id.includes(searchVal) && !u.name.toLowerCase().includes(searchVal.toLowerCase())) return;
+                list.innerHTML += `
+                <div class="card user-card">
+                    <img src="${u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png'}" class="user-dp">
+                    <div class="user-info">
+                        <div style="font-weight:bold;">${u.name || 'User'}</div>
+                        <div style="font-size:0.8rem; color:#888;">${d.id} | UID: ${u.gamingId || '--'}</div>
+                        <div class="user-balance">Bal: ₹${u.balance || 0}</div>
+                    </div>
+                    <button class="small ok" onclick="openUserModal('${d.id}')">EDIT</button>
+                </div>`;
+            });
+        };
+
+        window.openUserModal = async (phoneId) => {
+            const snap = await getDoc(doc(db, "users", phoneId));
+            const u = snap.data();
+            document.getElementById('edit-user-id').value = phoneId;
+            document.getElementById('edit-dp').src = u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png';
+            document.getElementById('edit-name').value = u.name || '';
+            document.getElementById('edit-phone').value = phoneId;
+            document.getElementById('edit-gname').value = u.gamingName || '';
+            document.getElementById('edit-guid').value = u.gamingId || '';
+            document.getElementById('edit-email').value = u.email || '';
+            document.getElementById('edit-balance').value = u.balance || 0;
+            document.getElementById('edit-profit').value = u.totalProfit || 0;
+            document.getElementById('edit-loss').value = u.totalLoss || 0;
+            document.getElementById('user-modal').style.display = 'flex';
+        };
+
+        window.saveUserChanges = async () => {
+            const id = document.getElementById('edit-user-id').value;
+            await updateDoc(doc(db, "users", id), {
+                name: document.getElementById('edit-name').value,
+                gamingName: document.getElementById('edit-gname').value,
+                gamingId: document.getElementById('edit-guid').value,
+                email: document.getElementById('edit-email').value,
+                balance: Number(document.getElementById('edit-balance').value),
+                totalProfit: Number(document.getElementById('edit-profit').value),
+                totalLoss: Number(document.getElementById('edit-loss').value)
+            });
+            alert("User Updated!");
+            closeUserModal();
+            renderUsers('');
+        };
+        window.closeUserModal = () => document.getElementById('user-modal').style.display = 'none';
+
+        // --- RESULTS ---
         async function uploadToCloudinary(file){
             const fd = new FormData(); fd.append("file", file); fd.append("upload_preset", "sql_admin");
             const res = await fetch("https://api.cloudinary.com/v1_1/debp1kjtm/image/upload", {method:"POST", body:fd});
@@ -413,80 +410,49 @@
             const f = document.getElementById('res-ss').files[0];
             const winnerPhone = document.getElementById('res-phone').value;
             const prizeAmt = Number(document.getElementById('res-prize').value);
-            
-            if(!f) { alert("Please select an image"); return; }
-            if(!winnerPhone) { alert("Please enter Winner Phone Number for Wallet Credit"); return; }
+            if(!f || !winnerPhone) return alert("Photo and Phone are mandatory!");
             
             try {
                 const img = await uploadToCloudinary(f);
-                const data = {
-                    title: "Match Result",
+                await addDoc(collection(db,"results"), {
                     matchId: document.getElementById('res-matchid').value,
                     winnerName: document.getElementById('res-winner').value,
                     winnerPhone: winnerPhone,
                     winnerUid: document.getElementById('res-uid').value,
                     winningAmount: prizeAmt,
-                    runnerName: document.getElementById('res-other').value,
-                    message: document.getElementById('res-msg').value,
-                    image: img, 
-                    timestamp: Date.now()
-                };
-
-                // 1. Publish Result
-                await addDoc(collection(db,"results"), data);
-
-                // 2. Auto-Credit Wallet
-                if(prizeAmt > 0) {
-                    const userRef = doc(db, "users", winnerPhone);
-                    const userSnap = await getDoc(userRef);
-                    if(userSnap.exists()){
-                        await updateDoc(userRef, { 
-                            balance: increment(prizeAmt),
-                            totalProfit: increment(prizeAmt)
-                        });
-                        alert(`Result Published & ₹${prizeAmt} credited to ${winnerPhone}`);
-                    } else {
-                        alert("Result Published, but Winner Phone not found in database. Wallet not credited.");
-                    }
-                } else {
-                    alert("Result Published!");
-                }
-
-                document.getElementById('sec-results-upload').style.display='none';
-                document.getElementById('btn-show-upload').style.display='block';
-                renderResultsList();
-            } catch(e) { alert("Upload Failed: " + e.message); }
+                    image: img, timestamp: Date.now()
+                });
+                // Auto Credit
+                const userRef = doc(db,"users",winnerPhone);
+                const userSnap = await getDoc(userRef);
+                if(userSnap.exists()) await updateDoc(userRef, { balance: increment(prizeAmt), totalProfit: increment(prizeAmt) });
+                
+                alert("Result Published!");
+                location.reload();
+            } catch(e) { alert(e.message); }
         };
 
-        window.renderResultsList = async () => {
-            const list = document.getElementById('results-list');
-            list.innerHTML = 'Loading results...';
-            onSnapshot(query(collection(db,"results"), orderBy("timestamp","desc"), limit(20)), snap => {
+        window.renderResultsList = () => {
+            onSnapshot(query(collection(db,"results"), orderBy("timestamp","desc")), s => {
+                const list = document.getElementById('results-list');
                 list.innerHTML = '';
-                snap.forEach(d => {
+                s.forEach(d => {
                     const r = d.data();
                     list.innerHTML += `
                     <div class="card" style="display:flex; gap:10px; align-items:center;">
                         <img src="${r.image}" style="width:60px; height:60px; object-fit:cover; border-radius:5px;">
                         <div style="flex:1;">
-                            <div style="color:var(--gold); font-weight:bold;">Winner: ${r.winnerName} (₹${r.winningAmount||0})</div>
-                            <div style="font-size:0.75rem; color:#888;">
-                                Ph: ${r.winnerPhone} | UID: ${r.winnerUid} <br>
-                                Match: ${r.matchId || 'N/A'}
-                            </div>
+                            <b>${r.winnerName}</b> (₹${r.winningAmount})<br>
+                            <small>${r.winnerPhone}</small>
                         </div>
-                        <button class="small danger" onclick="deleteDoc(doc(db,'results','${d.id}'))">DEL</button>
+                        <button class="small danger" onclick="deleteDocById('results','${d.id}')">DEL</button>
                     </div>`;
                 });
-                if(list.innerHTML === '') list.innerHTML = '<div class="card muted">No results history.</div>';
             });
         };
 
         // Init
-        window.deleteDoc = deleteDoc;
-        window.doc = doc;
-        window.db = db;
         showTab('add');
     </script>
 </body>
-    </html>
+</html>
