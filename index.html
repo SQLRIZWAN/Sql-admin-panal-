@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>SUPER ADMIN | BLACK GOLD</title>
+    <title>SUPER ADMIN | GOD MODE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
@@ -203,7 +203,7 @@
     <header>
         <div>
             <h2>GOD MODE</h2>
-            <small style="color:#666; font-size:0.7rem; letter-spacing:1px;">SUPER ADMIN v6.0</small>
+            <small style="color:#666; font-size:0.7rem; letter-spacing:1px;">SUPER ADMIN v6.1 (CLOUDINARY)</small>
         </div>
         
         <div style="position: relative;">
@@ -317,7 +317,7 @@
                 <div class="field">
                     <label style="color:#fff;"><i class="fa-solid fa-image"></i> Upload Result Screenshot</label>
                     <input type="file" id="res-file" accept="image/*">
-                    <small style="color:#666; margin-top:5px;">Select screenshot from gallery</small>
+                    <small style="color:#666; margin-top:5px;">Select screenshot from gallery (Cloudinary)</small>
                 </div>
 
                 <button class="btn-gold" id="btn-pub-res" onclick="publishResultLogic()">
@@ -368,14 +368,19 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, deleteDoc, query, orderBy, getDoc, increment, where, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-        // CONFIG (Replace if needed, but using yours)
+        // --- CLOUDINARY CONFIG ---
+        const CLOUD_NAME = "debp1kjtm";
+        const UPLOAD_PRESET = "sql_admin";
+        const CLOUD_FOLDER = "sql_users";
+        const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+
+        // --- FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyBvObxADcAior6R_or9O6UmWsFT8do1GkI",
             authDomain: "sqladmin-ff04d.firebaseapp.com",
             projectId: "sqladmin-ff04d",
-            storageBucket: "sqladmin-ff04d.firebasestorage.app", // Ensure this is enabled in console
+            storageBucket: "sqladmin-ff04d.firebasestorage.app", 
             messagingSenderId: "539086978850",
             appId: "1:539086978850:web:261e6a0cf3c9a2aa29ef7b"
         };
@@ -383,7 +388,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        const storage = getStorage(app);
 
         // --- GLOBAL HELPER ---
         window.copyToClip = (text) => {
@@ -551,7 +555,7 @@
         };
         window.delMatch = async(id) => { if(confirm("Delete permanently?")) await deleteDoc(doc(db,"matches",id)); };
 
-        // --- RESULT LOGIC WITH FILE UPLOAD ---
+        // --- RESULT LOGIC (CLOUDINARY) ---
         window.publishResultLogic = async () => {
             const mid = document.getElementById('res-mid').value.trim();
             const wName = document.getElementById('res-name').value;
@@ -568,23 +572,32 @@
 
             const btn = document.getElementById('btn-pub-res');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading Image...';
+            btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up fa-bounce"></i> Uploading to Cloud...';
             btn.disabled = true;
 
             try {
                 let imgUrl = "";
                 
-                // 1. Upload Image if selected
+                // 1. CLOUDINARY UPLOAD LOGIC
                 if(fileInput.files.length > 0) {
                     const file = fileInput.files[0];
-                    const storageRef = ref(storage, 'results/' + mid + '_' + Date.now());
-                    await uploadBytes(storageRef, file);
-                    imgUrl = await getDownloadURL(storageRef);
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', UPLOAD_PRESET);
+                    formData.append('folder', CLOUD_FOLDER);
+
+                    const res = await fetch(CLOUDINARY_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if(data.error) throw new Error(data.error.message);
+                    imgUrl = data.secure_url;
                 }
 
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating Wallet...';
+                btn.innerHTML = '<i class="fa-solid fa-database fa-spin"></i> Updating Wallet...';
 
-                // 2. Transaction
+                // 2. FIREBASE TRANSACTION
                 await runTransaction(db, async (transaction) => {
                     const matchRef = doc(db, "matches", mid);
                     const userRef = doc(db, "users", wUid);
@@ -605,7 +618,7 @@
                         winnerGamingUid: wGid,
                         winnerPrize: wAmt,
                         opponentUid: opUid,
-                        resultImage: imgUrl, // Store the URL from storage
+                        resultImage: imgUrl, // Save Cloudinary URL
                         resultPublished: true
                     });
 
@@ -627,7 +640,7 @@
                     });
                 });
 
-                alert("SUCCESS! Money Sent.");
+                alert("SUCCESS! Result Published & Money Sent.");
                 // Clear form
                 document.getElementById('res-mid').value = '';
                 document.getElementById('res-file').value = ''; 
