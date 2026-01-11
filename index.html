@@ -15,6 +15,7 @@
             --muted: #999; 
             --border: #222; 
             --blue: #0084ff; 
+            --neon-blue: #00f2ff;
             --purple: #9d00ff; 
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
@@ -24,7 +25,7 @@
             color: #fff; 
             font-family: 'Segoe UI', sans-serif; 
             margin: 0; 
-            padding-top: 80px; /* FIXED: Header overlap issue resolved */
+            padding-top: 80px; 
             padding-bottom: 80px; 
             line-height: 1.5; 
         }
@@ -37,7 +38,7 @@
             justify-content: space-between; 
             align-items: center; 
             border-bottom: 2px solid var(--gold); 
-            position: fixed; /* Sticky header */
+            position: fixed; 
             top: 0; 
             left: 0;
             width: 100%;
@@ -58,28 +59,52 @@
 
         .wrap { padding: 20px; max-width: 900px; margin: 0 auto; margin-top: 10px; }
         
-        /* NAV TABS */
-        .nav-tabs { display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; margin-bottom:25px; scrollbar-width: none; }
+        /* NAV TABS (SCROLLABLE & FIXED) */
+        .nav-tabs { 
+            display: flex; 
+            gap: 10px; 
+            overflow-x: auto; 
+            padding-bottom: 10px; 
+            margin-bottom: 25px; 
+            scrollbar-width: none; 
+            white-space: nowrap; /* Prevents breaking */
+        }
+        .nav-tabs::-webkit-scrollbar { display: none; }
+        
         .nav-btn { 
-            flex:1; 
-            min-width:110px; 
-            background:#111; 
-            color:#888; 
-            border:1px solid #222; 
-            padding:14px; 
-            border-radius:10px; 
-            text-align:center; 
-            font-weight:700; 
+            flex: 0 0 auto; /* Don't shrink */
+            min-width: 100px;
+            background: #111; 
+            color: #888; 
+            border: 1px solid #222; 
+            padding: 12px 18px; 
+            border-radius: 10px; 
+            text-align: center; 
+            font-weight: 700; 
             position: relative; 
-            font-size: 0.85rem; 
+            font-size: 0.8rem; 
             transition: 0.3s; 
-            white-space: nowrap; 
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         .nav-btn.active { background: #222; color: var(--gold); border-color: var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); transform: translateY(-2px); }
         
-        /* Highlight Result Tab */
-        #tab-results { border-color: var(--blue); color: var(--blue); }
-        #tab-results.active { background: var(--blue); color: #fff; box-shadow: 0 0 15px rgba(0, 132, 255, 0.4); }
+        /* FIXED RESULT TAB STYLE - PREMIUM GRADIENT */
+        #tab-results { 
+            background: linear-gradient(135deg, #004e92 0%, #000428 100%); /* Deep Royal Blue Gradient */
+            border: 1px solid #004e92;
+            color: #fff; /* White Text */
+            box-shadow: 0 4px 15px rgba(0, 78, 146, 0.3);
+        }
+        #tab-results.active { 
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); /* Bright Neon Blue when active */
+            box-shadow: 0 0 20px rgba(0, 198, 255, 0.6);
+            border-color: #00c6ff;
+            color: #fff;
+            transform: scale(1.05);
+        }
 
         .badge { position: absolute; top: -5px; right: -5px; background: var(--red); color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; display: none; border: 1px solid #fff; }
 
@@ -98,7 +123,7 @@
         button { padding:16px; border:none; border-radius:10px; font-weight:800; cursor:pointer; font-size: 1rem; letter-spacing: 1px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         button:active { transform: scale(0.98); }
         .btn-save { background:var(--accent); color:#000; width:100%; box-shadow: 0 4px 15px rgba(0, 255, 136, 0.2); }
-        .btn-blue { background: var(--blue); color: #fff; width: 100%; box-shadow: 0 4px 15px rgba(0, 132, 255, 0.2); }
+        .btn-blue { background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); color: #fff; width: 100%; box-shadow: 0 4px 15px rgba(0, 132, 255, 0.2); }
         .danger { background:var(--red); color:#fff; }
         .btn-purple { background: var(--purple); color: #fff; width: 100%; margin-top: 10px; }
         .btn-copy { padding: 6px 12px; font-size: 0.75rem; background: #333; color: #fff; border-radius: 6px; margin-left: 10px; }
@@ -108,9 +133,11 @@
 
         /* Pay Tabs */
         .pay-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; background: #111; padding: 12px; border-radius: 12px; border: 1px solid #222; }
-        .p-btn { flex: 1 1 45%; padding: 12px 5px; background: #000; border: 1px solid #333; color: #888; border-radius: 8px; font-size: 0.75rem; font-weight: bold; text-align: center; }
-        .p-btn.active { border-color: var(--accent); color: var(--accent); background: #002211; }
-        .p-btn-wide { flex: 1 1 100%; border-color: var(--blue); color: var(--blue); }
+        .p-btn { flex: 1 1 45%; padding: 12px 5px; background: #000; border: 1px solid #333; color: #888; border-radius: 8px; font-size: 0.75rem; font-weight: bold; text-align: center; cursor: pointer; transition: 0.2s; }
+        .p-btn:hover { background: #151515; }
+        .p-btn.active { border-color: var(--accent); color: var(--accent); background: #002211; box-shadow: inset 0 0 10px rgba(0,255,136,0.1); }
+        .p-btn-wide { flex: 1 1 100%; border-color: #333; color: #ccc; }
+        .p-btn-wide.active { border-color: var(--blue); color: var(--blue); background: #001122; }
 
         /* Loading & Stats */
         .loading-spinner { text-align: center; padding: 30px; color: var(--accent); font-weight: bold; animation: pulse 1s infinite; }
@@ -127,7 +154,6 @@
         .modal-box { background:#111; width:100%; max-width:500px; padding:30px; border-radius:20px; border: 1px solid var(--gold); overflow-y: auto; max-height: 90vh; }
         .pay-ss { width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; margin: 10px 0; background: #000; border: 1px solid #333; }
         
-        /* New Result Form Specific */
         .result-header { color: var(--blue); font-size: 1.4rem; font-weight: 900; margin-bottom: 25px; border-bottom: 2px solid #333; padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
         
         @keyframes pulse { 0% {opacity: 0.5;} 50% {opacity: 1;} 100% {opacity: 0.5;} }
@@ -138,7 +164,7 @@
     <header>
         <div>
             <h2>SUPER ADMIN</h2>
-            <small style="color:#666; font-size:0.7rem;">GOD MODE v5.0 (AUTO-WIN)</small>
+            <small style="color:#666; font-size:0.7rem;">GOD MODE v5.1</small>
         </div>
         
         <div style="position: relative;">
@@ -340,7 +366,6 @@
             
             if(tab === 'dash') loadDashboard();
             if(tab === 'manage') loadMatches();
-            // Removed auto load for results as now it is manual entry
             if(tab === 'pay') setPayView(currentPayTab);
             if(tab === 'users') loadUsers();
             
@@ -464,24 +489,21 @@
         };
         window.delMatch = async(id) => { if(confirm("WARNING: Delete this match permanently?")) await deleteDoc(doc(db,"matches",id)); };
 
-        // --- NEW UPDATED RESULT LOGIC (AUTO WALLET) ---
+        // --- RESULT LOGIC (AUTO WALLET) ---
         window.publishResultLogic = async () => {
-            // 1. Get Values
             const mid = document.getElementById('res-mid').value.trim();
             const wName = document.getElementById('res-name').value;
-            const wUid = document.getElementById('res-uid').value.trim(); // Phone/DocID
+            const wUid = document.getElementById('res-uid').value.trim(); 
             const wAmt = Number(document.getElementById('res-amt').value);
             const wGid = document.getElementById('res-guid').value;
             const opUid = document.getElementById('res-op-uid').value;
             const img = document.getElementById('res-img').value;
 
-            // 2. Validation
             if(!mid) return alert("Match ID is Required!");
             if(!wName) return alert("Winner Name is Required!");
             if(!wUid) return alert("Winner Phone (User ID) is Required for Wallet Update!");
             if(wAmt <= 0) return alert("Winning Amount must be greater than 0!");
 
-            // 3. Confirmation
             const conf = confirm(`CONFIRM RESULT UPLOAD?\n\nMatch ID: ${mid}\nWinner: ${wName} (${wUid})\nAmount: ₹${wAmt}\n\nThis will ADD ₹${wAmt} to user's wallet automatically.`);
             if(!conf) return;
 
@@ -489,25 +511,19 @@
             btn.innerHTML = "Processing Transaction...";
 
             try {
-                // 4. Run Firebase Transaction
                 await runTransaction(db, async (transaction) => {
-                    
-                    // A. References
                     const matchRef = doc(db, "matches", mid);
                     const userRef = doc(db, "users", wUid);
 
-                    // B. Reads
                     const matchSnap = await transaction.get(matchRef);
                     if(!matchSnap.exists()) throw "Invalid Match ID! Match does not exist.";
 
                     const userSnap = await transaction.get(userRef);
                     if(!userSnap.exists()) throw "Invalid Winner Phone/User ID! User not found.";
 
-                    // C. Calculations
                     const newBal = (userSnap.data().balance || 0) + wAmt;
                     const newProfit = (userSnap.data().totalProfit || 0) + wAmt;
 
-                    // D. Writes (Match Update)
                     transaction.update(matchRef, {
                         status: 'finished',
                         winnerName: wName,
@@ -519,13 +535,11 @@
                         resultPublished: true
                     });
 
-                    // E. Writes (User Wallet Update)
                     transaction.update(userRef, {
                         balance: newBal,
                         totalProfit: newProfit
                     });
 
-                    // F. Writes (Payment History)
                     const payRef = doc(collection(db, "payments"));
                     transaction.set(payRef, {
                         userId: wUid,
@@ -539,9 +553,7 @@
                     });
                 });
 
-                // 5. Success
                 alert(`SUCCESS!\n₹${wAmt} Added to Wallet of ${wUid}.`);
-                // Clear fields
                 document.getElementById('res-mid').value = '';
                 document.getElementById('res-uid').value = '';
                 document.getElementById('res-amt').value = '';
@@ -555,7 +567,7 @@
         };
 
 
-        // --- PAYMENTS & HISTORY ---
+        // --- PAYMENTS & HISTORY (STRICT FILTERING) ---
         window.setPayView = (v) => {
             currentPayTab = v;
             document.querySelectorAll('.p-btn').forEach(b => b.classList.remove('active'));
@@ -571,6 +583,7 @@
             let col = "payments";
             if(currentPayTab.includes('draw')) col = "withdrawals";
             
+            // Query logic
             onSnapshot(query(collection(db, col), orderBy("timestamp", "desc")), snap => {
                 container.innerHTML = "";
                 let pendingCount = 0;
@@ -580,16 +593,29 @@
                     const p = d.data();
                     const id = d.id;
                     const isPending = p.status === 'pending';
-                    const pType = p.type || (col === 'payments' ? 'deposit' : 'withdraw');
+                    const isMatchPay = p.matchId && p.matchId !== 'ADD_FUND' && p.matchId !== '';
+                    
+                    // Stats
+                    if(isPending && col === 'payments') pendingCount++;
+                    if(isPending && col === 'withdrawals') pendingCount++;
 
-                    if(isPending) pendingCount++;
-
+                    // STRICT FILTERING LOGIC
                     let show = false;
-                    if(currentPayTab === 'fund' && isPending && col === 'payments') show = true;
-                    if(currentPayTab === 'fund-h' && !isPending && col === 'payments' && pType !== 'match_join') show = true;
-                    if(currentPayTab === 'draw' && isPending && col === 'withdrawals') show = true;
-                    if(currentPayTab === 'draw-h' && !isPending && col === 'withdrawals') show = true;
-                    if(currentPayTab === 'join' && (p.matchId || pType === 'match_join') && p.matchId !== 'ADD_FUND') show = true;
+
+                    // 1. ADD FUNDS (Pending Only)
+                    if(currentPayTab === 'fund' && col === 'payments' && isPending && !isMatchPay) show = true;
+
+                    // 2. WITHDRAW REQUESTS (Pending Only)
+                    if(currentPayTab === 'draw' && col === 'withdrawals' && isPending) show = true;
+
+                    // 3. DEPOSIT HISTORY (Done Transactions ONLY, No Match joins)
+                    if(currentPayTab === 'fund-h' && col === 'payments' && !isPending && !isMatchPay) show = true;
+
+                    // 4. WITHDRAW HISTORY (Done Transactions ONLY)
+                    if(currentPayTab === 'draw-h' && col === 'withdrawals' && !isPending) show = true;
+
+                    // 5. DIRECT MATCH PAYMENTS (Only Match Joins)
+                    if(currentPayTab === 'join' && col === 'payments' && isMatchPay) show = true;
 
                     if(show) {
                         visibleCount++;
@@ -608,7 +634,7 @@
                             <div style="background:#151515; padding:15px; border-radius:10px; margin:15px 0; border:1px dashed #333;">
                                 <div style="font-size:0.95rem;">Amount: <b style="color:${isPending?'var(--gold)':'#fff'}; font-size:1.3rem;">₹${p.amount}</b></div>
                                 <div style="font-size:0.8rem; color:#aaa; margin-top:5px; word-break:break-all;">${p.utr ? 'UTR/Ref: <span style="color:#fff">'+p.utr+'</span>' : 'Method: '+ (p.upi || p.type)}</div>
-                                ${p.matchId ? `<div style="font-size:0.8rem; color:var(--blue); margin-top:5px;">Match ID: ${p.matchId}</div>` : ''}
+                                ${p.matchId ? `<div style="font-size:0.8rem; color:var(--blue); margin-top:5px; font-weight:bold;">MATCH ID: ${p.matchId}</div>` : ''}
                             </div>
                             
                             ${p.ss ? `<img src="${p.ss}" class="pay-ss" onclick="window.open('${p.ss}')">` : ''}
