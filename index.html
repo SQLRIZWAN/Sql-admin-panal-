@@ -2,137 +2,121 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>SQL MASTER ADMIN</title>
+    <title>SQL MASTER ADMIN | PRO</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-        :root { --accent: #00ff88; --gold: #ffd700; --bg: #050505; --card: #111; --red: #ff4444; --muted:#999; --border:#222; }
+        :root { --accent: #00ff88; --gold: #ffd700; --bg: #050505; --card: #111; --red: #ff4444; --muted:#999; --border:#222; --blue: #0084ff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; padding-bottom: 50px; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
         
-        /* HEADER with MENU */
         header { background: #000; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
-        header h2 { margin: 0; font-size: 1.1rem; color: var(--gold); letter-spacing: 1px; font-weight: 800; }
-        .menu-btn { font-size: 1.4rem; color: #fff; cursor: pointer; }
+        header h2 { margin: 0; font-size: 1.1rem; color: var(--gold); letter-spacing: 1px; }
         
-        /* DROPDOWN MENU */
-        .admin-menu-dropdown { position: absolute; top: 60px; right: 10px; background: #1a1a1a; border: 1px solid var(--gold); border-radius: 8px; width: 150px; display: none; flex-direction: column; box-shadow: 0 5px 20px rgba(0,0,0,0.8); z-index: 2000; }
-        .admin-menu-dropdown.show { display: flex; }
-        .menu-item { padding: 12px; border-bottom: 1px solid #333; color: #fff; text-align: center; font-weight: bold; cursor: pointer; }
-        .menu-item:last-child { border: none; color: var(--red); }
+        .wrap { padding: 15px; max-width: 800px; margin: 0 auto; }
+        
+        /* NAVIGATION TABS */
+        .nav-tabs { display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; margin-bottom:10px; scrollbar-width: none; }
+        .nav-btn { flex:1; min-width:110px; background:#111; color:#888; border:1px solid #222; padding:12px; border-radius:10px; text-align:center; font-weight:700; position: relative; }
+        .nav-btn.active { background: #222; color: var(--gold); border-color: var(--gold); }
+        .badge { position: absolute; top: -5px; right: -5px; background: var(--red); color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; display: none; }
 
-        .wrap { padding: 15px; width: 100%; max-width: 800px; margin: 0 auto; }
-        
-        /* CARDS & FORMS */
+        /* PAYMENT SUB TABS */
+        .pay-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .p-btn { padding: 10px; background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; font-size: 0.75rem; font-weight: bold; }
+        .p-btn.active { border-color: var(--accent); color: var(--accent); background: #001a0d; }
+
+        /* CARDS */
         .card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; position:relative; }
         .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .field { display:flex; flex-direction:column; margin-bottom:8px; }
         label { font-size: 0.7rem; color:var(--muted); text-transform:uppercase; margin-bottom:4px; font-weight:700; }
-        input, select, textarea { background:#000; border:1px solid #333; color:#fff; padding:10px; border-radius:8px; font-size:0.9rem; width:100%; }
-        input:focus, select:focus { border-color: var(--accent); }
+        input, select, textarea { background:#000; border:1px solid #333; color:#fff; padding:10px; border-radius:8px; font-size:0.9rem; }
         
-        /* BUTTONS */
-        button { padding:12px; border:none; border-radius:8px; font-weight:800; cursor:pointer; font-size:0.9rem; transition:0.2s; }
-        .btn-create { background:var(--gold); color:#000; width:100%; }
+        button { padding:12px; border:none; border-radius:8px; font-weight:800; cursor:pointer; }
         .btn-save { background:var(--accent); color:#000; width:100%; }
-        .btn-sm { padding:6px 12px; font-size:0.75rem; border-radius:6px; }
         .danger { background:var(--red); color:#fff; }
-        .ok { background:var(--accent); color:#000; }
         
-        /* TABS */
-        .nav-tabs { display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; margin-bottom:10px; scrollbar-width: none; }
-        .nav-btn { flex:1; min-width:110px; background:#111; color:#888; border:1px solid #222; padding:12px; border-radius:10px; text-align:center; font-weight:700; }
-        .nav-btn.active { background: #222; color: var(--gold); border-color: var(--gold); }
-
-        .sub-tabs { display:flex; gap:10px; margin-bottom:15px; }
-        .sub-btn { flex:1; padding:8px; background:#111; border:1px solid #333; color:#fff; border-radius:8px; font-size:0.8rem; }
-        .sub-btn.active { background:var(--accent); color:#000; font-weight:bold; }
-
-        /* PAYMENT LIST STYLES */
-        .pay-card { border-left: 3px solid var(--muted); }
-        .pay-card.deposit { border-left-color: var(--gold); }
-        .pay-card.withdraw { border-left-color: var(--red); }
-        .status-badge { display:inline-block; padding:3px 8px; border-radius:4px; font-size:0.65rem; background:#222; color:#fff; margin-top:5px; text-transform:uppercase; }
-        .user-info-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; border-bottom:1px solid #222; padding-bottom:10px; }
-        .u-dp { width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid #555; }
+        /* USER & PAY LIST */
+        .user-row { display: flex; align-items: center; gap: 12px; padding: 10px; border-bottom: 1px solid #222; }
+        .u-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
+        .pay-ss { width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; margin: 10px 0; background: #000; border: 1px solid #333; }
         
-        /* MODAL */
-        .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:5000; display:none; align-items:center; justify-content:center; padding:20px; }
-        .modal-box { background:#111; width:100%; max-width:500px; padding:20px; border-radius:15px; border:1px solid var(--gold); max-height:90vh; overflow-y:auto; }
-
-        .loader { text-align:center; padding:20px; color:#666; font-style:italic; }
+        .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:5000; display:none; align-items:center; justify-content:center; padding:20px; }
+        .modal-box { background:#111; width:100%; max-width:500px; padding:20px; border-radius:15px; border: 1px solid var(--gold); overflow-y: auto; max-height: 90vh; }
     </style>
 </head>
 <body>
 
     <header>
-        <h2>ADMIN PANEL</h2>
-        <div class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-        <div id="head-menu" class="admin-menu-dropdown">
-            <div class="menu-item" onclick="location.reload()">REFRESH</div>
-            <div class="menu-item" onclick="alert('Logged Out'); location.reload();">LOGOUT</div>
+        <h2>SQL MASTER ADMIN</h2>
+        <div style="display:flex; gap:10px;">
+            <button onclick="location.reload()" style="background:none; border:1px solid var(--gold); color:var(--gold); padding:5px 10px; border-radius:5px;">Refresh</button>
         </div>
     </header>
 
     <div class="wrap">
         <div class="nav-tabs">
-            <button class="nav-btn active" id="tab-add" onclick="switchTab('add')">ADD MATCH</button>
-            <button class="nav-btn" id="tab-manage" onclick="switchTab('manage')">MANAGE</button>
-            <button class="nav-btn" id="tab-pay" onclick="switchTab('pay')">PAYMENTS</button>
-            <button class="nav-btn" id="tab-users" onclick="switchTab('users')">USERS</button>
+            <button class="nav-btn active" id="tab-add" onclick="showTab('add')">ADD MATCH</button>
+            <button class="nav-btn" id="tab-manage" onclick="showTab('manage')">MANAGE</button>
+            <button class="nav-btn" id="tab-pay" onclick="showTab('pay')">
+                PAYMENTS <span id="pay-notif" class="badge">0</span>
+            </button>
+            <button class="nav-btn" id="tab-users" onclick="showTab('users')">USERS</button>
         </div>
 
-        <div id="view-add" class="view-sec">
+        <div id="view-add" class="tab-content">
             <div class="card">
-                <h3 style="color:var(--gold); margin-top:0;">LAUNCH MATCH</h3>
+                <h3 style="color:var(--gold); margin:0 0 10px 0;">CREATE MATCH</h3>
                 <div class="grid-form">
                     <div class="field"><label>Map</label><input id="nm-map" value="Bermuda"></div>
                     <div class="field"><label>Type</label><input id="nm-type" value="Solo"></div>
-                    <div class="field"><label>Entry Fee</label><input type="number" id="nm-fee" value="10"></div>
-                    <div class="field"><label>Prize Pool</label><input type="number" id="nm-win" value="100"></div>
-                    <div class="field"><label>Total Slots</label><input type="number" id="nm-slots" value="48"></div>
-                    <div class="field"><label>Fake Joined</label><input type="number" id="nm-fake" value="0"></div>
+                    <div class="field"><label>Entry</label><input type="number" id="nm-fee" value="10"></div>
+                    <div class="field"><label>Prize</label><input type="number" id="nm-win" value="100"></div>
+                    <div class="field"><label>Slots</label><input type="number" id="nm-slots" value="48"></div>
+                    <div class="field"><label>Joined</label><input type="number" id="nm-fake" value="0"></div>
                 </div>
-                <div class="field"><label>Date & Time</label><input type="datetime-local" id="nm-date"></div>
-                <button class="btn-create" onclick="createMatch()">PUBLISH MATCH</button>
+                <div class="field"><label>Start Date/Time</label><input type="datetime-local" id="nm-time"></div>
+                <button class="btn-save" onclick="createMatch()">LAUNCH MATCH</button>
             </div>
         </div>
 
-        <div id="view-manage" class="view-sec" style="display:none;">
-            <div id="manage-list"></div>
+        <div id="view-manage" class="tab-content" style="display:none;">
+            <div id="match-list"></div>
         </div>
 
-        <div id="view-pay" class="view-sec" style="display:none;">
-            <div class="sub-tabs">
-                <button class="sub-btn active" id="sub-deposits" onclick="renderPayments('deposit')">ADD FUNDS</button>
-                <button class="sub-btn" id="sub-withdrawals" onclick="renderPayments('withdraw')">WITHDRAWALS</button>
+        <div id="view-pay" class="tab-content" style="display:none;">
+            <div class="pay-tabs">
+                <button class="p-btn active" id="pb-fund" onclick="setPayView('fund')">ADD FUND REQ</button>
+                <button class="p-btn" id="pb-fund-h" onclick="setPayView('fund-h')">FUND HISTORY</button>
+                <button class="p-btn" id="pb-draw" onclick="setPayView('draw')">WITHDRAW REQ</button>
+                <button class="p-btn" id="pb-draw-h" onclick="setPayView('draw-h')">WITHDRAW HISTORY</button>
+                <button class="p-btn" style="grid-column: span 2; border-color:var(--blue); color:var(--blue);" onclick="setPayView('join')">DIRECT MATCH JOIN PAYMENTS</button>
             </div>
-            <div id="payment-list"></div>
+            <div id="pay-list-container"></div>
         </div>
 
-        <div id="view-users" class="view-sec" style="display:none;">
-            <input type="text" id="user-search" placeholder="Search by Phone..." oninput="renderUsers(this.value)" style="margin-bottom:10px;">
+        <div id="view-users" class="tab-content" style="display:none;">
+            <div class="card" style="text-align:center;">
+                <h2 id="total-users" style="color:var(--accent); margin:0;">0</h2>
+                <label>Total Users Registered</label>
+                <input type="text" id="user-search" placeholder="Search by name or phone..." oninput="loadUsers(this.value)" style="margin-top:10px;">
+            </div>
             <div id="users-list"></div>
         </div>
     </div>
 
     <div id="user-modal" class="modal">
         <div class="modal-box">
-            <h3 style="color:var(--gold); text-align:center;">EDIT USER</h3>
-            <input type="hidden" id="edit-uid">
-            <div class="field"><label>Name</label><input id="edit-name"></div>
-            <div class="field"><label>Balance (₹)</label><input type="number" id="edit-bal" style="font-weight:bold; color:var(--accent);"></div>
-            <div class="field"><label>Total Won (₹)</label><input type="number" id="edit-won"></div>
-            <div style="display:flex; gap:10px; margin-top:15px;">
-                <button class="btn-save" onclick="saveUser()">SAVE</button>
-                <button class="danger" onclick="document.getElementById('user-modal').style.display='none'">CLOSE</button>
-            </div>
+            <h3 style="color:var(--gold); text-align:center; margin-top:0;">USER FULL DETAILS</h3>
+            <div id="user-details-content"></div>
+            <button class="danger" style="width:100%; margin-top:15px;" onclick="document.getElementById('user-modal').style.display='none'">CLOSE</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, deleteDoc, query, orderBy, getDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, deleteDoc, query, orderBy, getDoc, increment, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBvObxADcAior6R_or9O6UmWsFT8do1GkI",
@@ -146,238 +130,234 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- GLOBAL UI FUNCTIONS ---
-        window.toggleMenu = () => {
-            document.getElementById('head-menu').classList.toggle('show');
-        };
+        // --- GLOBAL STATE ---
+        let currentPayTab = 'fund';
 
-        window.switchTab = (tab) => {
-            document.querySelectorAll('.view-sec').forEach(d => d.style.display = 'none');
+        window.showTab = (tab) => {
+            document.querySelectorAll('.tab-content').forEach(v => v.style.display = 'none');
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('view-'+tab).style.display = 'block';
+            document.getElementById('tab-'+tab).classList.add('active');
             
-            document.getElementById('view-' + tab).style.display = 'block';
-            document.getElementById('tab-' + tab).classList.add('active');
-
             if(tab === 'manage') loadMatches();
-            if(tab === 'pay') renderPayments('deposit'); // Default to deposits
-            if(tab === 'users') renderUsers();
+            if(tab === 'pay') setPayView(currentPayTab);
+            if(tab === 'users') loadUsers();
         };
 
-        // --- 1. MATCH CREATE ---
+        // --- MATCHES ---
         window.createMatch = async () => {
-            try {
-                const btn = document.querySelector('.btn-create');
-                btn.innerText = "Creating...";
-                await addDoc(collection(db, "matches"), {
-                    map: document.getElementById('nm-map').value,
-                    type: document.getElementById('nm-type').value,
-                    entry: Number(document.getElementById('nm-fee').value),
-                    win: Number(document.getElementById('nm-win').value),
-                    total: Number(document.getElementById('nm-slots').value),
-                    joined: Number(document.getElementById('nm-fake').value),
-                    startTime: new Date(document.getElementById('nm-date').value || Date.now()).getTime(),
-                    status: 'open',
-                    roomId: '',
-                    password: ''
-                });
-                alert("Match Created!");
-                btn.innerText = "PUBLISH MATCH";
-                switchTab('manage');
-            } catch(e) { alert(e.message); }
+            const data = {
+                map: document.getElementById('nm-map').value,
+                type: document.getElementById('nm-type').value,
+                entry: Number(document.getElementById('nm-fee').value),
+                win: Number(document.getElementById('nm-win').value),
+                total: Number(document.getElementById('nm-slots').value),
+                joined: Number(document.getElementById('nm-fake').value),
+                startTime: new Date(document.getElementById('nm-time').value).getTime(),
+                status: 'open', roomId: '', password: ''
+            };
+            await addDoc(collection(db, "matches"), data);
+            alert("Match Created!");
+            showTab('manage');
         };
 
-        // --- 2. MANAGE MATCHES (FIXED MAP/TYPE/SLOTS) ---
         function loadMatches() {
-            const list = document.getElementById('manage-list');
-            list.innerHTML = "<div class='loader'>Loading matches...</div>";
-            
-            onSnapshot(query(collection(db, "matches"), orderBy("startTime", "desc")), (snap) => {
+            onSnapshot(query(collection(db, "matches"), orderBy("startTime", "desc")), snap => {
+                const list = document.getElementById('match-list');
                 list.innerHTML = "";
                 snap.forEach(d => {
                     const m = d.data();
                     const id = d.id;
-                    const dateVal = new Date(m.startTime).toISOString().slice(0,16); // format for input
-
+                    const timeStr = new Date(m.startTime).toISOString().slice(0,16);
                     list.innerHTML += `
                     <div class="card">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                            <span style="color:var(--gold); font-weight:bold;">${id}</span>
-                            <button class="btn-sm danger" onclick="delMatch('${id}')"><i class="fas fa-trash"></i></button>
-                        </div>
                         <div class="grid-form">
                             <div class="field"><label>Map</label><input id="m-map-${id}" value="${m.map}"></div>
                             <div class="field"><label>Type</label><input id="m-type-${id}" value="${m.type}"></div>
-                            <div class="field"><label>Slots</label><input type="number" id="m-total-${id}" value="${m.total}"></div>
+                            <div class="field"><label>Slots</label><input type="number" id="m-tot-${id}" value="${m.total}"></div>
                             <div class="field"><label>Joined</label><input type="number" id="m-join-${id}" value="${m.joined}"></div>
-                            <div class="field"><label>Room ID</label><input id="m-rid-${id}" value="${m.roomId||''}" placeholder="--"></div>
-                            <div class="field"><label>Pass</label><input id="m-pass-${id}" value="${m.password||''}" placeholder="--"></div>
-                            <div class="field"><label>Status</label>
-                                <select id="m-stat-${id}">
-                                    <option value="open" ${m.status=='open'?'selected':''}>Open</option>
-                                    <option value="started" ${m.status=='started'?'selected':''}>Started</option>
-                                    <option value="finished" ${m.status=='finished'?'selected':''}>Finished</option>
-                                </select>
-                            </div>
-                            <div class="field"><label>Time</label><input type="datetime-local" id="m-time-${id}" value="${dateVal}"></div>
                         </div>
-                        <button class="btn-save" style="margin-top:10px;" onclick="updMatch('${id}')">UPDATE MATCH</button>
+                        <div class="field"><label>Room ID / Pass</label>
+                            <div style="display:flex; gap:5px;">
+                                <input id="m-rid-${id}" value="${m.roomId||''}" placeholder="Room ID">
+                                <input id="m-pas-${id}" value="${m.password||''}" placeholder="Pass">
+                            </div>
+                        </div>
+                        <div class="field"><label>Status</label>
+                            <select id="m-st-${id}">
+                                <option value="open" ${m.status=='open'?'selected':''}>Open</option>
+                                <option value="started" ${m.status=='started'?'selected':''}>Started</option>
+                                <option value="finished" ${m.status=='finished'?'selected':''}>Finished</option>
+                            </select>
+                        </div>
+                        <button class="btn-save" onclick="updateMatch('${id}')">SAVE UPDATES</button>
+                        <button class="danger" style="width:100%; margin-top:5px; padding:5px;" onclick="delMatch('${id}')">DELETE</button>
                     </div>`;
                 });
             });
         }
-
-        window.updMatch = async (id) => {
-            await updateDoc(doc(db, "matches", id), {
-                map: document.getElementById(`m-map-${id}`).value,
-                type: document.getElementById(`m-type-${id}`).value,
-                total: Number(document.getElementById(`m-total-${id}`).value),
-                joined: Number(document.getElementById(`m-join-${id}`).value),
-                roomId: document.getElementById(`m-rid-${id}`).value,
-                password: document.getElementById(`m-pass-${id}`).value,
-                status: document.getElementById(`m-stat-${id}`).value,
-                startTime: new Date(document.getElementById(`m-time-${id}`).value).getTime()
+        window.updateMatch = async (id) => {
+            await updateDoc(doc(db,"matches",id), {
+                map: document.getElementById('m-map-'+id).value,
+                type: document.getElementById('m-type-'+id).value,
+                total: Number(document.getElementById('m-tot-'+id).value),
+                joined: Number(document.getElementById('m-join-'+id).value),
+                roomId: document.getElementById('m-rid-'+id).value,
+                password: document.getElementById('m-pas-'+id).value,
+                status: document.getElementById('m-st-'+id).value
             });
             alert("Updated!");
         };
+        window.delMatch = async(id) => { if(confirm("Delete Match?")) await deleteDoc(doc(db,"matches",id)); };
 
-        window.delMatch = async (id) => { if(confirm("Delete?")) await deleteDoc(doc(db, "matches", id)); };
+        // --- PAYMENTS & HISTORY & NOTIFICATIONS ---
+        window.setPayView = (v) => {
+            currentPayTab = v;
+            document.querySelectorAll('.p-btn').forEach(b => b.classList.remove('active'));
+            const btnId = {fund:'pb-fund', 'fund-h':'pb-fund-h', draw:'pb-draw', 'draw-h':'pb-draw-h', join:'pb-join'}[v];
+            if(document.getElementById(btnId)) document.getElementById(btnId).classList.add('active');
+            loadPayments();
+        };
 
-        // --- 3. PAYMENTS & WITHDRAWALS (FIXED LOGIC) ---
-        window.renderPayments = (type) => {
-            // UI Toggle
-            document.getElementById('sub-deposits').classList.toggle('active', type==='deposit');
-            document.getElementById('sub-withdrawals').classList.toggle('active', type==='withdraw');
+        function loadPayments() {
+            const container = document.getElementById('pay-list-container');
+            container.innerHTML = "Loading...";
 
-            const list = document.getElementById('payment-list');
-            list.innerHTML = "<div class='loader'>Fetching Data...</div>";
+            let col = "payments";
+            let q = query(collection(db, col), orderBy("timestamp", "desc"));
 
-            const colName = type === 'withdraw' ? 'withdrawals' : 'payments';
+            if(currentPayTab.includes('draw')) col = "withdrawals";
             
-            onSnapshot(query(collection(db, colName), orderBy("timestamp", "desc")), (snap) => {
-                list.innerHTML = "";
-                if(snap.empty) { list.innerHTML = "<div class='loader'>No records found.</div>"; return; }
+            onSnapshot(query(collection(db, col), orderBy("timestamp", "desc")), snap => {
+                container.innerHTML = "";
+                let pendingCount = 0;
 
                 snap.forEach(d => {
-                    const data = d.data();
+                    const p = d.data();
                     const id = d.id;
-                    
-                    // Filter: Only show Deposits in 'deposit' tab (Payments collection has matches too)
-                    if(type === 'deposit' && data.matchId && data.matchId !== 'ADD_FUND') return; // Skip match fees here if you want separate list
-                    
-                    const isPending = data.status === 'pending';
-                    const cssClass = type === 'withdraw' ? 'withdraw' : 'deposit';
+                    const isPending = p.status === 'pending';
+                    if(isPending) pendingCount++;
 
-                    list.innerHTML += `
-                    <div class="card pay-card ${cssClass}">
-                        <div class="user-info-row">
-                            <img src="https://img.icons8.com/color/48/user-male-circle.png" class="u-dp">
-                            <div>
-                                <div style="font-weight:bold;">${data.userName || 'User'}</div>
-                                <div style="font-size:0.75rem; color:#888;">${data.userId || data.phone}</div>
+                    // Filter Logic for 4 Tabs
+                    let show = false;
+                    if(currentPayTab === 'fund' && isPending && p.type === 'deposit') show = true;
+                    if(currentPayTab === 'fund-h' && !isPending && p.type === 'deposit') show = true;
+                    if(currentPayTab === 'draw' && isPending) show = true;
+                    if(currentPayTab === 'draw-h' && !isPending) show = true;
+                    if(currentPayTab === 'join' && p.matchId && p.matchId !== 'ADD_FUND') show = true;
+
+                    if(show) {
+                        container.innerHTML += `
+                        <div class="card" style="border-left: 4px solid ${isPending?'var(--gold)':'var(--accent)'}">
+                            <div style="display:flex; justify-content:space-between;">
+                                <b>${p.userName}</b>
+                                <span style="font-size:0.7rem; color:${isPending?'var(--gold)':'var(--accent)'}">${p.status.toUpperCase()}</span>
                             </div>
-                            <button class="btn-sm" style="margin-left:auto; background:#222;" onclick="openUserEdit('${data.userId || data.phone}')">Profile</button>
-                        </div>
-                        
-                        <div style="font-size:1.2rem; margin-bottom:5px;">
-                            ${type==='withdraw'?'Withdraw Request':'Add Fund'}: <b style="color:var(--gold)">₹${data.amount}</b>
-                        </div>
-                        
-                        <div style="font-size:0.8rem; color:#aaa; margin-bottom:10px;">
-                            ${type==='withdraw' ? `UPI: <b style="color:#fff">${data.upi}</b>` : `UTR: <b style="color:#fff">${data.utr}</b>`}
-                            <br>Date: ${new Date(data.timestamp).toLocaleString()}
-                        </div>
-
-                        ${type==='deposit' && data.ss ? `<img src="${data.ss}" style="width:100px; border-radius:8px; margin-bottom:10px;" onclick="window.open('${data.ss}')">` : ''}
-
-                        ${isPending ? `
-                            <div style="display:flex; gap:10px;">
-                                <button class="btn-sm ok" style="flex:1" onclick="handleReq('${id}', '${colName}', '${data.userId||data.phone}', ${data.amount}, 'approve')">APPROVE</button>
-                                <button class="btn-sm danger" style="flex:1" onclick="handleReq('${id}', '${colName}', '${data.userId||data.phone}', ${data.amount}, 'reject')">REJECT</button>
-                            </div>
-                        ` : `<span class="status-badge" style="background:${data.status==='approved'?'green':'red'}">${data.status}</span>`}
-                    </div>`;
+                            <div style="font-size:0.9rem; margin:5px 0;">Amount: <b style="color:var(--gold)">₹${p.amount}</b></div>
+                            <div style="font-size:0.75rem; color:#888;">${p.utr ? 'UTR: '+p.utr : 'UPI: '+p.upi}</div>
+                            ${p.ss ? `<img src="${p.ss}" class="pay-ss" onclick="window.open('${p.ss}')">` : ''}
+                            ${isPending ? `
+                                <div style="display:flex; gap:10px; margin-top:10px;">
+                                    <button onclick="approveReq('${id}','${col}','${p.userId}','${p.amount}')" style="flex:1; background:var(--accent); color:#000; font-size:0.8rem;">APPROVE</button>
+                                    <button onclick="rejectReq('${id}','${col}','${p.userId}','${p.amount}')" style="flex:1; background:var(--red); color:#fff; font-size:0.8rem;">REJECT</button>
+                                </div>
+                            ` : ''}
+                            <button onclick="viewFullUser('${p.userId}')" style="width:100%; margin-top:5px; background:#222; color:#fff; font-size:0.7rem; padding:5px;">VIEW USER PROFILE</button>
+                        </div>`;
+                    }
                 });
+                
+                // Update Notification Badge
+                const badge = document.getElementById('pay-notif');
+                if(pendingCount > 0) { badge.innerText = pendingCount; badge.style.display = 'block'; }
+                else { badge.style.display = 'none'; }
+
+                if(container.innerHTML === "") container.innerHTML = "<div style='text-align:center; padding:20px; color:#555;'>No Data Found</div>";
             });
+        }
+
+        window.approveReq = async (id, col, uid, amt) => {
+            if(!confirm("Approve this?")) return;
+            await updateDoc(doc(db, col, id), { status: 'approved' });
+            if(col === 'payments') {
+                await updateDoc(doc(db, "users", uid), { balance: increment(Number(amt)) });
+            }
+            alert("Approved!");
         };
 
-        window.handleReq = async (docId, colName, uid, amount, action) => {
-            if(!confirm(`Are you sure you want to ${action}?`)) return;
-
-            try {
-                // 1. Update Request Status
-                await updateDoc(doc(db, colName, docId), { status: action === 'approve' ? 'approved' : 'rejected' });
-
-                // 2. If Approved & Add Fund -> Add Money to User
-                if(action === 'approve' && colName === 'payments') {
-                    await updateDoc(doc(db, "users", uid), { balance: increment(Number(amount)) });
-                    alert("Approved & Balance Added!");
-                } 
-                // 3. If Approved & Withdrawal -> Money already deducted, just notify (Status updated)
-                else if (action === 'approve' && colName === 'withdrawals') {
-                    alert("Withdrawal Marked Approved.");
-                }
-                // 4. If Rejected & Withdrawal -> Refund Money
-                else if (action === 'reject' && colName === 'withdrawals') {
-                    await updateDoc(doc(db, "users", uid), { balance: increment(Number(amount)) }); // Refund
-                    alert("Rejected & Money Refunded to User.");
-                } else {
-                    alert("Updated.");
-                }
-            } catch(e) { alert("Error: " + e.message); }
+        window.rejectReq = async (id, col, uid, amt) => {
+            if(!confirm("Reject this?")) return;
+            await updateDoc(doc(db, col, id), { status: 'rejected' });
+            if(col === 'withdrawals') {
+                await updateDoc(doc(db, "users", uid), { balance: increment(Number(amt)) }); // Refund
+            }
+            alert("Rejected!");
         };
 
-        // --- 4. USERS & EDIT PROFILE (SHOWING IN REQUESTS) ---
-        window.renderUsers = (search) => {
-            const list = document.getElementById('users-list');
-            if(!search) list.innerHTML = "<div class='loader'>Type to search...</div>";
-            
-            // Note: For real app, use specific query. Here getting all for simplicity in demo
-            onSnapshot(collection(db, "users"), (snap) => {
+        // --- USERS ---
+        window.loadUsers = (search = "") => {
+            onSnapshot(collection(db, "users"), snap => {
+                document.getElementById('total-users').innerText = snap.size;
+                const list = document.getElementById('users-list');
                 list.innerHTML = "";
                 snap.forEach(d => {
                     const u = d.data();
-                    if(search && !u.phone.includes(search) && !u.name.toLowerCase().includes(search.toLowerCase())) return;
-
+                    if(search && !u.name.toLowerCase().includes(search.toLowerCase()) && !d.id.includes(search)) return;
                     list.innerHTML += `
-                    <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <b>${u.name}</b> <br>
-                            <span style="font-size:0.8rem; color:#888;">${u.phone}</span>
+                    <div class="user-row" onclick="viewFullUser('${d.id}')">
+                        <img src="${u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png'}" class="u-img">
+                        <div style="flex:1;">
+                            <div style="font-weight:bold;">${u.name}</div>
+                            <div style="font-size:0.75rem; color:#888;">${d.id}</div>
                         </div>
                         <div style="text-align:right;">
                             <div style="color:var(--accent); font-weight:bold;">₹${u.balance}</div>
-                            <button class="btn-sm" onclick="openUserEdit('${d.id}')">EDIT</button>
+                            <small style="color:#555;">Details ></small>
                         </div>
                     </div>`;
                 });
             });
         };
 
-        window.openUserEdit = async (uid) => {
+        window.viewFullUser = async (uid) => {
             const snap = await getDoc(doc(db, "users", uid));
-            if(!snap.exists()) return alert("User not found");
+            if(!snap.exists()) return alert("User not found!");
             const u = snap.data();
+            const content = document.getElementById('user-details-content');
             
-            document.getElementById('edit-uid').value = uid;
-            document.getElementById('edit-name').value = u.name;
-            document.getElementById('edit-bal').value = u.balance;
-            document.getElementById('edit-won').value = u.totalProfit || 0;
+            content.innerHTML = `
+                <div style="text-align:center; margin-bottom:15px;">
+                    <img src="${u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png'}" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--accent);">
+                    <h2 style="margin:10px 0 0 0;">${u.name}</h2>
+                    <span style="color:#888;">${uid}</span>
+                </div>
+                <div class="card" style="background:#000;">
+                    <div class="field"><label>Wallet Balance</label><input type="number" id="ed-bal" value="${u.balance}"></div>
+                    <div class="field"><label>Total Profit</label><input type="number" id="ed-prof" value="${u.totalProfit||0}"></div>
+                    <div class="field"><label>Total Loss</label><input type="number" id="ed-loss" value="${u.totalLoss||0}"></div>
+                    <div class="field"><label>Gaming Name</label><input id="ed-gname" value="${u.gamingName||''}"></div>
+                    <div class="field"><label>Gaming UID</label><input id="ed-guid" value="${u.gamingId||''}"></div>
+                    <button class="btn-save" onclick="saveUserEdit('${uid}')">UPDATE USER DATA</button>
+                </div>
+            `;
             document.getElementById('user-modal').style.display = 'flex';
         };
 
-        window.saveUser = async () => {
-            const uid = document.getElementById('edit-uid').value;
+        window.saveUserEdit = async (uid) => {
             await updateDoc(doc(db, "users", uid), {
-                name: document.getElementById('edit-name').value,
-                balance: Number(document.getElementById('edit-bal').value),
-                totalProfit: Number(document.getElementById('edit-won').value)
+                balance: Number(document.getElementById('ed-bal').value),
+                totalProfit: Number(document.getElementById('ed-prof').value),
+                totalLoss: Number(document.getElementById('ed-loss').value),
+                gamingName: document.getElementById('ed-gname').value,
+                gamingId: document.getElementById('ed-guid').value
             });
-            alert("User Saved!");
+            alert("User Updated!");
             document.getElementById('user-modal').style.display = 'none';
         };
 
-        // INIT
-        switchTab('add');
+        // --- INIT ---
+        showTab('add');
+
     </script>
 </body>
-                </html>
+</html>
