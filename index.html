@@ -6,12 +6,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-        :root { --accent: #00ff88; --gold: #ffd700; --bg: #050505; --card: #111; --red: #ff4444; --muted:#999; --border:#222; --blue: #0084ff; --purple: #9d00ff; }
+        :root { 
+            --accent: #00ff88; 
+            --gold: #ffd700; 
+            --bg: #050505; 
+            --card: #111; 
+            --red: #ff4444; 
+            --muted: #999; 
+            --border: #222; 
+            --blue: #0084ff; 
+            --purple: #9d00ff; 
+        }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 80px; line-height: 1.5; }
+        
+        body { 
+            background: var(--bg); 
+            color: #fff; 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            padding-top: 80px; /* FIXED: Header overlap issue resolved */
+            padding-bottom: 80px; 
+            line-height: 1.5; 
+        }
         
         /* HEADER */
-        header { background: #000; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; box-shadow: 0 5px 20px rgba(0,0,0,0.8); }
+        header { 
+            background: #000; 
+            padding: 15px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 2px solid var(--gold); 
+            position: fixed; /* Sticky header */
+            top: 0; 
+            left: 0;
+            width: 100%;
+            z-index: 1000; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.9); 
+            height: 70px;
+        }
         header h2 { margin: 0; font-size: 1.2rem; color: var(--gold); letter-spacing: 1px; font-weight: 800; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
         
         .menu-btn { font-size: 1.5rem; color: #fff; cursor: pointer; padding: 5px; }
@@ -23,12 +56,31 @@
 
         @keyframes slideDown { from {opacity:0; transform:translateY(-10px);} to {opacity:1; transform:translateY(0);} }
 
-        .wrap { padding: 20px; max-width: 900px; margin: 0 auto; }
+        .wrap { padding: 20px; max-width: 900px; margin: 0 auto; margin-top: 10px; }
         
         /* NAV TABS */
-        .nav-tabs { display:flex; gap:12px; overflow-x:auto; padding-bottom:10px; margin-bottom:20px; scrollbar-width: none; }
-        .nav-btn { flex:1; min-width:110px; background:#111; color:#888; border:1px solid #222; padding:14px; border-radius:12px; text-align:center; font-weight:700; position: relative; font-size: 0.85rem; transition: 0.3s; white-space: nowrap; }
+        .nav-tabs { display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; margin-bottom:25px; scrollbar-width: none; }
+        .nav-btn { 
+            flex:1; 
+            min-width:110px; 
+            background:#111; 
+            color:#888; 
+            border:1px solid #222; 
+            padding:14px; 
+            border-radius:10px; 
+            text-align:center; 
+            font-weight:700; 
+            position: relative; 
+            font-size: 0.85rem; 
+            transition: 0.3s; 
+            white-space: nowrap; 
+        }
         .nav-btn.active { background: #222; color: var(--gold); border-color: var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); transform: translateY(-2px); }
+        
+        /* Highlight Result Tab */
+        #tab-results { border-color: var(--blue); color: var(--blue); }
+        #tab-results.active { background: var(--blue); color: #fff; box-shadow: 0 0 15px rgba(0, 132, 255, 0.4); }
+
         .badge { position: absolute; top: -5px; right: -5px; background: var(--red); color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; display: none; border: 1px solid #fff; }
 
         /* CARDS */
@@ -38,16 +90,15 @@
         .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .field { display:flex; flex-direction:column; margin-bottom:15px; }
         label { font-size: 0.75rem; color:var(--muted); text-transform:uppercase; margin-bottom:8px; font-weight:700; letter-spacing: 0.5px; }
-        input, select, textarea { background:#0a0a0a; border:1px solid #333; color:#fff; padding:14px; border-radius:10px; font-size:0.95rem; width: 100%; transition: 0.3s; font-family: sans-serif; }
+        input, select, textarea { background:#0a0a0a; border:1px solid #333; color:#fff; padding:15px; border-radius:10px; font-size:1rem; width: 100%; transition: 0.3s; font-family: sans-serif; }
         input:focus, select:focus, textarea:focus { border-color: var(--accent); background: #0f1f15; box-shadow: 0 0 10px rgba(0, 255, 136, 0.1); }
         textarea { resize: vertical; min-height: 120px; }
 
         /* Buttons Polish */
-        button { padding:16px; border:none; border-radius:10px; font-weight:800; cursor:pointer; font-size: 0.95rem; letter-spacing: 1px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        button { padding:16px; border:none; border-radius:10px; font-weight:800; cursor:pointer; font-size: 1rem; letter-spacing: 1px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         button:active { transform: scale(0.98); }
         .btn-save { background:var(--accent); color:#000; width:100%; box-shadow: 0 4px 15px rgba(0, 255, 136, 0.2); }
         .btn-blue { background: var(--blue); color: #fff; width: 100%; box-shadow: 0 4px 15px rgba(0, 132, 255, 0.2); }
-        .btn-yellow { background: var(--gold); color: #000; width: 100%; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2); }
         .danger { background:var(--red); color:#fff; }
         .btn-purple { background: var(--purple); color: #fff; width: 100%; margin-top: 10px; }
         .btn-copy { padding: 6px 12px; font-size: 0.75rem; background: #333; color: #fff; border-radius: 6px; margin-left: 10px; }
@@ -77,8 +128,7 @@
         .pay-ss { width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; margin: 10px 0; background: #000; border: 1px solid #333; }
         
         /* New Result Form Specific */
-        .result-header { color: var(--gold); font-size: 1.2rem; font-weight: bold; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .file-fake-input { background: #0a0a0a; border: 1px dashed #444; padding: 15px; border-radius: 10px; text-align: center; color: #666; font-size: 0.9rem; cursor: pointer; }
+        .result-header { color: var(--blue); font-size: 1.4rem; font-weight: 900; margin-bottom: 25px; border-bottom: 2px solid #333; padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
         
         @keyframes pulse { 0% {opacity: 0.5;} 50% {opacity: 1;} 100% {opacity: 0.5;} }
     </style>
@@ -88,7 +138,7 @@
     <header>
         <div>
             <h2>SUPER ADMIN</h2>
-            <small style="color:#666; font-size:0.7rem;">GOD MODE v4.0 (AUTO-WALLET)</small>
+            <small style="color:#666; font-size:0.7rem;">GOD MODE v5.0 (AUTO-WIN)</small>
         </div>
         
         <div style="position: relative;">
@@ -108,7 +158,11 @@
             <button class="nav-btn active" id="tab-dash" onclick="showTab('dash')"><i class="fa-solid fa-chart-line"></i> STATS</button>
             <button class="nav-btn" id="tab-add" onclick="showTab('add')"><i class="fa-solid fa-plus"></i> ADD</button>
             <button class="nav-btn" id="tab-manage" onclick="showTab('manage')"><i class="fa-solid fa-list-check"></i> MANAGE</button>
-            <button class="nav-btn" id="tab-results" onclick="showTab('results')" style="color:var(--gold); border-color:var(--gold);"><i class="fa-solid fa-trophy"></i> UPLOAD RESULT</button>
+            
+            <button class="nav-btn" id="tab-results" onclick="showTab('results')">
+                <i class="fa-solid fa-trophy"></i> UPLOAD RESULT
+            </button>
+            
             <button class="nav-btn" id="tab-pay" onclick="showTab('pay')">
                 <i class="fa-solid fa-indian-rupee-sign"></i> PAY <span id="pay-notif" class="badge">0</span>
             </button>
@@ -161,57 +215,53 @@
         </div>
 
         <div id="view-results" class="tab-content" style="display:none;">
-            <div class="card" style="border-top: 3px solid var(--gold);">
-                <div class="result-header">UPLOAD MATCH RESULT</div>
+            <div class="card" style="border-top: 4px solid var(--blue);">
+                <div class="result-header">PUBLISH MATCH RESULT</div>
                 
                 <div class="field">
-                    <label>Match ID (Select Match)</label>
-                    <select id="res-match-select" onchange="autoFillMatchData()" style="font-family: monospace; color: var(--gold);">
-                        <option value="">-- Load & Select Match --</option>
-                    </select>
+                    <label style="color:var(--gold);">MATCH ID (MANUAL FILL)</label>
+                    <input type="text" id="res-mid" placeholder="Paste Match ID here..." style="border-color:var(--gold); font-family:monospace;">
                 </div>
 
                 <div class="field">
-                    <label>Winner Name</label>
-                    <input type="text" id="res-winner-name" placeholder="Winner name">
+                    <label>Winner User Name</label>
+                    <input type="text" id="res-name" placeholder="Name of Winner">
                 </div>
 
                 <div class="grid-form">
                     <div class="field">
-                        <label style="color:var(--accent);">Winner UID (Phone No)</label>
-                        <input type="number" id="res-winner-uid" placeholder="Gaming UID (Phone)" style="border-color:var(--accent);">
+                        <label style="color:var(--accent);">Winner Phone (User ID)</label>
+                        <input type="number" id="res-uid" placeholder="Reg. Phone Number">
+                        <small style="color:#666; font-size:0.7rem; margin-top:5px;">*Amount will add to this ID</small>
                     </div>
                     <div class="field">
-                        <label style="color:var(--accent);">Prize Amount (₹)</label>
-                        <input type="number" id="res-prize-amt" placeholder="Amount to Credit">
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label>Runner/Other (Optional)</label>
-                    <input type="text" id="res-runner" placeholder="Other players info">
-                </div>
-
-                <div class="field">
-                    <label>Message / Details</label>
-                    <textarea id="res-message" placeholder="Short message to show with result"></textarea>
-                </div>
-
-                <div class="field">
-                    <label>Attach Image (URL)</label>
-                    <input type="text" id="res-image-url" placeholder="Paste Image Link (Optional)">
-                    <div class="file-fake-input" onclick="document.getElementById('res-image-url').focus()">
-                        <i class="fa-solid fa-image"></i> Paste Link Above
+                        <label style="color:var(--accent);">Win Prize Amount (₹)</label>
+                        <input type="number" id="res-amt" placeholder="Winning Amount">
                     </div>
                 </div>
 
                 <div class="grid-form">
-                    <button class="btn-save" onclick="uploadResult()">UPLOAD RESULT</button>
-                    <button class="btn-yellow" onclick="window.open('https://imgur.com/upload', '_blank')">VIEW RESULTS</button>
+                    <div class="field">
+                        <label>Winner Gaming UID</label>
+                        <input type="text" id="res-guid" placeholder="In-Game UID">
+                    </div>
+                    <div class="field">
+                        <label>Opponent Player UID</label>
+                        <input type="text" id="res-op-uid" placeholder="Opponent UID">
+                    </div>
                 </div>
-                
-                <p style="font-size:0.75rem; color:#666; margin-top:15px; text-align:center;">
-                    <i class="fa-solid fa-circle-info"></i> NOTE: Entering Amount & UID will <b>automatically add money</b> to the winner's wallet.
+
+                <div class="field">
+                    <label>Result Photo URL</label>
+                    <input type="text" id="res-img" placeholder="https://imgur.com/...">
+                </div>
+
+                <button class="btn-blue" onclick="publishResultLogic()">
+                    <i class="fa-solid fa-upload"></i> UPLOAD RESULT & CREDIT MONEY
+                </button>
+
+                <p style="font-size:0.75rem; color:#888; text-align:center; margin-top:15px; background:#1a1a1a; padding:10px; border-radius:8px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> <b>WARNING:</b> This action will mark match as FINISHED and add money to Winner's Wallet immediately.
                 </p>
             </div>
         </div>
@@ -290,7 +340,7 @@
             
             if(tab === 'dash') loadDashboard();
             if(tab === 'manage') loadMatches();
-            if(tab === 'results') loadFinishedMatches(); 
+            // Removed auto load for results as now it is manual entry
             if(tab === 'pay') setPayView(currentPayTab);
             if(tab === 'users') loadUsers();
             
@@ -325,9 +375,6 @@
                     joined: Number(document.getElementById('nm-fake').value),
                     startTime: new Date(document.getElementById('nm-time').value).getTime(),
                     status: 'open', roomId: '', password: '',
-                    // Result fields
-                    resultStatus: false, 
-                    winnerName: '', winnerUid: '', winnerPrize: 0,
                     createdAt: Date.now()
                 };
                 await addDoc(collection(db, "matches"), data);
@@ -417,129 +464,94 @@
         };
         window.delMatch = async(id) => { if(confirm("WARNING: Delete this match permanently?")) await deleteDoc(doc(db,"matches",id)); };
 
-        // --- IMPROVED RESULT LOGIC WITH AUTO WALLET ---
-        window.loadFinishedMatches = () => {
-            const select = document.getElementById('res-match-select');
-            
-            // Query matches that are marked 'finished' or 'started' to allow resolving
-            const q = query(collection(db, "matches"), orderBy("startTime", "desc"));
-            
-            onSnapshot(q, snap => {
-                select.innerHTML = '<option value="">-- Load & Select Match --</option>';
-                if(snap.empty) return;
+        // --- NEW UPDATED RESULT LOGIC (AUTO WALLET) ---
+        window.publishResultLogic = async () => {
+            // 1. Get Values
+            const mid = document.getElementById('res-mid').value.trim();
+            const wName = document.getElementById('res-name').value;
+            const wUid = document.getElementById('res-uid').value.trim(); // Phone/DocID
+            const wAmt = Number(document.getElementById('res-amt').value);
+            const wGid = document.getElementById('res-guid').value;
+            const opUid = document.getElementById('res-op-uid').value;
+            const img = document.getElementById('res-img').value;
 
-                snap.forEach(d => {
-                    const m = d.data();
-                    if(m.status === 'finished' || m.status === 'started') {
-                        const date = new Date(m.startTime).toLocaleDateString();
-                        const opt = document.createElement('option');
-                        opt.value = d.id;
-                        opt.innerText = `[${date}] ${m.map} (${m.type})`;
-                        // Store detailed info in dataset
-                        opt.dataset.wName = m.winnerName || '';
-                        opt.dataset.wUid = m.winnerUid || '';
-                        opt.dataset.wPrize = m.winnerPrize || '';
-                        opt.dataset.runner = m.runnerInfo || '';
-                        opt.dataset.msg = m.resultMessage || '';
-                        opt.dataset.img = m.resultImage || '';
-                        select.appendChild(opt);
-                    }
-                });
-            });
-        };
+            // 2. Validation
+            if(!mid) return alert("Match ID is Required!");
+            if(!wName) return alert("Winner Name is Required!");
+            if(!wUid) return alert("Winner Phone (User ID) is Required for Wallet Update!");
+            if(wAmt <= 0) return alert("Winning Amount must be greater than 0!");
 
-        window.autoFillMatchData = () => {
-            const select = document.getElementById('res-match-select');
-            const opt = select.options[select.selectedIndex];
-            if(opt && opt.dataset) {
-                document.getElementById('res-winner-name').value = opt.dataset.wName || '';
-                document.getElementById('res-winner-uid').value = opt.dataset.wUid || '';
-                document.getElementById('res-prize-amt').value = opt.dataset.wPrize || '';
-                document.getElementById('res-runner').value = opt.dataset.runner || '';
-                document.getElementById('res-message').value = opt.dataset.msg || '';
-                document.getElementById('res-image-url').value = opt.dataset.img || '';
-            }
-        };
+            // 3. Confirmation
+            const conf = confirm(`CONFIRM RESULT UPLOAD?\n\nMatch ID: ${mid}\nWinner: ${wName} (${wUid})\nAmount: ₹${wAmt}\n\nThis will ADD ₹${wAmt} to user's wallet automatically.`);
+            if(!conf) return;
 
-        window.uploadResult = async () => {
-            const mid = document.getElementById('res-match-select').value;
-            if(!mid) return alert("Please select a match first!");
-
-            const wName = document.getElementById('res-winner-name').value;
-            const wUid = document.getElementById('res-winner-uid').value.trim(); // Phone number used as ID
-            const prize = Number(document.getElementById('res-prize-amt').value);
-            const runner = document.getElementById('res-runner').value;
-            const msg = document.getElementById('res-message').value;
-            const img = document.getElementById('res-image-url').value;
-
-            if(!wName || !wUid) return alert("Winner Name and UID (Phone) are required!");
-
-            const confirmMsg = `CONFIRM RESULT:\n\nWinner: ${wName}\nUID: ${wUid}\nPrize: ₹${prize}\n\nThis will AUTO-UPDATE the wallet of user ID: ${wUid}. Continue?`;
-            if(!confirm(confirmMsg)) return;
-
-            const btn = document.querySelector('#view-results .btn-save');
-            btn.innerText = "Processing...";
+            const btn = document.querySelector('#view-results .btn-blue');
+            btn.innerHTML = "Processing Transaction...";
 
             try {
-                // 1. Check if user exists (User ID = Phone Number)
-                const userRef = doc(db, "users", wUid);
-                const userSnap = await getDoc(userRef);
-
-                if(!userSnap.exists()) {
-                    throw new Error(`User with ID/Phone ${wUid} NOT FOUND in database. Cannot credit money.`);
-                }
-
-                // 2. Perform Transaction (Update Match + Credit User + Add History)
+                // 4. Run Firebase Transaction
                 await runTransaction(db, async (transaction) => {
-                    // Re-read user to be safe
-                    const freshUserSnap = await transaction.get(userRef);
-                    if (!freshUserSnap.exists()) throw "User does not exist!";
                     
-                    // Update Match Result
+                    // A. References
                     const matchRef = doc(db, "matches", mid);
+                    const userRef = doc(db, "users", wUid);
+
+                    // B. Reads
+                    const matchSnap = await transaction.get(matchRef);
+                    if(!matchSnap.exists()) throw "Invalid Match ID! Match does not exist.";
+
+                    const userSnap = await transaction.get(userRef);
+                    if(!userSnap.exists()) throw "Invalid Winner Phone/User ID! User not found.";
+
+                    // C. Calculations
+                    const newBal = (userSnap.data().balance || 0) + wAmt;
+                    const newProfit = (userSnap.data().totalProfit || 0) + wAmt;
+
+                    // D. Writes (Match Update)
                     transaction.update(matchRef, {
                         status: 'finished',
                         winnerName: wName,
                         winnerUid: wUid,
-                        winnerPrize: prize,
-                        runnerInfo: runner,
-                        resultMessage: msg,
+                        winnerGamingUid: wGid,
+                        winnerPrize: wAmt,
+                        opponentUid: opUid,
                         resultImage: img,
-                        resultPublishedAt: Date.now()
+                        resultPublished: true
                     });
 
-                    // Update User Wallet
-                    if(prize > 0) {
-                        const newBal = (freshUserSnap.data().balance || 0) + prize;
-                        const newWon = (freshUserSnap.data().totalProfit || 0) + prize;
-                        transaction.update(userRef, { 
-                            balance: newBal,
-                            totalProfit: newWon
-                        });
+                    // E. Writes (User Wallet Update)
+                    transaction.update(userRef, {
+                        balance: newBal,
+                        totalProfit: newProfit
+                    });
 
-                        // Create Transaction History Record
-                        const payRef = doc(collection(db, "payments"));
-                        transaction.set(payRef, {
-                            userId: wUid,
-                            userName: freshUserSnap.data().name,
-                            amount: prize,
-                            type: 'winnings',
-                            status: 'approved',
-                            matchId: mid,
-                            note: `Won match on ${new Date().toLocaleDateString()}`,
-                            timestamp: Date.now()
-                        });
-                    }
+                    // F. Writes (Payment History)
+                    const payRef = doc(collection(db, "payments"));
+                    transaction.set(payRef, {
+                        userId: wUid,
+                        userName: userSnap.data().name,
+                        amount: wAmt,
+                        type: 'winnings',
+                        status: 'approved',
+                        matchId: mid,
+                        note: `Match Win: ${mid} vs ${opUid || 'N/A'}`,
+                        timestamp: Date.now()
+                    });
                 });
 
-                alert("SUCCESS! Result uploaded and Wallet Updated.");
-                loadFinishedMatches(); // Refresh list
+                // 5. Success
+                alert(`SUCCESS!\n₹${wAmt} Added to Wallet of ${wUid}.`);
+                // Clear fields
+                document.getElementById('res-mid').value = '';
+                document.getElementById('res-uid').value = '';
+                document.getElementById('res-amt').value = '';
+                btn.innerHTML = '<i class="fa-solid fa-upload"></i> UPLOAD RESULT & CREDIT MONEY';
 
-            } catch(e) { 
-                alert("FAILED: " + e.message); 
+            } catch(e) {
                 console.error(e);
+                alert("TRANSACTION FAILED: " + e);
+                btn.innerHTML = '<i class="fa-solid fa-upload"></i> UPLOAD RESULT & CREDIT MONEY';
             }
-            btn.innerText = "UPLOAD RESULT";
         };
 
 
@@ -655,7 +667,6 @@
                 snap.forEach(d => {
                     const u = d.data();
                     const s = search.toLowerCase();
-                    // Assuming Doc ID is Phone, or Phone field exists
                     if(search && !u.name.toLowerCase().includes(s) && !d.id.includes(s) && !(u.phone && u.phone.includes(s))) return;
                     found++;
                     if(found > 50 && !search) return;
@@ -727,5 +738,4 @@
         showTab('dash'); 
     </script>
 </body>
-
-</html>
+    </html>
