@@ -2,57 +2,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>SQL MASTER ADMIN | PRO</title>
+    <title>SQL MASTER ADMIN | ULTIMATE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         :root { --accent: #00ff88; --gold: #ffd700; --bg: #050505; --card: #111; --red: #ff4444; --muted:#999; --border:#222; --blue: #0084ff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 30px; }
         
-        header { background: #000; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
-        header h2 { margin: 0; font-size: 1.1rem; color: var(--gold); letter-spacing: 1px; }
+        header { background: #000; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
+        header h2 { margin: 0; font-size: 1rem; color: var(--gold); letter-spacing: 1px; font-weight: 800; }
         
-        .wrap { padding: 15px; max-width: 800px; margin: 0 auto; }
+        .wrap { padding: 12px; max-width: 800px; margin: 0 auto; }
         
-        /* NAVIGATION TABS */
-        .nav-tabs { display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; margin-bottom:10px; scrollbar-width: none; }
-        .nav-btn { flex:1; min-width:110px; background:#111; color:#888; border:1px solid #222; padding:12px; border-radius:10px; text-align:center; font-weight:700; position: relative; }
-        .nav-btn.active { background: #222; color: var(--gold); border-color: var(--gold); }
-        .badge { position: absolute; top: -5px; right: -5px; background: var(--red); color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; display: none; }
+        /* MAIN TABS */
+        .nav-tabs { display:flex; gap:8px; overflow-x:auto; padding-bottom:10px; margin-bottom:10px; scrollbar-width: none; }
+        .nav-btn { flex:1; min-width:105px; background:#111; color:#888; border:1px solid #222; padding:10px; border-radius:10px; text-align:center; font-weight:700; position: relative; font-size: 0.8rem; }
+        .nav-btn.active { background: #1a1a1a; color: var(--gold); border-color: var(--gold); }
+        
+        /* BADGE SYSTEM */
+        .badge { position: absolute; top: -5px; right: -2px; background: var(--red); color: white; font-size: 0.65rem; padding: 2px 5px; border-radius: 50%; min-width: 18px; height: 18px; display: none; align-items: center; justify-content: center; font-weight: 800; border: 1px solid #000; }
 
         /* PAYMENT SUB TABS */
-        .pay-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .p-btn { padding: 10px; background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; font-size: 0.75rem; font-weight: bold; }
+        .pay-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+        .p-btn { padding: 9px; background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; font-size: 0.7rem; font-weight: bold; position: relative; }
         .p-btn.active { border-color: var(--accent); color: var(--accent); background: #001a0d; }
 
         /* CARDS */
-        .card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; position:relative; }
-        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .field { display:flex; flex-direction:column; margin-bottom:8px; }
-        label { font-size: 0.7rem; color:var(--muted); text-transform:uppercase; margin-bottom:4px; font-weight:700; }
-        input, select, textarea { background:#000; border:1px solid #333; color:#fff; padding:10px; border-radius:8px; font-size:0.9rem; }
+        .card { background: var(--card); padding: 12px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 12px; position:relative; }
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .field { display:flex; flex-direction:column; margin-bottom:6px; }
+        label { font-size: 0.65rem; color:var(--muted); text-transform:uppercase; margin-bottom:3px; font-weight:700; }
+        input, select, textarea { background:#000; border:1px solid #333; color:#fff; padding:8px; border-radius:6px; font-size:0.85rem; }
         
-        button { padding:12px; border:none; border-radius:8px; font-weight:800; cursor:pointer; }
-        .btn-save { background:var(--accent); color:#000; width:100%; }
-        .danger { background:var(--red); color:#fff; }
+        /* MINI BUTTONS */
+        button { border:none; border-radius:6px; font-weight:700; cursor:pointer; }
+        .btn-save { background:var(--accent); color:#000; padding: 10px; width:100%; }
+        .del-mini { background: rgba(255, 68, 68, 0.15); color: var(--red); padding: 4px 8px; font-size: 0.65rem; border: 1px solid var(--red); position: absolute; top: 10px; right: 10px; }
         
-        /* USER & PAY LIST */
-        .user-row { display: flex; align-items: center; gap: 12px; padding: 10px; border-bottom: 1px solid #222; }
-        .u-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
-        .pay-ss { width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; margin: 10px 0; background: #000; border: 1px solid #333; }
+        /* LIST STYLES */
+        .user-row { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid #222; }
+        .u-img { width: 45px; height: 45px; border-radius: 50%; border: 1px solid var(--gold); object-fit: cover; }
+        .pay-ss { width: 100%; max-height: 180px; object-fit: contain; border-radius: 8px; margin: 8px 0; background: #000; }
         
-        .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:5000; display:none; align-items:center; justify-content:center; padding:20px; }
-        .modal-box { background:#111; width:100%; max-width:500px; padding:20px; border-radius:15px; border: 1px solid var(--gold); overflow-y: auto; max-height: 90vh; }
+        .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:5000; display:none; align-items:center; justify-content:center; padding:15px; }
+        .modal-box { background:#111; width:100%; max-width:450px; padding:15px; border-radius:15px; border: 1px solid var(--gold); overflow-y: auto; max-height: 85vh; }
     </style>
 </head>
 <body>
 
     <header>
-        <h2>SQL MASTER ADMIN</h2>
-        <div style="display:flex; gap:10px;">
-            <button onclick="location.reload()" style="background:none; border:1px solid var(--gold); color:var(--gold); padding:5px 10px; border-radius:5px;">Refresh</button>
-        </div>
+        <h2>SQL MASTER SUPER ADMIN</h2>
+        <button onclick="location.reload()" style="background:none; border:1px solid var(--gold); color:var(--gold); padding:4px 10px; font-size: 0.7rem;">REFRESH</button>
     </header>
 
     <div class="wrap">
@@ -60,24 +61,24 @@
             <button class="nav-btn active" id="tab-add" onclick="showTab('add')">ADD MATCH</button>
             <button class="nav-btn" id="tab-manage" onclick="showTab('manage')">MANAGE</button>
             <button class="nav-btn" id="tab-pay" onclick="showTab('pay')">
-                PAYMENTS <span id="pay-notif" class="badge">0</span>
+                PAYMENTS <span id="main-pay-badge" class="badge">0</span>
             </button>
             <button class="nav-btn" id="tab-users" onclick="showTab('users')">USERS</button>
         </div>
 
         <div id="view-add" class="tab-content">
             <div class="card">
-                <h3 style="color:var(--gold); margin:0 0 10px 0;">CREATE MATCH</h3>
+                <h4 style="color:var(--gold); margin:0 0 10px 0;">LAUNCH NEW MATCH</h4>
                 <div class="grid-form">
                     <div class="field"><label>Map</label><input id="nm-map" value="Bermuda"></div>
                     <div class="field"><label>Type</label><input id="nm-type" value="Solo"></div>
-                    <div class="field"><label>Entry</label><input type="number" id="nm-fee" value="10"></div>
-                    <div class="field"><label>Prize</label><input type="number" id="nm-win" value="100"></div>
-                    <div class="field"><label>Slots</label><input type="number" id="nm-slots" value="48"></div>
-                    <div class="field"><label>Joined</label><input type="number" id="nm-fake" value="0"></div>
+                    <div class="field"><label>Entry Fee</label><input type="number" id="nm-fee" value="10"></div>
+                    <div class="field"><label>Win Prize</label><input type="number" id="nm-win" value="100"></div>
+                    <div class="field"><label>Total Slots</label><input type="number" id="nm-slots" value="48"></div>
+                    <div class="field"><label>Fake Join</label><input type="number" id="nm-fake" value="0"></div>
                 </div>
-                <div class="field"><label>Start Date/Time</label><input type="datetime-local" id="nm-time"></div>
-                <button class="btn-save" onclick="createMatch()">LAUNCH MATCH</button>
+                <div class="field"><label>Start Time</label><input type="datetime-local" id="nm-time"></div>
+                <button class="btn-save" onclick="createMatch()">PUBLISH MATCH</button>
             </div>
         </div>
 
@@ -87,20 +88,20 @@
 
         <div id="view-pay" class="tab-content" style="display:none;">
             <div class="pay-tabs">
-                <button class="p-btn active" id="pb-fund" onclick="setPayView('fund')">ADD FUND REQ</button>
+                <button class="p-btn active" id="pb-fund" onclick="setPayView('fund')">ADD FUNDS <span id="sub-fund-badge" class="badge">0</span></button>
                 <button class="p-btn" id="pb-fund-h" onclick="setPayView('fund-h')">FUND HISTORY</button>
-                <button class="p-btn" id="pb-draw" onclick="setPayView('draw')">WITHDRAW REQ</button>
+                <button class="p-btn" id="pb-draw" onclick="setPayView('draw')">WITHDRAW <span id="sub-draw-badge" class="badge">0</span></button>
                 <button class="p-btn" id="pb-draw-h" onclick="setPayView('draw-h')">WITHDRAW HISTORY</button>
-                <button class="p-btn" style="grid-column: span 2; border-color:var(--blue); color:var(--blue);" onclick="setPayView('join')">DIRECT MATCH JOIN PAYMENTS</button>
+                <button class="p-btn" style="grid-column: span 2; border-color:var(--blue); color:var(--blue);" onclick="setPayView('join')">MATCH JOIN PAYMENTS</button>
             </div>
             <div id="pay-list-container"></div>
         </div>
 
         <div id="view-users" class="tab-content" style="display:none;">
-            <div class="card" style="text-align:center;">
-                <h2 id="total-users" style="color:var(--accent); margin:0;">0</h2>
-                <label>Total Users Registered</label>
-                <input type="text" id="user-search" placeholder="Search by name or phone..." oninput="loadUsers(this.value)" style="margin-top:10px;">
+            <div class="card" style="text-align:center; padding:10px;">
+                <h3 id="total-users" style="color:var(--accent); margin:0;">0</h3>
+                <label>Registered Users</label>
+                <input type="text" id="user-search" placeholder="Search by phone/name..." oninput="loadUsers(this.value)" style="margin-top:8px;">
             </div>
             <div id="users-list"></div>
         </div>
@@ -108,9 +109,9 @@
 
     <div id="user-modal" class="modal">
         <div class="modal-box">
-            <h3 style="color:var(--gold); text-align:center; margin-top:0;">USER FULL DETAILS</h3>
+            <h4 style="color:var(--gold); text-align:center; margin-top:0;">USER PROFILE</h4>
             <div id="user-details-content"></div>
-            <button class="danger" style="width:100%; margin-top:15px;" onclick="document.getElementById('user-modal').style.display='none'">CLOSE</button>
+            <button class="danger" style="width:100%; margin-top:10px; padding:8px;" onclick="document.getElementById('user-modal').style.display='none'">CLOSE</button>
         </div>
     </div>
 
@@ -130,7 +131,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- GLOBAL STATE ---
         let currentPayTab = 'fund';
 
         window.showTab = (tab) => {
@@ -138,7 +138,6 @@
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('view-'+tab).style.display = 'block';
             document.getElementById('tab-'+tab).classList.add('active');
-            
             if(tab === 'manage') loadMatches();
             if(tab === 'pay') setPayView(currentPayTab);
             if(tab === 'users') loadUsers();
@@ -168,20 +167,14 @@
                 snap.forEach(d => {
                     const m = d.data();
                     const id = d.id;
-                    const timeStr = new Date(m.startTime).toISOString().slice(0,16);
                     list.innerHTML += `
                     <div class="card">
-                        <div class="grid-form">
+                        <button class="del-mini" onclick="delMatch('${id}')">DELETE</button>
+                        <div class="grid-form" style="margin-top:15px;">
                             <div class="field"><label>Map</label><input id="m-map-${id}" value="${m.map}"></div>
                             <div class="field"><label>Type</label><input id="m-type-${id}" value="${m.type}"></div>
                             <div class="field"><label>Slots</label><input type="number" id="m-tot-${id}" value="${m.total}"></div>
                             <div class="field"><label>Joined</label><input type="number" id="m-join-${id}" value="${m.joined}"></div>
-                        </div>
-                        <div class="field"><label>Room ID / Pass</label>
-                            <div style="display:flex; gap:5px;">
-                                <input id="m-rid-${id}" value="${m.roomId||''}" placeholder="Room ID">
-                                <input id="m-pas-${id}" value="${m.password||''}" placeholder="Pass">
-                            </div>
                         </div>
                         <div class="field"><label>Status</label>
                             <select id="m-st-${id}">
@@ -190,8 +183,7 @@
                                 <option value="finished" ${m.status=='finished'?'selected':''}>Finished</option>
                             </select>
                         </div>
-                        <button class="btn-save" onclick="updateMatch('${id}')">SAVE UPDATES</button>
-                        <button class="danger" style="width:100%; margin-top:5px; padding:5px;" onclick="delMatch('${id}')">DELETE</button>
+                        <button class="btn-save" onclick="updateMatch('${id}')">UPDATE</button>
                     </div>`;
                 });
             });
@@ -202,20 +194,17 @@
                 type: document.getElementById('m-type-'+id).value,
                 total: Number(document.getElementById('m-tot-'+id).value),
                 joined: Number(document.getElementById('m-join-'+id).value),
-                roomId: document.getElementById('m-rid-'+id).value,
-                password: document.getElementById('m-pas-'+id).value,
                 status: document.getElementById('m-st-'+id).value
             });
             alert("Updated!");
         };
         window.delMatch = async(id) => { if(confirm("Delete Match?")) await deleteDoc(doc(db,"matches",id)); };
 
-        // --- PAYMENTS & HISTORY & NOTIFICATIONS ---
+        // --- PAYMENTS & HISTORY ---
         window.setPayView = (v) => {
             currentPayTab = v;
             document.querySelectorAll('.p-btn').forEach(b => b.classList.remove('active'));
-            const btnId = {fund:'pb-fund', 'fund-h':'pb-fund-h', draw:'pb-draw', 'draw-h':'pb-draw-h', join:'pb-join'}[v];
-            if(document.getElementById(btnId)) document.getElementById(btnId).classList.add('active');
+            document.getElementById('pb-'+v).classList.add('active');
             loadPayments();
         };
 
@@ -223,76 +212,74 @@
             const container = document.getElementById('pay-list-container');
             container.innerHTML = "Loading...";
 
-            let col = "payments";
-            let q = query(collection(db, col), orderBy("timestamp", "desc"));
+            // Listen to both collections for badges
+            onSnapshot(collection(db, "payments"), pSnap => {
+                onSnapshot(collection(db, "withdrawals"), wSnap => {
+                    let f_pend = 0, d_pend = 0;
+                    pSnap.forEach(d => { if(d.data().status==='pending' && d.data().type==='deposit') f_pend++; });
+                    wSnap.forEach(d => { if(d.data().status==='pending') d_pend++; });
 
-            if(currentPayTab.includes('draw')) col = "withdrawals";
-            
-            onSnapshot(query(collection(db, col), orderBy("timestamp", "desc")), snap => {
-                container.innerHTML = "";
-                let pendingCount = 0;
+                    document.getElementById('sub-fund-badge').innerText = f_pend;
+                    document.getElementById('sub-fund-badge').style.display = f_pend > 0 ? 'flex' : 'none';
+                    document.getElementById('sub-draw-badge').innerText = d_pend;
+                    document.getElementById('sub-draw-badge').style.display = d_pend > 0 ? 'flex' : 'none';
+                    document.getElementById('main-pay-badge').innerText = f_pend + d_pend;
+                    document.getElementById('main-pay-badge').style.display = (f_pend + d_pend) > 0 ? 'flex' : 'none';
 
-                snap.forEach(d => {
-                    const p = d.data();
-                    const id = d.id;
-                    const isPending = p.status === 'pending';
-                    if(isPending) pendingCount++;
+                    // Render current view
+                    container.innerHTML = "";
+                    const snap = currentPayTab.includes('draw') ? wSnap : pSnap;
+                    snap.forEach(d => {
+                        const p = d.data();
+                        const isPending = p.status === 'pending';
+                        let show = false;
+                        if(currentPayTab==='fund' && isPending && p.type==='deposit') show = true;
+                        if(currentPayTab==='fund-h' && !isPending && p.type==='deposit') show = true;
+                        if(currentPayTab==='draw' && isPending) show = true;
+                        if(currentPayTab==='draw-h' && !isPending) show = true;
+                        if(currentPayTab==='join' && p.matchId && p.matchId !== 'ADD_FUND') show = true;
 
-                    // Filter Logic for 4 Tabs
-                    let show = false;
-                    if(currentPayTab === 'fund' && isPending && p.type === 'deposit') show = true;
-                    if(currentPayTab === 'fund-h' && !isPending && p.type === 'deposit') show = true;
-                    if(currentPayTab === 'draw' && isPending) show = true;
-                    if(currentPayTab === 'draw-h' && !isPending) show = true;
-                    if(currentPayTab === 'join' && p.matchId && p.matchId !== 'ADD_FUND') show = true;
-
-                    if(show) {
-                        container.innerHTML += `
-                        <div class="card" style="border-left: 4px solid ${isPending?'var(--gold)':'var(--accent)'}">
-                            <div style="display:flex; justify-content:space-between;">
-                                <b>${p.userName}</b>
-                                <span style="font-size:0.7rem; color:${isPending?'var(--gold)':'var(--accent)'}">${p.status.toUpperCase()}</span>
-                            </div>
-                            <div style="font-size:0.9rem; margin:5px 0;">Amount: <b style="color:var(--gold)">₹${p.amount}</b></div>
-                            <div style="font-size:0.75rem; color:#888;">${p.utr ? 'UTR: '+p.utr : 'UPI: '+p.upi}</div>
-                            ${p.ss ? `<img src="${p.ss}" class="pay-ss" onclick="window.open('${p.ss}')">` : ''}
-                            ${isPending ? `
-                                <div style="display:flex; gap:10px; margin-top:10px;">
-                                    <button onclick="approveReq('${id}','${col}','${p.userId}','${p.amount}')" style="flex:1; background:var(--accent); color:#000; font-size:0.8rem;">APPROVE</button>
-                                    <button onclick="rejectReq('${id}','${col}','${p.userId}','${p.amount}')" style="flex:1; background:var(--red); color:#fff; font-size:0.8rem;">REJECT</button>
+                        if(show) {
+                            container.innerHTML += `
+                            <div class="card" style="border-left: 3px solid ${isPending?'var(--gold)':'var(--accent)'}">
+                                <button class="del-mini" onclick="delDoc('${currentPayTab.includes('draw')?'withdrawals':'payments'}','${d.id}')">DEL</button>
+                                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                    <b style="font-size:0.85rem;">${p.userName}</b>
+                                    <span style="font-size:0.65rem; color:${isPending?'var(--gold)':'var(--accent)'}">${p.status.toUpperCase()}</span>
                                 </div>
-                            ` : ''}
-                            <button onclick="viewFullUser('${p.userId}')" style="width:100%; margin-top:5px; background:#222; color:#fff; font-size:0.7rem; padding:5px;">VIEW USER PROFILE</button>
-                        </div>`;
-                    }
+                                <div style="font-size:0.9rem;">Amount: <b style="color:var(--gold)">₹${p.amount}</b></div>
+                                <div style="font-size:0.7rem; color:#888; margin:4px 0;">${p.utr ? 'UTR: '+p.utr : 'UPI: '+p.upi}</div>
+                                ${p.ss ? `<img src="${p.ss}" class="pay-ss" onclick="window.open('${p.ss}')">` : ''}
+                                ${isPending ? `
+                                    <div style="display:flex; gap:8px; margin-top:8px;">
+                                        <button onclick="approveReq('${d.id}','${currentPayTab.includes('draw')?'withdrawals':'payments'}','${p.userId}','${p.amount}')" style="flex:1; background:var(--accent); padding:7px; font-size:0.75rem;">APPROVE</button>
+                                        <button onclick="rejectReq('${d.id}','${currentPayTab.includes('draw')?'withdrawals':'payments'}','${p.userId}','${p.amount}')" style="flex:1; background:var(--red); color:#fff; padding:7px; font-size:0.75rem;">REJECT</button>
+                                    </div>
+                                ` : ''}
+                                <button onclick="viewFullUser('${p.userId}')" style="width:100%; margin-top:6px; background:#222; color:#fff; font-size:0.65rem; padding:5px;">VIEW PROFILE</button>
+                            </div>`;
+                        }
+                    });
+                    if(container.innerHTML === "") container.innerHTML = "<center style='padding:20px; color:#444;'>No Requests</center>";
                 });
-                
-                // Update Notification Badge
-                const badge = document.getElementById('pay-notif');
-                if(pendingCount > 0) { badge.innerText = pendingCount; badge.style.display = 'block'; }
-                else { badge.style.display = 'none'; }
-
-                if(container.innerHTML === "") container.innerHTML = "<div style='text-align:center; padding:20px; color:#555;'>No Data Found</div>";
             });
         }
 
         window.approveReq = async (id, col, uid, amt) => {
-            if(!confirm("Approve this?")) return;
+            if(!confirm("Approve?")) return;
             await updateDoc(doc(db, col, id), { status: 'approved' });
-            if(col === 'payments') {
-                await updateDoc(doc(db, "users", uid), { balance: increment(Number(amt)) });
-            }
+            if(col === 'payments') await updateDoc(doc(db, "users", uid), { balance: increment(Number(amt)) });
             alert("Approved!");
         };
 
         window.rejectReq = async (id, col, uid, amt) => {
-            if(!confirm("Reject this?")) return;
+            if(!confirm("Reject?")) return;
             await updateDoc(doc(db, col, id), { status: 'rejected' });
-            if(col === 'withdrawals') {
-                await updateDoc(doc(db, "users", uid), { balance: increment(Number(amt)) }); // Refund
-            }
+            if(col === 'withdrawals') await updateDoc(doc(db, "users", uid), { balance: increment(Number(amt)) });
             alert("Rejected!");
         };
+
+        window.delDoc = async(col, id) => { if(confirm("Delete permanently?")) await deleteDoc(doc(db, col, id)); };
 
         // --- USERS ---
         window.loadUsers = (search = "") => {
@@ -307,13 +294,10 @@
                     <div class="user-row" onclick="viewFullUser('${d.id}')">
                         <img src="${u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png'}" class="u-img">
                         <div style="flex:1;">
-                            <div style="font-weight:bold;">${u.name}</div>
-                            <div style="font-size:0.75rem; color:#888;">${d.id}</div>
+                            <div style="font-weight:bold; font-size:0.85rem;">${u.name}</div>
+                            <div style="font-size:0.7rem; color:#666;">${d.id}</div>
                         </div>
-                        <div style="text-align:right;">
-                            <div style="color:var(--accent); font-weight:bold;">₹${u.balance}</div>
-                            <small style="color:#555;">Details ></small>
-                        </div>
+                        <div style="color:var(--accent); font-weight:800; font-size:0.85rem;">₹${u.balance}</div>
                     </div>`;
                 });
             });
@@ -324,21 +308,15 @@
             if(!snap.exists()) return alert("User not found!");
             const u = snap.data();
             const content = document.getElementById('user-details-content');
-            
             content.innerHTML = `
-                <div style="text-align:center; margin-bottom:15px;">
-                    <img src="${u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png'}" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--accent);">
-                    <h2 style="margin:10px 0 0 0;">${u.name}</h2>
-                    <span style="color:#888;">${uid}</span>
+                <div style="text-align:center; margin-bottom:10px;">
+                    <img src="${u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png'}" style="width:70px; height:70px; border-radius:50%; border:2px solid var(--accent);">
+                    <h3 style="margin:5px 0;">${u.name}</h3>
                 </div>
-                <div class="card" style="background:#000;">
-                    <div class="field"><label>Wallet Balance</label><input type="number" id="ed-bal" value="${u.balance}"></div>
-                    <div class="field"><label>Total Profit</label><input type="number" id="ed-prof" value="${u.totalProfit||0}"></div>
-                    <div class="field"><label>Total Loss</label><input type="number" id="ed-loss" value="${u.totalLoss||0}"></div>
-                    <div class="field"><label>Gaming Name</label><input id="ed-gname" value="${u.gamingName||''}"></div>
-                    <div class="field"><label>Gaming UID</label><input id="ed-guid" value="${u.gamingId||''}"></div>
-                    <button class="btn-save" onclick="saveUserEdit('${uid}')">UPDATE USER DATA</button>
-                </div>
+                <div class="field"><label>Wallet Balance</label><input type="number" id="ed-bal" value="${u.balance}"></div>
+                <div class="field"><label>Total Profit</label><input type="number" id="ed-prof" value="${u.totalProfit||0}"></div>
+                <div class="field"><label>Total Loss</label><input type="number" id="ed-loss" value="${u.totalLoss||0}"></div>
+                <button class="btn-save" style="margin-top:10px;" onclick="saveUserEdit('${uid}')">SAVE DATA</button>
             `;
             document.getElementById('user-modal').style.display = 'flex';
         };
@@ -347,17 +325,13 @@
             await updateDoc(doc(db, "users", uid), {
                 balance: Number(document.getElementById('ed-bal').value),
                 totalProfit: Number(document.getElementById('ed-prof').value),
-                totalLoss: Number(document.getElementById('ed-loss').value),
-                gamingName: document.getElementById('ed-gname').value,
-                gamingId: document.getElementById('ed-guid').value
+                totalLoss: Number(document.getElementById('ed-loss').value)
             });
-            alert("User Updated!");
+            alert("Updated!");
             document.getElementById('user-modal').style.display = 'none';
         };
 
-        // --- INIT ---
         showTab('add');
-
     </script>
 </body>
 </html>
