@@ -76,15 +76,15 @@
             <div class="card">
                 <h3 style="color:var(--gold); margin:0 0 8px 0;">CREATE NEW TOURNAMENT</h3>
                 <div class="grid-form">
-                    <div class="field"><label>Map</label><input id="new-map" placeholder="e.g. Bermuda"></div>
-                    <div class="field"><label>Type</label><input id="new-type" placeholder="e.g. Solo"></div>
+                    <div class="field"><label>Map Name</label><input id="new-map" placeholder="e.g. Bermuda"></div>
+                    <div class="field"><label>Game Type</label><input id="new-type" placeholder="e.g. Solo / Duo"></div>
                     <div class="field"><label>Entry Fee (₹)</label><input type="number" id="new-fee" value="10"></div>
-                    <div class="field"><label>Win Prize (₹)</label><input type="number" id="new-win" value="18"></div>
+                    <div class="field"><label>Win Prize (₹)</label><input type="number" id="new-win" value="100"></div>
                     <div class="field"><label>Total Slots</label><input type="number" id="new-slots" value="48"></div>
-                    <div class="field"><label>Joined (Fake/Real)</label><input type="number" id="new-joined" value="0"></div>
+                    <div class="field"><label>Fake Joined Count</label><input type="number" id="new-joined" value="0"></div>
                 </div>
-                <div class="field"><label>Start Time</label><input type="datetime-local" id="new-time"></div>
-                <div class="field"><label>Details</label><textarea id="new-details" placeholder="Match notes..."></textarea></div>
+                <div class="field"><label>Start Date & Time</label><input type="datetime-local" id="new-time"></div>
+                <div class="field"><label>Match Details / Rules</label><textarea id="new-details" placeholder="Enter specific rules for this match..."></textarea></div>
                 <button class="btn-create" onclick="createNewMatch()"><i class="fas fa-rocket"></i> LAUNCH MATCH</button>
             </div>
         </div>
@@ -95,9 +95,9 @@
 
         <div id="sec-pay" class="tab-content" style="display:none">
             <div class="tab-sub">
-                <button class="sub-btn active" id="sub-pending" onclick="filterPay('pending')">MATCH JOIN</button>
-                <button class="sub-btn" id="sub-addfund" onclick="filterPay('add_fund')">ADD FUND REQ</button>
-                <button class="sub-btn" id="sub-withdraw" onclick="filterPay('withdrawal')">WITHDRAW REQ</button>
+                <button class="sub-btn active" id="sub-pending" onclick="filterPay('pending')">PENDING</button>
+                <button class="sub-btn" id="sub-addfund" onclick="filterPay('add_fund')">ADD FUND</button>
+                <button class="sub-btn" id="sub-withdraw" onclick="filterPay('withdrawal')">WITHDRAWALS</button>
                 <button class="sub-btn" id="sub-history" onclick="filterPay('history')">HISTORY</button>
             </div>
             <div id="pay-list"></div>
@@ -120,17 +120,17 @@
                 
                 <div id="sec-results-upload" style="display:none; margin-top:15px; border-top:1px solid #333; padding-top:15px;">
                     <div class="grid-form">
-                        <div class="field"><label>Match ID</label><input id="res-matchid" placeholder="Optional"></div>
+                        <div class="field"><label>Match ID (Optional)</label><input id="res-matchid" placeholder="Paste Match ID"></div>
                         <div class="field"><label>Winner Name</label><input id="res-winner"></div>
-                        <div class="field"><label>Winner Phone (For Wallet Credit)</label><input id="res-phone" placeholder="User Phone Number"></div>
-                        <div class="field"><label>Winner UID (Display Only)</label><input id="res-uid" placeholder="Gaming UID"></div>
+                        <div class="field"><label>Winner Phone (Exact)</label><input id="res-phone" placeholder="For Wallet Credit"></div>
+                        <div class="field"><label>Winner UID</label><input id="res-uid" placeholder="Gaming UID"></div>
                         <div class="field"><label>Winning Amount (₹)</label><input type="number" id="res-prize" value="0"></div>
-                        <div class="field"><label>Runner Up</label><input id="res-other"></div>
+                        <div class="field"><label>Kill Count</label><input id="res-kills" value="0"></div>
                     </div>
-                    <div class="field"><label>Message</label><textarea id="res-msg"></textarea></div>
-                    <div class="field"><label>Result Image</label><input type="file" id="res-ss" accept="image/*"></div>
+                    <div class="field"><label>Result Message</label><textarea id="res-msg" placeholder="Congrats..."></textarea></div>
+                    <div class="field"><label>Result Screenshot</label><input type="file" id="res-ss" accept="image/*"></div>
                     <div style="display:flex; gap:10px;">
-                        <button class="btn-create" onclick="uploadResult()">PUBLISH RESULT</button>
+                        <button class="btn-create" onclick="uploadResult()">PUBLISH & CREDIT</button>
                         <button class="danger" style="width:40%" onclick="document.getElementById('sec-results-upload').style.display='none'; document.getElementById('btn-show-upload').style.display='block'">CANCEL</button>
                     </div>
                 </div>
@@ -155,7 +155,7 @@
                 <div class="field"><label>Phone (Read Only)</label><input id="edit-phone" readonly style="color:#777;"></div>
                 <div class="field"><label>Gaming Name</label><input id="edit-gname"></div>
                 <div class="field"><label>Gaming UID</label><input id="edit-guid"></div>
-                <div class="field"><label>Email</label><input id="edit-email"></div>
+                <div class="field"><label>Email / UPI</label><input id="edit-email"></div>
             </div>
             <hr style="border:0; border-top:1px solid #222; margin:15px 0;">
             <h4 style="color:var(--accent); margin:0 0 10px 0;">WALLET & STATS</h4>
@@ -175,7 +175,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import {
             getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, deleteDoc,
-            query, orderBy, limit, getDocs, getDoc, arrayUnion, increment
+            query, orderBy, limit, getDocs, getDoc, arrayUnion, increment, where
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -190,11 +190,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- GLOBAL VARIABLES FOR BUTTONS ---
-        window.db = db;
-        window.doc = doc;
-        window.deleteDoc = deleteDoc;
-
         // --- NAVIGATION ---
         window.showTab = (tab) => {
             document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
@@ -208,7 +203,7 @@
             if(tab === 'results_list') renderResultsList();
         };
 
-        // --- MATCHES ---
+        // --- MATCHES LOGIC ---
         window.createNewMatch = async () => {
             const data = {
                 map: document.getElementById('new-map').value || 'Bermuda',
@@ -221,42 +216,53 @@
                 startTime: new Date(document.getElementById('new-time').value || Date.now()).getTime(),
                 roomId: '', password: '', 
                 details: document.getElementById('new-details').value,
-                approvedUtrs: []
+                approvedUtrs: [] // For preventing dupes
             };
-            try{ await addDoc(collection(db, "matches"), data); alert("Match Launched!"); showTab('manage'); }
+            try{ 
+                await addDoc(collection(db, "matches"), data); 
+                alert("Match Launched Successfully!"); 
+                showTab('manage'); 
+            }
             catch(e){ alert(e.message); }
         };
 
         window.renderMatchesManage = () => {
             const list = document.getElementById('manage-list');
-            list.innerHTML = 'Loading...';
+            list.innerHTML = '<div style="text-align:center; padding:20px;">Loading Matches...</div>';
+            
             onSnapshot(collection(db,"matches"), s => {
                 list.innerHTML = '';
+                if(s.empty) list.innerHTML = '<div style="text-align:center; padding:20px; color:#555;">No Matches Found</div>';
+                
                 s.forEach(d => {
                     const m = d.data();
                     const id = d.id;
-                    const timeStr = m.startTime ? new Date(m.startTime).toISOString().slice(0,16) : '';
+                    // Format date for input
+                    const dObj = new Date(m.startTime);
+                    const timeStr = new Date(dObj.getTime() - (dObj.getTimezoneOffset() * 60000)).toISOString().slice(0,16);
+
                     list.innerHTML += `
                     <div class="card">
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                            <span style="color:var(--gold)">ID: ${id}</span>
-                            <button class="small danger" onclick="deleteDocMatch('${id}')">DELETE</button>
+                            <span style="color:var(--gold); font-weight:bold;">ID: ${id}</span>
+                            <button class="small danger" onclick="deleteDocMatch('${id}')"><i class="fas fa-trash"></i> DELETE</button>
                         </div>
                         <div class="grid-form">
-                            <div class="field"><label>Status</label>
+                            <div class="field"><label>Match Status</label>
                                 <select id="s-${id}">
                                     <option value="open" ${m.status==='open'?'selected':''}>Open</option>
                                     <option value="full" ${m.status==='full'?'selected':''}>Full</option>
                                     <option value="started" ${m.status==='started'?'selected':''}>Started</option>
+                                    <option value="finished" ${m.status==='finished'?'selected':''}>Finished</option>
                                 </select>
                             </div>
-                            <div class="field"><label>Joined</label><input type="number" id="j-${id}" value="${m.joined}"></div>
-                            <div class="field"><label>Room ID</label><input id="rid-${id}" value="${m.roomId||''}"></div>
-                            <div class="field"><label>Password</label><input id="pass-${id}" value="${m.password||''}"></div>
-                            <div class="field"><label>Map</label><input id="map-${id}" value="${m.map}"></div>
-                            <div class="field"><label>Time</label><input type="datetime-local" id="time-${id}" value="${timeStr}"></div>
+                            <div class="field"><label>Joined Count</label><input type="number" id="j-${id}" value="${m.joined}"></div>
+                            <div class="field"><label>Room ID</label><input id="rid-${id}" value="${m.roomId||''}" placeholder="Set Room ID"></div>
+                            <div class="field"><label>Password</label><input id="pass-${id}" value="${m.password||''}" placeholder="Set Password"></div>
+                            <div class="field"><label>Map Name</label><input id="map-${id}" value="${m.map}"></div>
+                            <div class="field"><label>Start Time</label><input type="datetime-local" id="time-${id}" value="${timeStr}"></div>
                         </div>
-                        <button class="btn-save" style="margin-top:10px;" onclick="updateMatch('${id}')">SAVE UPDATES</button>
+                        <button class="btn-save" style="margin-top:10px;" onclick="updateMatch('${id}')">SAVE ALL UPDATES</button>
                     </div>`;
                 });
             });
@@ -272,93 +278,141 @@
                 startTime: new Date(document.getElementById(`time-${id}`).value).getTime()
             };
             await updateDoc(doc(db,"matches",id), data);
-            alert("Match Updated!");
+            alert("Match Updated Successfully!");
         };
-        window.deleteDocMatch = async (id) => { if(confirm("Delete Match?")) await deleteDoc(doc(db,"matches",id)); }
+        
+        window.deleteDocMatch = async (id) => { if(confirm("Are you sure you want to delete this match?")) await deleteDoc(doc(db,"matches",id)); }
 
-        // --- PAYMENTS (FIXED LOGIC) ---
+        // --- PAYMENT & WITHDRAWAL LOGIC ---
         window.filterPay = (f) => renderPayments(f);
+        
         window.renderPayments = (filter) => {
             document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
             const btnMap = { 'pending':'sub-pending', 'add_fund':'sub-addfund', 'withdrawal':'sub-withdrawal', 'history':'sub-history' };
             if(btnMap[filter]) document.getElementById(btnMap[filter]).classList.add('active');
 
             const list = document.getElementById('pay-list');
-            list.innerHTML = 'Loading...';
+            list.innerHTML = '<div style="text-align:center; padding:20px;">Loading Requests...</div>';
             
-            onSnapshot(collection(db,"payments"), s => {
-                list.innerHTML = '';
-                s.forEach(d => {
-                    const p = d.data();
-                    const pid = d.id;
-                    let show = false;
-                    
-                    if(filter === 'pending' && p.status === 'pending' && (!p.type || p.type === 'match')) show = true;
-                    if(filter === 'add_fund' && p.status === 'pending' && p.type === 'add_fund') show = true;
-                    if(filter === 'withdrawal' && p.status === 'pending' && p.type === 'withdrawal') show = true;
-                    if(filter === 'history' && p.status !== 'pending') show = true;
-
-                    if(!show) return;
-
-                    list.innerHTML += `
-                    <div class="card pay-card">
-                        <button class="danger abs-del" onclick="deleteDocById('payments','${pid}')">DEL</button>
-                        <img src="${p.ss || ''}" class="pay-thumb" onclick="window.open('${p.ss}')" onerror="this.src='https://placehold.co/80?text=NO+SS'">
-                        <div class="pay-body">
-                            <div class="pay-meta">
-                                <b style="color:var(--gold)">${(p.type||'match').toUpperCase()}</b> | ${p.status}<br>
-                                <b>User:</b> ${p.userName} (${p.userId})<br>
-                                <b>Amount:</b> ₹${p.amount||0} | <b>UTR:</b> ${p.utr||'N/A'}
-                                ${p.matchId ? `<br><b>Match ID:</b> ${p.matchId}` : ''}
-                            </div>
-                            <div class="pay-actions">
-                                ${p.status === 'pending' ? `
-                                    <button class="small ok" onclick="approveRequest('${pid}','${p.userId}','${p.amount||0}','${p.type||'match'}','${p.matchId||''}','${p.utr||''}')">APPROVE</button>
-                                    <button class="small danger" onclick="rejectRequest('${pid}')">REJECT</button>
-                                ` : `<span style="font-size:0.7rem; color:var(--muted)">COMPLETED</span>`}
-                                <button class="small" onclick="openUserModal('${p.userId}')">USER INFO</button>
-                            </div>
-                        </div>
-                    </div>`;
+            // Combine queries or simple fetch and filter client side for simplicity in Admin Panel
+            // For production, specific queries are better. Here we fetch 'payments' and 'withdrawals' based on filter.
+            
+            if(filter === 'withdrawal') {
+                onSnapshot(query(collection(db, "withdrawals"), orderBy("timestamp", "desc")), s => {
+                    list.innerHTML = '';
+                    if(s.empty) list.innerHTML = '<div style="text-align:center; padding:20px; color:#555;">No Withdrawal Requests</div>';
+                    s.forEach(d => {
+                        const p = d.data();
+                        if(p.status !== 'pending') return; // Only show pending here
+                        renderPayCard(list, d.id, p, 'withdrawal');
+                    });
                 });
-            });
+            } else {
+                onSnapshot(query(collection(db, "payments"), orderBy("timestamp", "desc")), s => {
+                    list.innerHTML = '';
+                    let found = false;
+                    s.forEach(d => {
+                        const p = d.data();
+                        const pid = d.id;
+                        let show = false;
+                        
+                        // Filter Logic
+                        if(filter === 'pending' && p.status === 'pending') show = true; 
+                        if(filter === 'add_fund' && p.status === 'pending' && p.type === 'deposit') show = true;
+                        if(filter === 'history' && p.status !== 'pending') show = true;
+
+                        if(show) {
+                            renderPayCard(list, pid, p, 'payment');
+                            found = true;
+                        }
+                    });
+                    if(!found) list.innerHTML += '<div style="text-align:center; padding:20px; color:#555;">No Records Found</div>';
+                });
+            }
         };
 
-        window.approveRequest = async (pid, uid, amt, type, mid, utr) => {
-            if(!confirm("Approve this payment/join?")) return;
+        function renderPayCard(container, pid, p, context) {
+            const isWithdrawal = context === 'withdrawal';
+            const typeLabel = isWithdrawal ? 'WITHDRAWAL REQUEST' : (p.type === 'deposit' ? 'ADD FUND' : 'MATCH JOIN');
+            const colorClass = isWithdrawal ? 'var(--red)' : 'var(--gold)';
+
+            container.innerHTML += `
+            <div class="card pay-card">
+                <button class="danger abs-del" onclick="deleteDocById('${isWithdrawal?'withdrawals':'payments'}','${pid}')">DEL</button>
+                ${!isWithdrawal ? `<img src="${p.ss || ''}" class="pay-thumb" onclick="window.open('${p.ss}')" onerror="this.src='https://placehold.co/80?text=NO+IMG'">` : ''}
+                <div class="pay-body">
+                    <div class="pay-meta">
+                        <b style="color:${colorClass}">${typeLabel}</b> | Status: ${p.status}<br>
+                        <b>User:</b> ${p.userName || 'User'} (${p.phone || p.userId})<br>
+                        <b>Amount:</b> ₹${p.amount} 
+                        ${!isWithdrawal ? `| <b>UTR:</b> ${p.utr||'--'}` : `| <b>UPI:</b> ${p.upi}`}
+                        ${p.matchId ? `<br><b>Match ID:</b> ${p.matchId}` : ''}
+                    </div>
+                    <div class="pay-actions">
+                        ${p.status === 'pending' ? `
+                            <button class="small ok" onclick="processReq('${pid}','${p.phone||p.userId}',${p.amount},'${isWithdrawal?'withdraw':p.type}','${p.matchId||''}','${p.utr||''}')">APPROVE</button>
+                            <button class="small danger" onclick="rejectReq('${pid}','${isWithdrawal?'withdraw':'payment'}')">REJECT</button>
+                        ` : `<span style="font-size:0.7rem; color:var(--muted); border:1px solid #333; padding:4px 8px; border-radius:4px;">${p.status.toUpperCase()}</span>`}
+                        <button class="small" onclick="openUserModal('${p.phone||p.userId}')">USER INFO</button>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        window.processReq = async (pid, uid, amt, type, mid, utr) => {
+            if(!confirm(`Approve ${type.toUpperCase()} of ₹${amt}?`)) return;
+            
             try {
-                if(type === 'add_fund') {
+                if(type === 'deposit' || type === 'ADD_FUND') {
+                    // Credit User
                     await updateDoc(doc(db, "users", uid), { balance: increment(Number(amt)) });
-                } else if (type === 'match' || !type) {
-                    if(mid) await updateDoc(doc(db,"matches",mid), { joined: increment(1), approvedUtrs: arrayUnion(utr) });
+                    await updateDoc(doc(db, "payments", pid), { status: 'approved' });
+                } 
+                else if (type === 'withdraw') {
+                    // Update Status (Balance already deducted on User side)
+                    await updateDoc(doc(db, "withdrawals", pid), { status: 'approved' });
                 }
-                await updateDoc(doc(db, "payments", pid), { status: 'approved' });
-                alert("Approved Successfully!");
-            } catch(e) { alert(e.message); }
+                else {
+                    // Match Join (Legacy check if needed, mostly handled by Atomic Transaction on User Side)
+                    // If this is manual approval for match join payment
+                    if(mid) await updateDoc(doc(db,"matches",mid), { joined: increment(1), approvedUtrs: arrayUnion(utr) });
+                    await updateDoc(doc(db, "payments", pid), { status: 'approved' });
+                }
+                alert("Request Approved Successfully!");
+            } catch(e) { alert("Error: " + e.message); }
         };
 
-        window.rejectRequest = async (pid) => {
-            if(confirm("Reject this request?")) await updateDoc(doc(db, "payments", pid), { status: 'rejected' });
+        window.rejectReq = async (pid, type) => {
+            if(!confirm("Reject this request?")) return;
+            const col = type === 'withdraw' ? 'withdrawals' : 'payments';
+            await updateDoc(doc(db, col, pid), { status: 'rejected' });
+            // Note: For withdrawal reject, you might want to refund balance manually via Edit User
+            alert("Request Rejected.");
         };
 
         window.deleteDocById = async (col, id) => { if(confirm("Delete permanently?")) await deleteDoc(doc(db, col, id)); };
 
-        // --- USERS ---
+        // --- USERS MANAGEMENT ---
         window.renderUsers = async (searchVal) => {
             const list = document.getElementById('users-list');
+            list.innerHTML = 'Loading Users...';
+            
             const snap = await getDocs(collection(db, "users"));
             document.getElementById('total-users-nav').innerText = snap.size;
             document.getElementById('total-users-count').innerText = snap.size;
+            
             list.innerHTML = '';
             snap.forEach(d => {
                 const u = d.data();
+                // Client side search for simplicity
                 if(searchVal && !d.id.includes(searchVal) && !u.name.toLowerCase().includes(searchVal.toLowerCase())) return;
+                
                 list.innerHTML += `
                 <div class="card user-card">
                     <img src="${u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png'}" class="user-dp">
                     <div class="user-info">
                         <div style="font-weight:bold;">${u.name || 'User'}</div>
-                        <div style="font-size:0.8rem; color:#888;">${d.id} | UID: ${u.gamingId || '--'}</div>
+                        <div style="font-size:0.8rem; color:#888;">${d.id} | UID: ${u.gamingId || u.gamingUid || '--'}</div>
                         <div class="user-balance">Bal: ₹${u.balance || 0}</div>
                     </div>
                     <button class="small ok" onclick="openUserModal('${d.id}')">EDIT</button>
@@ -367,19 +421,24 @@
         };
 
         window.openUserModal = async (phoneId) => {
-            const snap = await getDoc(doc(db, "users", phoneId));
-            const u = snap.data();
-            document.getElementById('edit-user-id').value = phoneId;
-            document.getElementById('edit-dp').src = u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png';
-            document.getElementById('edit-name').value = u.name || '';
-            document.getElementById('edit-phone').value = phoneId;
-            document.getElementById('edit-gname').value = u.gamingName || '';
-            document.getElementById('edit-guid').value = u.gamingId || '';
-            document.getElementById('edit-email').value = u.email || '';
-            document.getElementById('edit-balance').value = u.balance || 0;
-            document.getElementById('edit-profit').value = u.totalProfit || 0;
-            document.getElementById('edit-loss').value = u.totalLoss || 0;
-            document.getElementById('user-modal').style.display = 'flex';
+            try {
+                const snap = await getDoc(doc(db, "users", phoneId));
+                if(!snap.exists()) return alert("User not found");
+                
+                const u = snap.data();
+                document.getElementById('edit-user-id').value = phoneId;
+                document.getElementById('edit-dp').src = u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png';
+                document.getElementById('edit-name').value = u.name || '';
+                document.getElementById('edit-phone').value = phoneId;
+                document.getElementById('edit-gname').value = u.gamingName || '';
+                document.getElementById('edit-guid').value = u.gamingId || u.gamingUid || '';
+                document.getElementById('edit-email').value = u.email || '';
+                document.getElementById('edit-balance').value = u.balance || 0;
+                document.getElementById('edit-profit').value = u.totalProfit || 0;
+                document.getElementById('edit-loss').value = u.totalLoss || 0;
+                
+                document.getElementById('user-modal').style.display = 'flex';
+            } catch(e) { alert(e.message); }
         };
 
         window.saveUserChanges = async () => {
@@ -393,57 +452,84 @@
                 totalProfit: Number(document.getElementById('edit-profit').value),
                 totalLoss: Number(document.getElementById('edit-loss').value)
             });
-            alert("User Updated!");
+            alert("User Profile Updated!");
             closeUserModal();
-            renderUsers('');
+            renderUsers(''); // Refresh list
         };
+        
         window.closeUserModal = () => document.getElementById('user-modal').style.display = 'none';
 
-        // --- RESULTS ---
+        // --- RESULTS & AUTO CREDIT ---
         async function uploadToCloudinary(file){
-            const fd = new FormData(); fd.append("file", file); fd.append("upload_preset", "sql_admin");
+            const fd = new FormData(); 
+            fd.append("file", file); 
+            fd.append("upload_preset", "sql_admin");
             const res = await fetch("https://api.cloudinary.com/v1_1/debp1kjtm/image/upload", {method:"POST", body:fd});
-            const d = await res.json(); return d.secure_url;
+            const d = await res.json(); 
+            return d.secure_url;
         }
 
         window.uploadResult = async () => {
             const f = document.getElementById('res-ss').files[0];
             const winnerPhone = document.getElementById('res-phone').value;
             const prizeAmt = Number(document.getElementById('res-prize').value);
-            if(!f || !winnerPhone) return alert("Photo and Phone are mandatory!");
+            
+            if(!f) return alert("Please select a screenshot!");
+            if(!winnerPhone) return alert("Winner Phone Number is mandatory for credit!");
             
             try {
                 const img = await uploadToCloudinary(f);
+                
                 await addDoc(collection(db,"results"), {
                     matchId: document.getElementById('res-matchid').value,
                     winnerName: document.getElementById('res-winner').value,
                     winnerPhone: winnerPhone,
                     winnerUid: document.getElementById('res-uid').value,
                     winningAmount: prizeAmt,
-                    image: img, timestamp: Date.now()
+                    kills: document.getElementById('res-kills').value,
+                    message: document.getElementById('res-msg').value,
+                    image: img, 
+                    timestamp: Date.now(),
+                    likes: 0
                 });
-                // Auto Credit
-                const userRef = doc(db,"users",winnerPhone);
-                const userSnap = await getDoc(userRef);
-                if(userSnap.exists()) await updateDoc(userRef, { balance: increment(prizeAmt), totalProfit: increment(prizeAmt) });
+
+                // Auto Credit Logic
+                if(prizeAmt > 0) {
+                    const userRef = doc(db,"users",winnerPhone);
+                    const userSnap = await getDoc(userRef);
+                    if(userSnap.exists()){
+                         await updateDoc(userRef, { 
+                             balance: increment(prizeAmt), 
+                             totalProfit: increment(prizeAmt) 
+                         });
+                         alert(`Result Published & ₹${prizeAmt} Credited to ${winnerPhone}`);
+                    } else {
+                        alert("Result Published, but User Phone not found in DB (No Credit Given).");
+                    }
+                } else {
+                    alert("Result Published (No Prize Amount).");
+                }
                 
-                alert("Result Published!");
                 location.reload();
-            } catch(e) { alert(e.message); }
+            } catch(e) { alert("Error: " + e.message); }
         };
 
         window.renderResultsList = () => {
+            const list = document.getElementById('results-list');
+            list.innerHTML = 'Loading...';
+            
             onSnapshot(query(collection(db,"results"), orderBy("timestamp","desc")), s => {
-                const list = document.getElementById('results-list');
                 list.innerHTML = '';
+                if(s.empty) list.innerHTML = '<div style="text-align:center; padding:20px;">No Results</div>';
+                
                 s.forEach(d => {
                     const r = d.data();
                     list.innerHTML += `
                     <div class="card" style="display:flex; gap:10px; align-items:center;">
-                        <img src="${r.image}" style="width:60px; height:60px; object-fit:cover; border-radius:5px;">
+                        <img src="${r.image}" style="width:60px; height:60px; object-fit:cover; border-radius:5px; border:1px solid #333;" onclick="window.open('${r.image}')">
                         <div style="flex:1;">
-                            <b>${r.winnerName}</b> (₹${r.winningAmount})<br>
-                            <small>${r.winnerPhone}</small>
+                            <b style="color:var(--gold)">${r.winnerName}</b> (₹${r.winningAmount})<br>
+                            <small style="color:#888;">${r.winnerPhone} | Kills: ${r.kills}</small>
                         </div>
                         <button class="small danger" onclick="deleteDocById('results','${d.id}')">DEL</button>
                     </div>`;
@@ -451,8 +537,10 @@
             });
         };
 
-        // Init
+        // --- INIT ---
+        // Start on Add Match tab
         showTab('add');
+        
     </script>
 </body>
-</html>
+    </html>
