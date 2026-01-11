@@ -2,114 +2,121 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>SQL MASTER | SUPER ADMIN PRO</title>
+    <title>SQL MASTER ADMIN | PRO</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-        :root { --accent: #00ff88; --gold: #ffd700; --bg: #050505; --card: #111; --red: #ff4444; --border: #262626; --blue: #00d9ff; }
+        :root { --accent: #00ff88; --gold: #ffd700; --bg: #050505; --card: #111; --red: #ff4444; --muted:#999; --border:#222; --blue: #0084ff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 20px; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
         
-        /* HEADER */
         header { background: #000; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
-        header h2 { margin: 0; font-size: 1rem; color: var(--gold); font-weight: 800; }
-
-        /* TAB NAVIGATION */
-        .nav-tabs { display: flex; overflow-x: auto; background: #000; padding: 10px; gap: 8px; border-bottom: 1px solid var(--border); }
-        .nav-btn { flex: 0 0 auto; background: #151515; color: #888; border: 1px solid var(--border); padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; position: relative; cursor: pointer; }
-        .nav-btn.active { background: #222; color: var(--gold); border-color: var(--gold); }
-
-        /* NOTIFICATION BADGE */
-        .badge { position: absolute; top: -5px; right: -5px; background: var(--red); color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: bold; border: 1px solid #000; display: none; }
-
-        .wrap { padding: 15px; max-width: 800px; margin: 0 auto; }
-
-        /* CARDS & FORMS */
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; position: relative; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .field { margin-bottom: 10px; }
-        label { display: block; font-size: 0.65rem; color: #777; text-transform: uppercase; margin-bottom: 4px; font-weight: 700; }
-        input, select { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 8px; font-size: 0.9rem; }
-        input:focus { border-color: var(--accent); }
-
-        /* BUTTONS */
-        button { border: none; cursor: pointer; font-weight: 700; transition: 0.2s; border-radius: 6px; }
-        .btn-main { background: var(--gold); color: #000; width: 100%; padding: 12px; margin-top: 5px; }
-        .btn-save { background: var(--accent); color: #000; width: 100%; padding: 10px; }
-        .btn-del { background: rgba(255,68,68,0.1); border: 1px solid var(--red); color: var(--red); font-size: 0.6rem; padding: 4px 8px; position: absolute; top: 10px; right: 10px; }
+        header h2 { margin: 0; font-size: 1.1rem; color: var(--gold); letter-spacing: 1px; }
         
-        /* PAYMENT SUB TABS */
-        .sub-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .sub-btn { background: #111; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 8px; font-size: 0.7rem; position: relative; }
-        .sub-btn.active { border-color: var(--accent); color: var(--accent); background: #001a0d; }
+        .wrap { padding: 15px; max-width: 800px; margin: 0 auto; }
+        
+        /* NAVIGATION TABS */
+        .nav-tabs { display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; margin-bottom:10px; scrollbar-width: none; }
+        .nav-btn { flex:1; min-width:110px; background:#111; color:#888; border:1px solid #222; padding:12px; border-radius:10px; text-align:center; font-weight:700; position: relative; }
+        .nav-btn.active { background: #222; color: var(--gold); border-color: var(--gold); }
+        .badge { position: absolute; top: -5px; right: -5px; background: var(--red); color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; display: none; }
 
-        /* LISTS */
-        .user-row { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid #222; }
-        .u-img { width: 45px; height: 45px; border-radius: 50%; border: 1px solid var(--gold); }
-        .ss-img { width: 100%; border-radius: 8px; margin: 10px 0; border: 1px solid #333; cursor: pointer; }
+        /* PAYMENT SUB TABS */
+        .pay-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .p-btn { padding: 10px; background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; font-size: 0.75rem; font-weight: bold; }
+        .p-btn.active { border-color: var(--accent); color: var(--accent); background: #001a0d; }
+
+        /* CARDS */
+        .card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; position:relative; }
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .field { display:flex; flex-direction:column; margin-bottom:8px; }
+        label { font-size: 0.7rem; color:var(--muted); text-transform:uppercase; margin-bottom:4px; font-weight:700; }
+        input, select, textarea { background:#000; border:1px solid #333; color:#fff; padding:10px; border-radius:8px; font-size:0.9rem; }
+        
+        button { padding:12px; border:none; border-radius:8px; font-weight:800; cursor:pointer; }
+        .btn-save { background:var(--accent); color:#000; width:100%; }
+        .danger { background:var(--red); color:#fff; }
+        
+        /* USER & PAY LIST */
+        .user-row { display: flex; align-items: center; gap: 12px; padding: 10px; border-bottom: 1px solid #222; }
+        .u-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
+        .pay-ss { width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; margin: 10px 0; background: #000; border: 1px solid #333; }
+        
+        .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:5000; display:none; align-items:center; justify-content:center; padding:20px; }
+        .modal-box { background:#111; width:100%; max-width:500px; padding:20px; border-radius:15px; border: 1px solid var(--gold); overflow-y: auto; max-height: 90vh; }
     </style>
 </head>
 <body>
 
     <header>
-        <h2>SQL MASTER ADMIN PANEL</h2>
-        <button onclick="location.reload()" style="background:var(--gold); color:#000; padding:5px 12px; font-size:0.7rem;">REFRESH</button>
+        <h2>SQL MASTER ADMIN</h2>
+        <div style="display:flex; gap:10px;">
+            <button onclick="location.reload()" style="background:none; border:1px solid var(--gold); color:var(--gold); padding:5px 10px; border-radius:5px;">Refresh</button>
+        </div>
     </header>
 
-    <div class="nav-tabs">
-        <div class="nav-btn active" id="tab-add" onclick="switchTab('add')">ADD MATCH</div>
-        <div class="nav-btn" id="tab-manage" onclick="switchTab('manage')">MANAGE MATCH</div>
-        <div class="nav-btn" id="tab-pay" onclick="switchTab('pay')">
-            PAYMENTS <span id="b-main-pay" class="badge">0</span>
-        </div>
-        <div class="nav-btn" id="tab-users" onclick="switchTab('users')">ALL USERS</div>
-    </div>
-
     <div class="wrap">
-        <div id="v-add" class="view">
+        <div class="nav-tabs">
+            <button class="nav-btn active" id="tab-add" onclick="showTab('add')">ADD MATCH</button>
+            <button class="nav-btn" id="tab-manage" onclick="showTab('manage')">MANAGE</button>
+            <button class="nav-btn" id="tab-pay" onclick="showTab('pay')">
+                PAYMENTS <span id="pay-notif" class="badge">0</span>
+            </button>
+            <button class="nav-btn" id="tab-users" onclick="showTab('users')">USERS</button>
+        </div>
+
+        <div id="view-add" class="tab-content">
             <div class="card">
-                <h3 style="margin-top:0; color:var(--gold);">NEW TOURNAMENT</h3>
-                <div class="grid">
-                    <div class="field"><label>Map Name</label><input id="n-map" value="Bermuda"></div>
-                    <div class="field"><label>Match Type</label><input id="n-type" value="Solo"></div>
-                    <div class="field"><label>Entry Fee (₹)</label><input type="number" id="n-fee" value="10"></div>
-                    <div class="field"><label>Win Prize (₹)</label><input type="number" id="n-win" value="100"></div>
-                    <div class="field"><label>Total Slots</label><input type="number" id="n-slots" value="48"></div>
-                    <div class="field"><label>Fake Joiners</label><input type="number" id="n-fake" value="0"></div>
+                <h3 style="color:var(--gold); margin:0 0 10px 0;">CREATE MATCH</h3>
+                <div class="grid-form">
+                    <div class="field"><label>Map</label><input id="nm-map" value="Bermuda"></div>
+                    <div class="field"><label>Type</label><input id="nm-type" value="Solo"></div>
+                    <div class="field"><label>Entry</label><input type="number" id="nm-fee" value="10"></div>
+                    <div class="field"><label>Prize</label><input type="number" id="nm-win" value="100"></div>
+                    <div class="field"><label>Slots</label><input type="number" id="nm-slots" value="48"></div>
+                    <div class="field"><label>Joined</label><input type="number" id="nm-fake" value="0"></div>
                 </div>
-                <div class="field"><label>Start Date & Time</label><input type="datetime-local" id="n-time"></div>
-                <button class="btn-main" onclick="addMatch()">PUBLISH NOW</button>
+                <div class="field"><label>Start Date/Time</label><input type="datetime-local" id="nm-time"></div>
+                <button class="btn-save" onclick="createMatch()">LAUNCH MATCH</button>
             </div>
         </div>
 
-        <div id="v-manage" class="view" style="display:none;">
+        <div id="view-manage" class="tab-content" style="display:none;">
             <div id="match-list"></div>
         </div>
 
-        <div id="v-pay" class="view" style="display:none;">
-            <div class="sub-nav">
-                <button class="sub-btn active" id="sb-fund" onclick="setPayTab('fund')">ADD FUND REQ <span id="b-fund" class="badge">0</span></button>
-                <button class="sub-btn" id="sb-fund-h" onclick="setPayTab('fund-h')">FUND HISTORY</button>
-                <button class="sub-btn" id="sb-draw" onclick="setPayTab('draw')">WITHDRAW REQ <span id="b-draw" class="badge">0</span></button>
-                <button class="sub-btn" id="sb-draw-h" onclick="setPayTab('draw-h')">WITHDRAW HISTORY</button>
-                <button class="sub-btn" style="grid-column: span 2; border-color:var(--blue);" onclick="setPayTab('join')">DIRECT JOIN PAYMENTS</button>
+        <div id="view-pay" class="tab-content" style="display:none;">
+            <div class="pay-tabs">
+                <button class="p-btn active" id="pb-fund" onclick="setPayView('fund')">ADD FUND REQ</button>
+                <button class="p-btn" id="pb-fund-h" onclick="setPayView('fund-h')">FUND HISTORY</button>
+                <button class="p-btn" id="pb-draw" onclick="setPayView('draw')">WITHDRAW REQ</button>
+                <button class="p-btn" id="pb-draw-h" onclick="setPayView('draw-h')">WITHDRAW HISTORY</button>
+                <button class="p-btn" style="grid-column: span 2; border-color:var(--blue); color:var(--blue);" onclick="setPayView('join')">DIRECT MATCH JOIN PAYMENTS</button>
             </div>
-            <div id="pay-list"></div>
+            <div id="pay-list-container"></div>
         </div>
 
-        <div id="v-users" class="view" style="display:none;">
+        <div id="view-users" class="tab-content" style="display:none;">
             <div class="card" style="text-align:center;">
-                <h1 id="count-users" style="margin:0; color:var(--accent);">0</h1>
-                <label>Total Registered Players</label>
-                <input type="text" placeholder="Search by name or phone..." oninput="loadUsers(this.value)" style="margin-top:10px;">
+                <h2 id="total-users" style="color:var(--accent); margin:0;">0</h2>
+                <label>Total Users Registered</label>
+                <input type="text" id="user-search" placeholder="Search by name or phone..." oninput="loadUsers(this.value)" style="margin-top:10px;">
             </div>
             <div id="users-list"></div>
         </div>
     </div>
 
+    <div id="user-modal" class="modal">
+        <div class="modal-box">
+            <h3 style="color:var(--gold); text-align:center; margin-top:0;">USER FULL DETAILS</h3>
+            <div id="user-details-content"></div>
+            <button class="danger" style="width:100%; margin-top:15px;" onclick="document.getElementById('user-modal').style.display='none'">CLOSE</button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, deleteDoc, query, orderBy, getDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, deleteDoc, query, orderBy, getDoc, increment, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBvObxADcAior6R_or9O6UmWsFT8do1GkI",
@@ -123,42 +130,35 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- CORE UI ---
-        window.switchTab = (t) => {
-            document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('v-'+t).style.display = 'block';
-            document.getElementById('tab-'+t).classList.add('active');
-            if(t === 'manage') loadMatches();
-            if(t === 'pay') loadPayments();
-            if(t === 'users') loadUsers();
-        };
-
+        // --- GLOBAL STATE ---
         let currentPayTab = 'fund';
-        window.setPayTab = (t) => {
-            currentPayTab = t;
-            document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('sb-'+t)?.classList.add('active');
-            loadPayments();
+
+        window.showTab = (tab) => {
+            document.querySelectorAll('.tab-content').forEach(v => v.style.display = 'none');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('view-'+tab).style.display = 'block';
+            document.getElementById('tab-'+tab).classList.add('active');
+            
+            if(tab === 'manage') loadMatches();
+            if(tab === 'pay') setPayView(currentPayTab);
+            if(tab === 'users') loadUsers();
         };
 
         // --- MATCHES ---
-        window.addMatch = async () => {
-            try {
-                const dt = {
-                    map: document.getElementById('n-map').value,
-                    type: document.getElementById('n-type').value,
-                    entry: Number(document.getElementById('n-fee').value),
-                    win: Number(document.getElementById('n-win').value),
-                    total: Number(document.getElementById('n-slots').value),
-                    joined: Number(document.getElementById('n-fake').value),
-                    startTime: new Date(document.getElementById('n-time').value).getTime(),
-                    status: 'open', roomId: '', password: ''
-                };
-                await addDoc(collection(db, "matches"), dt);
-                alert("Match Published!");
-                switchTab('manage');
-            } catch(e) { alert(e.message); }
+        window.createMatch = async () => {
+            const data = {
+                map: document.getElementById('nm-map').value,
+                type: document.getElementById('nm-type').value,
+                entry: Number(document.getElementById('nm-fee').value),
+                win: Number(document.getElementById('nm-win').value),
+                total: Number(document.getElementById('nm-slots').value),
+                joined: Number(document.getElementById('nm-fake').value),
+                startTime: new Date(document.getElementById('nm-time').value).getTime(),
+                status: 'open', roomId: '', password: ''
+            };
+            await addDoc(collection(db, "matches"), data);
+            alert("Match Created!");
+            showTab('manage');
         };
 
         function loadMatches() {
@@ -167,154 +167,197 @@
                 list.innerHTML = "";
                 snap.forEach(d => {
                     const m = d.data();
+                    const id = d.id;
+                    const timeStr = new Date(m.startTime).toISOString().slice(0,16);
                     list.innerHTML += `
                     <div class="card">
-                        <button class="btn-del" onclick="delDoc('matches','${d.id}')">DELETE</button>
-                        <div class="grid" style="margin-top:15px;">
-                            <div class="field"><label>Map</label><input id="m-map-${d.id}" value="${m.map}"></div>
-                            <div class="field"><label>Type</label><input id="m-type-${d.id}" value="${m.type}"></div>
-                            <div class="field"><label>Room ID</label><input id="m-rid-${d.id}" value="${m.roomId||''}" placeholder="--"></div>
-                            <div class="field"><label>Password</label><input id="m-pas-${d.id}" value="${m.password||''}" placeholder="--"></div>
-                            <div class="field"><label>Slots</label><input type="number" id="m-tot-${d.id}" value="${m.total}"></div>
-                            <div class="field"><label>Joined</label><input type="number" id="m-joi-${d.id}" value="${m.joined}"></div>
+                        <div class="grid-form">
+                            <div class="field"><label>Map</label><input id="m-map-${id}" value="${m.map}"></div>
+                            <div class="field"><label>Type</label><input id="m-type-${id}" value="${m.type}"></div>
+                            <div class="field"><label>Slots</label><input type="number" id="m-tot-${id}" value="${m.total}"></div>
+                            <div class="field"><label>Joined</label><input type="number" id="m-join-${id}" value="${m.joined}"></div>
+                        </div>
+                        <div class="field"><label>Room ID / Pass</label>
+                            <div style="display:flex; gap:5px;">
+                                <input id="m-rid-${id}" value="${m.roomId||''}" placeholder="Room ID">
+                                <input id="m-pas-${id}" value="${m.password||''}" placeholder="Pass">
+                            </div>
                         </div>
                         <div class="field"><label>Status</label>
-                            <select id="m-st-${d.id}">
-                                <option value="open" ${m.status=='open'?'selected':''}>OPEN</option>
-                                <option value="started" ${m.status=='started'?'selected':''}>STARTED</option>
-                                <option value="finished" ${m.status=='finished'?'selected':''}>FINISHED</option>
+                            <select id="m-st-${id}">
+                                <option value="open" ${m.status=='open'?'selected':''}>Open</option>
+                                <option value="started" ${m.status=='started'?'selected':''}>Started</option>
+                                <option value="finished" ${m.status=='finished'?'selected':''}>Finished</option>
                             </select>
                         </div>
-                        <button class="btn-save" onclick="updMatch('${d.id}')">SAVE CHANGES</button>
+                        <button class="btn-save" onclick="updateMatch('${id}')">SAVE UPDATES</button>
+                        <button class="danger" style="width:100%; margin-top:5px; padding:5px;" onclick="delMatch('${id}')">DELETE</button>
                     </div>`;
                 });
             });
         }
-        window.updMatch = async (id) => {
-            await updateDoc(doc(db, "matches", id), {
-                map: document.getElementById(`m-map-${id}`).value,
-                type: document.getElementById(`m-type-${id}`).value,
-                roomId: document.getElementById(`m-rid-${id}`).value,
-                password: document.getElementById(`m-pas-${id}`).value,
-                total: Number(document.getElementById(`m-tot-${id}`).value),
-                joined: Number(document.getElementById(`m-joi-${id}`).value),
-                status: document.getElementById(`m-st-${id}`).value
+        window.updateMatch = async (id) => {
+            await updateDoc(doc(db,"matches",id), {
+                map: document.getElementById('m-map-'+id).value,
+                type: document.getElementById('m-type-'+id).value,
+                total: Number(document.getElementById('m-tot-'+id).value),
+                joined: Number(document.getElementById('m-join-'+id).value),
+                roomId: document.getElementById('m-rid-'+id).value,
+                password: document.getElementById('m-pas-'+id).value,
+                status: document.getElementById('m-st-'+id).value
             });
             alert("Updated!");
         };
+        window.delMatch = async(id) => { if(confirm("Delete Match?")) await deleteDoc(doc(db,"matches",id)); };
 
-        // --- PAYMENTS & HISTORY ---
+        // --- PAYMENTS & HISTORY & NOTIFICATIONS ---
+        window.setPayView = (v) => {
+            currentPayTab = v;
+            document.querySelectorAll('.p-btn').forEach(b => b.classList.remove('active'));
+            const btnId = {fund:'pb-fund', 'fund-h':'pb-fund-h', draw:'pb-draw', 'draw-h':'pb-draw-h', join:'pb-join'}[v];
+            if(document.getElementById(btnId)) document.getElementById(btnId).classList.add('active');
+            loadPayments();
+        };
+
         function loadPayments() {
-            const list = document.getElementById('pay-list');
-            list.innerHTML = "Loading...";
+            const container = document.getElementById('pay-list-container');
+            container.innerHTML = "Loading...";
 
-            onSnapshot(collection(db, "payments"), pSnap => {
-                onSnapshot(collection(db, "withdrawals"), wSnap => {
-                    // Update Badges
-                    let f_pending = 0, d_pending = 0;
-                    pSnap.forEach(x => { if(x.data().status==='pending' && x.data().type==='deposit') f_pending++; });
-                    wSnap.forEach(x => { if(x.data().status==='pending') d_pending++; });
+            let col = "payments";
+            let q = query(collection(db, col), orderBy("timestamp", "desc"));
 
-                    document.getElementById('b-fund').innerText = f_pending;
-                    document.getElementById('b-fund').style.display = f_pending > 0 ? 'flex' : 'none';
-                    document.getElementById('b-draw').innerText = d_pending;
-                    document.getElementById('b-draw').style.display = d_pending > 0 ? 'flex' : 'none';
-                    document.getElementById('b-main-pay').innerText = f_pending + d_pending;
-                    document.getElementById('b-main-pay').style.display = (f_pending+d_pending) > 0 ? 'flex' : 'none';
+            if(currentPayTab.includes('draw')) col = "withdrawals";
+            
+            onSnapshot(query(collection(db, col), orderBy("timestamp", "desc")), snap => {
+                container.innerHTML = "";
+                let pendingCount = 0;
 
-                    list.innerHTML = "";
-                    const activeSnap = currentPayTab.includes('draw') ? wSnap : pSnap;
+                snap.forEach(d => {
+                    const p = d.data();
+                    const id = d.id;
+                    const isPending = p.status === 'pending';
+                    if(isPending) pendingCount++;
 
-                    activeSnap.forEach(d => {
-                        const p = d.data();
-                        const isP = p.status === 'pending';
-                        let canShow = false;
+                    // Filter Logic for 4 Tabs
+                    let show = false;
+                    if(currentPayTab === 'fund' && isPending && p.type === 'deposit') show = true;
+                    if(currentPayTab === 'fund-h' && !isPending && p.type === 'deposit') show = true;
+                    if(currentPayTab === 'draw' && isPending) show = true;
+                    if(currentPayTab === 'draw-h' && !isPending) show = true;
+                    if(currentPayTab === 'join' && p.matchId && p.matchId !== 'ADD_FUND') show = true;
 
-                        if(currentPayTab==='fund' && isP && p.type==='deposit') canShow = true;
-                        if(currentPayTab==='fund-h' && !isP && p.type==='deposit') canShow = true;
-                        if(currentPayTab==='draw' && isP) canShow = true;
-                        if(currentPayTab==='draw-h' && !isP) canShow = true;
-                        if(currentPayTab==='join' && p.matchId && p.matchId !== 'ADD_FUND') canShow = true;
-
-                        if(canShow) {
-                            list.innerHTML += `
-                            <div class="card" style="border-left:4px solid ${isP?'var(--gold)':'var(--accent)'}">
-                                <button class="btn-del" onclick="delDoc('${currentPayTab.includes('draw')?'withdrawals':'payments'}','${d.id}')">DEL</button>
-                                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                                    <b>${p.userName}</b>
-                                    <span style="font-size:0.7rem; color:${isP?'var(--gold)':'#00ff88'}">${p.status.toUpperCase()}</span>
+                    if(show) {
+                        container.innerHTML += `
+                        <div class="card" style="border-left: 4px solid ${isPending?'var(--gold)':'var(--accent)'}">
+                            <div style="display:flex; justify-content:space-between;">
+                                <b>${p.userName}</b>
+                                <span style="font-size:0.7rem; color:${isPending?'var(--gold)':'var(--accent)'}">${p.status.toUpperCase()}</span>
+                            </div>
+                            <div style="font-size:0.9rem; margin:5px 0;">Amount: <b style="color:var(--gold)">₹${p.amount}</b></div>
+                            <div style="font-size:0.75rem; color:#888;">${p.utr ? 'UTR: '+p.utr : 'UPI: '+p.upi}</div>
+                            ${p.ss ? `<img src="${p.ss}" class="pay-ss" onclick="window.open('${p.ss}')">` : ''}
+                            ${isPending ? `
+                                <div style="display:flex; gap:10px; margin-top:10px;">
+                                    <button onclick="approveReq('${id}','${col}','${p.userId}','${p.amount}')" style="flex:1; background:var(--accent); color:#000; font-size:0.8rem;">APPROVE</button>
+                                    <button onclick="rejectReq('${id}','${col}','${p.userId}','${p.amount}')" style="flex:1; background:var(--red); color:#fff; font-size:0.8rem;">REJECT</button>
                                 </div>
-                                <div style="font-size:1.1rem; font-weight:800; color:var(--gold)">₹${p.amount}</div>
-                                <div style="font-size:0.75rem; color:#888;">${p.utr ? 'UTR: '+p.utr : 'UPI: '+p.upi}</div>
-                                ${p.ss ? `<img src="${p.ss}" class="ss-img" onclick="window.open('${p.ss}')">` : ''}
-                                ${isP ? `
-                                    <div class="grid" style="margin-top:10px;">
-                                        <button onclick="handleReq('${d.id}','${currentPayTab.includes('draw')?'withdrawals':'payments'}','${p.userId}','${p.amount}','app')" style="background:var(--accent); color:#000; padding:8px;">APPROVE</button>
-                                        <button onclick="handleReq('${d.id}','${currentPayTab.includes('draw')?'withdrawals':'payments'}','${p.userId}','${p.amount}','rej')" style="background:var(--red); color:#fff; padding:8px;">REJECT</button>
-                                    </div>
-                                ` : ''}
-                            </div>`;
-                        }
-                    });
-                    if(list.innerHTML === "") list.innerHTML = "<center style='color:#555; padding:20px;'>No Records Found</center>";
+                            ` : ''}
+                            <button onclick="viewFullUser('${p.userId}')" style="width:100%; margin-top:5px; background:#222; color:#fff; font-size:0.7rem; padding:5px;">VIEW USER PROFILE</button>
+                        </div>`;
+                    }
                 });
+                
+                // Update Notification Badge
+                const badge = document.getElementById('pay-notif');
+                if(pendingCount > 0) { badge.innerText = pendingCount; badge.style.display = 'block'; }
+                else { badge.style.display = 'none'; }
+
+                if(container.innerHTML === "") container.innerHTML = "<div style='text-align:center; padding:20px; color:#555;'>No Data Found</div>";
             });
         }
 
-        window.handleReq = async (id, col, uid, amt, act) => {
-            if(!confirm("Are you sure?")) return;
-            const newStatus = act === 'app' ? 'approved' : 'rejected';
-            await updateDoc(doc(db, col, id), { status: newStatus });
-            if(act === 'app' && col === 'payments') {
+        window.approveReq = async (id, col, uid, amt) => {
+            if(!confirm("Approve this?")) return;
+            await updateDoc(doc(db, col, id), { status: 'approved' });
+            if(col === 'payments') {
                 await updateDoc(doc(db, "users", uid), { balance: increment(Number(amt)) });
             }
-            if(act === 'rej' && col === 'withdrawals') {
-                await updateDoc(doc(db, "users", uid), { balance: increment(Number(amt)) });
+            alert("Approved!");
+        };
+
+        window.rejectReq = async (id, col, uid, amt) => {
+            if(!confirm("Reject this?")) return;
+            await updateDoc(doc(db, col, id), { status: 'rejected' });
+            if(col === 'withdrawals') {
+                await updateDoc(doc(db, "users", uid), { balance: increment(Number(amt)) }); // Refund
             }
-            alert("Action Success!");
+            alert("Rejected!");
         };
 
         // --- USERS ---
         window.loadUsers = (search = "") => {
             onSnapshot(collection(db, "users"), snap => {
-                document.getElementById('count-users').innerText = snap.size;
+                document.getElementById('total-users').innerText = snap.size;
                 const list = document.getElementById('users-list');
                 list.innerHTML = "";
                 snap.forEach(d => {
                     const u = d.data();
                     if(search && !u.name.toLowerCase().includes(search.toLowerCase()) && !d.id.includes(search)) return;
                     list.innerHTML += `
-                    <div class="user-row">
+                    <div class="user-row" onclick="viewFullUser('${d.id}')">
                         <img src="${u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png'}" class="u-img">
                         <div style="flex:1;">
-                            <div style="font-weight:bold; font-size:0.9rem;">${u.name}</div>
-                            <div style="font-size:0.7rem; color:#666;">${d.id}</div>
+                            <div style="font-weight:bold;">${u.name}</div>
+                            <div style="font-size:0.75rem; color:#888;">${d.id}</div>
                         </div>
                         <div style="text-align:right;">
-                            <div style="color:var(--accent); font-weight:800;">₹${u.balance}</div>
-                            <button onclick="editUser('${d.id}')" style="background:#222; color:#fff; font-size:0.6rem; padding:3px 6px;">EDIT</button>
+                            <div style="color:var(--accent); font-weight:bold;">₹${u.balance}</div>
+                            <small style="color:#555;">Details ></small>
                         </div>
                     </div>`;
                 });
             });
         };
 
-        window.editUser = async (uid) => {
+        window.viewFullUser = async (uid) => {
             const snap = await getDoc(doc(db, "users", uid));
+            if(!snap.exists()) return alert("User not found!");
             const u = snap.data();
-            const newBal = prompt("Enter New Balance for " + u.name, u.balance);
-            if(newBal !== null) {
-                await updateDoc(doc(db, "users", uid), { balance: Number(newBal) });
-                alert("Balance Updated!");
-            }
+            const content = document.getElementById('user-details-content');
+            
+            content.innerHTML = `
+                <div style="text-align:center; margin-bottom:15px;">
+                    <img src="${u.dpUrl || 'https://img.icons8.com/color/96/user-male-circle.png'}" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--accent);">
+                    <h2 style="margin:10px 0 0 0;">${u.name}</h2>
+                    <span style="color:#888;">${uid}</span>
+                </div>
+                <div class="card" style="background:#000;">
+                    <div class="field"><label>Wallet Balance</label><input type="number" id="ed-bal" value="${u.balance}"></div>
+                    <div class="field"><label>Total Profit</label><input type="number" id="ed-prof" value="${u.totalProfit||0}"></div>
+                    <div class="field"><label>Total Loss</label><input type="number" id="ed-loss" value="${u.totalLoss||0}"></div>
+                    <div class="field"><label>Gaming Name</label><input id="ed-gname" value="${u.gamingName||''}"></div>
+                    <div class="field"><label>Gaming UID</label><input id="ed-guid" value="${u.gamingId||''}"></div>
+                    <button class="btn-save" onclick="saveUserEdit('${uid}')">UPDATE USER DATA</button>
+                </div>
+            `;
+            document.getElementById('user-modal').style.display = 'flex';
         };
 
-        window.delDoc = async (col, id) => {
-            if(confirm("Permanent Delete?")) await deleteDoc(doc(db, col, id));
+        window.saveUserEdit = async (uid) => {
+            await updateDoc(doc(db, "users", uid), {
+                balance: Number(document.getElementById('ed-bal').value),
+                totalProfit: Number(document.getElementById('ed-prof').value),
+                totalLoss: Number(document.getElementById('ed-loss').value),
+                gamingName: document.getElementById('ed-gname').value,
+                gamingId: document.getElementById('ed-guid').value
+            });
+            alert("User Updated!");
+            document.getElementById('user-modal').style.display = 'none';
         };
 
-        // INIT
-        switchTab('add');
+        // --- INIT ---
+        showTab('add');
+
     </script>
 </body>
 </html>
