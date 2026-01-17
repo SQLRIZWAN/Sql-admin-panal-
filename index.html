@@ -212,6 +212,7 @@
             </div>
             <div id="admin-menu" class="menu-dropdown">
                 <div class="menu-item" onclick="location.reload()">REFRESH</div>
+                <div id="menu-login" class="menu-item" onclick="openAdminLogin()" style="display:none;">LOGIN</div>
                 <div class="menu-item" onclick="logoutAdmin()">LOGOUT</div>
             </div>
         </div>
@@ -364,9 +365,29 @@
         </div>
     </div>
 
+    <!-- ADMIN LOGIN MODAL (minimal, added to fix login/logout) -->
+    <div id="admin-login-modal" class="modal">
+        <div class="modal-box">
+            <h3 style="color:var(--gold); text-align:center; margin-top:0;">ADMIN LOGIN</h3>
+            <div style="margin:15px 0;">
+                <label style="font-size:0.75rem; color:#888; margin-bottom:6px;">Email</label>
+                <input type="email" id="admin-email" placeholder="admin@example.com">
+            </div>
+            <div style="margin:15px 0;">
+                <label style="font-size:0.75rem; color:#888; margin-bottom:6px;">Password</label>
+                <input type="password" id="admin-pass" placeholder="Password">
+            </div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn-gold" onclick="loginAdmin()">LOGIN</button>
+                <button class="btn-black" onclick="document.getElementById('admin-login-modal').style.display='none'">CANCEL</button>
+            </div>
+            <p style="font-size:0.8rem; color:#666; margin-top:12px; text-align:center;">Use Firebase Auth credentials</p>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signOut, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, deleteDoc, query, orderBy, getDoc, increment, where, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // --- CLOUDINARY CONFIG ---
@@ -399,7 +420,57 @@
 
         // MENU
         window.toggleMenu = () => { document.getElementById('admin-menu').classList.toggle('show'); };
-        window.logoutAdmin = () => { if(confirm('Logout?')) signOut(auth).then(() => location.reload()); };
+
+        // LOGIN / LOGOUT FIX
+        // Show/hide menu items depending on auth state
+        onAuthStateChanged(auth, (user) => {
+            const loginItem = document.getElementById('menu-login');
+            const logoutItem = Array.from(document.getElementsByClassName('menu-item')).find(el => el.innerText.trim().toUpperCase() === 'LOGOUT');
+            if(user){
+                // logged in
+                if(loginItem) loginItem.style.display = 'none';
+                if(logoutItem) logoutItem.style.display = 'block';
+            } else {
+                // not logged in
+                if(loginItem) loginItem.style.display = 'block';
+                if(logoutItem) logoutItem.style.display = 'block'; // keep visible for convenience; signOut will be harmless if not signed in
+            }
+        });
+
+        window.openAdminLogin = () => {
+            document.getElementById('admin-login-modal').style.display = 'flex';
+            document.getElementById('admin-email').focus();
+            document.getElementById('admin-pass').value = '';
+            document.getElementById('admin-email').value = '';
+        };
+
+        window.loginAdmin = async () => {
+            const email = document.getElementById('admin-email').value.trim();
+            const pass = document.getElementById('admin-pass').value;
+            if(!email || !pass) return alert('Enter email and password');
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                alert('Login successful');
+                document.getElementById('admin-login-modal').style.display = 'none';
+                document.getElementById('admin-email').value = '';
+                document.getElementById('admin-pass').value = '';
+                document.getElementById('admin-menu').classList.remove('show');
+            } catch (e) {
+                console.error(e);
+                alert('Login failed: ' + (e.message || e));
+            }
+        };
+
+        window.logoutAdmin = () => { 
+            if(!confirm('Logout?')) return;
+            signOut(auth).then(() => {
+                alert('Logged out');
+                location.reload();
+            }).catch((err) => {
+                console.error(err);
+                alert('Logout failed: ' + (err.message || err));
+            });
+        };
 
         window.showTab = (tab) => {
             document.querySelectorAll('.tab-content').forEach(v => v.style.display = 'none');
@@ -828,4 +899,4 @@
         showTab('dash'); 
     </script>
 </body>
-                </html>
+    </html>
