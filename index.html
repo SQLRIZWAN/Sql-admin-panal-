@@ -421,19 +421,32 @@
         // MENU
         window.toggleMenu = () => { document.getElementById('admin-menu').classList.toggle('show'); };
 
-        // LOGIN / LOGOUT FIX
-        // Show/hide menu items depending on auth state
+        // LOGIN / LOGOUT: robust auth state handler
         onAuthStateChanged(auth, (user) => {
             const loginItem = document.getElementById('menu-login');
-            const logoutItem = Array.from(document.getElementsByClassName('menu-item')).find(el => el.innerText.trim().toUpperCase() === 'LOGOUT');
-            if(user){
-                // logged in
-                if(loginItem) loginItem.style.display = 'none';
-                if(logoutItem) logoutItem.style.display = 'block';
+            const adminLoginModal = document.getElementById('admin-login-modal');
+            const adminMenu = document.getElementById('admin-menu');
+            // find logout item(s)
+            const logoutItems = Array.from(document.getElementsByClassName('menu-item')).filter(el => el.innerText.trim().toUpperCase() === 'LOGOUT');
+
+            if (user) {
+                // logged in -> hide login menu item, hide login modal, show logout
+                if (loginItem) loginItem.style.display = 'none';
+                logoutItems.forEach(el => el.style.display = 'block');
+                if (adminLoginModal) adminLoginModal.style.display = 'none';
+                // ensure admin menu closed
+                if (adminMenu) adminMenu.classList.remove('show');
             } else {
-                // not logged in
-                if(loginItem) loginItem.style.display = 'block';
-                if(logoutItem) logoutItem.style.display = 'block'; // keep visible for convenience; signOut will be harmless if not signed in
+                // not logged in -> show login menu item, hide logout (until logged in), show login modal
+                if (loginItem) loginItem.style.display = 'block';
+                logoutItems.forEach(el => el.style.display = 'none');
+                if (adminLoginModal) {
+                    // show modal for admin login
+                    adminLoginModal.style.display = 'flex';
+                    // focus email field if available
+                    const e = document.getElementById('admin-email');
+                    if (e) e.focus();
+                }
             }
         });
 
@@ -441,7 +454,6 @@
             document.getElementById('admin-login-modal').style.display = 'flex';
             document.getElementById('admin-email').focus();
             document.getElementById('admin-pass').value = '';
-            document.getElementById('admin-email').value = '';
         };
 
         window.loginAdmin = async () => {
@@ -461,15 +473,18 @@
             }
         };
 
-        window.logoutAdmin = () => { 
+        window.logoutAdmin = async () => { 
             if(!confirm('Logout?')) return;
-            signOut(auth).then(() => {
+            try {
+                await signOut(auth);
                 alert('Logged out');
-                location.reload();
-            }).catch((err) => {
+                // show admin login modal after logout
+                document.getElementById('admin-login-modal').style.display = 'flex';
+                document.getElementById('admin-menu').classList.remove('show');
+            } catch (err) {
                 console.error(err);
                 alert('Logout failed: ' + (err.message || err));
-            });
+            }
         };
 
         window.showTab = (tab) => {
@@ -899,4 +914,4 @@
         showTab('dash'); 
     </script>
 </body>
-    </html>
+                </html>
